@@ -1,0 +1,7 @@
+mcp>=2.0
+numpy>=2.0
+scipy>=1.13
+pyloudnorm>=0.1.1
+PyAudioWPatch>=0.2.12
+matplotlib>=3.8
+pyflakes>=3.0   # optional, for linting

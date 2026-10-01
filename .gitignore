@@ -1,0 +1,15 @@
+# rebuildable caches
+__pycache__/
+*.pyc
+preset_index.json
+sample_index.json
+
+# personal data and generated output (not code)
+bookmarks.json
+snapshots/
+reports/
+*.png
+
+# editor / OS
+.vscode/
+Thumbs.db
