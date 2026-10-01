@@ -27,6 +27,22 @@
   button:hover, select:hover { border-color: var(--dim); }
   main { display: grid; gap: 12px; padding: 12px 16px; grid-template-columns: repeat(12, 1fr); }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+  .card { position: relative; }
+  .card.closed { display: none; }
+  .card .x { position: absolute; top: 6px; right: 8px; width: 24px; height: 24px; padding: 0; line-height: 1; font-size: 16px;
+             border: 0; background: transparent; color: var(--dim); border-radius: 6px; z-index: 2; }
+  .card .x:hover { background: var(--bg); color: var(--fg); }
+  .nums { padding-top: 30px; }
+  .card.wide { grid-column: span 12 !important; }
+  main { grid-auto-flow: dense; }
+  .menu { position: relative; }
+  .menu-list { position: absolute; right: 0; top: calc(100% + 6px); background: var(--panel); border: 1px solid var(--line);
+               border-radius: 8px; padding: 6px; min-width: 230px; z-index: 20; display: none; box-shadow: 0 8px 24px #0008; }
+  .menu.open .menu-list { display: block; }
+  .menu-list label { display: flex; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+  .menu-list label:hover { background: var(--bg); }
+  .menu-list hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+  .menu-list button { width: 100%; text-align: left; margin-top: 2px; }
   .card h2 { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin: 0 0 8px; }
   .nums { grid-column: span 12; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
   .num { background: var(--bg); border-radius: 8px; padding: 10px; }
@@ -83,6 +99,10 @@
     </select>
   </label>
   <button id="reset" title="Restart integrated loudness, LRA and peak-hold">Reset</button>
+  <div class="menu" id="panelmenu">
+    <button id="panelbtn" aria-haspopup="true" aria-expanded="false" title="Choose which panels to show">Panels ▾</button>
+    <div class="menu-list" id="panellist" role="menu"></div>
+  </div>
 </header>
 <main>
   <section class="card nums" aria-label="Loudness readouts">
@@ -129,7 +149,7 @@
     <div><div class="label" style="color:var(--dim);font-size:11px">Frequency</div><div id="thz" style="font-size:20px;font-variant-numeric:tabular-nums">–</div></div>
     <div><div class="label" style="color:var(--dim);font-size:11px">Cents</div><div id="tcents" style="font-size:20px;font-variant-numeric:tabular-nums">–</div></div>
   </section>
-  <section class="card advice" id="advice">Waiting for audio…</section>
+  <section class="card advice" id="advice"><span id="advicetext">Waiting for audio…</span></section>
 </main>
 <footer>Designed by S.Simpson 2026</footer>
 <script>
@@ -153,6 +173,7 @@ function sizeCanvas(c) {
 }
 
 function drawHistory() {
+  if (!$("hist").offsetParent) return;  // panel closed
   const [g, w, h] = sizeCanvas($("hist"));  // fixed CSS height; width follows the card
   g.clearRect(0, 0, w, h);
   const lo = -40, hi = -4, y = v => h - (v - lo) / (hi - lo) * h;
@@ -172,6 +193,7 @@ function drawHistory() {
 }
 
 function drawScope(pts) {
+  if (!$("scope").offsetParent) return;  // panel closed
   const [g, w, h] = sizeCanvas($("scope"));
   g.clearRect(0, 0, w, h);
   const s = Math.min(w, h) / 2 - 6, cx = w / 2, cy = h / 2;
@@ -183,6 +205,7 @@ function drawScope(pts) {
 }
 
 function drawSpectrum(sp) {
+  if (!$("spec").offsetParent) return;  // panel closed
   const [g, w, h] = sizeCanvas($("spec"));
   g.clearRect(0, 0, w, h);
   const lo = -100, hi = -10, y = v => h - 14 - (Math.max(lo, v) - lo) / (hi - lo) * (h - 14);
@@ -240,14 +263,14 @@ function update(d) {
   drawHistory(); drawScope(d.scope); drawSpectrum(d.spectrum);
   const tips = [];
   if (d.momentary === null || d.momentary < -70) {
-    $("advice").innerHTML = "No signal — press play in Bitwig.";
+    $("advicetext").innerHTML = "No signal — press play in Bitwig.";
     return;
   }
   if (d.integrated !== null && Math.abs(d.gain_to_target) > 1) tips.push(`<b>${d.gain_to_target > 0 ? "Raise" : "Lower"} ~${Math.abs(d.gain_to_target).toFixed(1)} dB</b> to hit ${target.lufs} LUFS (${target.name}).`);
   if (d.true_peak_max > target.tp) tips.push(`<b>True peak ${d.true_peak_max.toFixed(2)} dBTP</b> is over the ${target.tp} dBTP ceiling.`);
   if (d.correlation < 0.2) tips.push(`<b>Low correlation (${d.correlation.toFixed(2)})</b> — check mono compatibility.`);
   if (d.clipped_samples) tips.push(`<b>${d.clipped_samples} clipped samples</b> since reset.`);
-  $("advice").innerHTML = tips.length ? tips.join(" &nbsp;·&nbsp; ") : "Within target. Integrated loudness and LRA build up over time — press Reset when you start a new pass.";
+  $("advicetext").innerHTML = tips.length ? tips.join(" &nbsp;·&nbsp; ") : "Within target. Integrated loudness and LRA build up over time — press Reset when you start a new pass.";
 }
 
 // ---- Master chain controls ----
@@ -285,7 +308,6 @@ $("build").onclick = async () => { setMsg("Building " + $("style").value + " cha
   if (r.error) return setMsg(r.error, true); await loadChain(false); setMsg("Chain built."); };
 $("refresh").onclick = () => loadChain(true);
 $("report").onclick = async () => { const r = await post("/api/report"); setMsg(r.error ? r.error : "Saved " + r.saved, !!r.error); };
-loadChain(false);
 
 // UK clock: Europe/London handles GMT/BST automatically.
 const ukTime = new Intl.DateTimeFormat("en-GB", {timeZone: "Europe/London", hour: "2-digit", minute: "2-digit",
@@ -330,6 +352,53 @@ function connect() {
 $("reset").onclick = () => fetch("/api/reset", {method: "POST"}).then(() => { history = []; });
 $("target").onchange = e => fetch("/api/target/" + e.target.value, {method: "POST"});
 window.addEventListener("resize", () => { drawHistory(); });
+
+// ---- Panels: close what you don't need, bring it back from the Panels menu ----
+const PANELS = [
+  ["nums", "Loudness readouts"], ["history", "Loudness history"], ["scope", "Vectorscope"], ["spectrum", "Spectrum"],
+  ["meters", "Levels & phase"], ["master", "Master chain controls"], ["tuner", "Tuner"], ["advice", "Advice"],
+];
+const PAIRS = [["history", "scope"], ["spectrum", "meters"]];   // two cards sharing a row: the survivor takes the full width
+const card = id => document.querySelector("main > .card." + id);
+let hidden = new Set();
+try { hidden = new Set(JSON.parse(store.get("monitor.hidden") || "[]")); } catch {}
+let chainLoaded = false;
+
+function applyPanels() {
+  for (const [id] of PANELS) card(id).classList.toggle("closed", hidden.has(id));
+  for (const [a, b] of PAIRS) {
+    card(a).classList.toggle("wide", hidden.has(b) && !hidden.has(a));
+    card(b).classList.toggle("wide", hidden.has(a) && !hidden.has(b));
+  }
+  document.querySelectorAll("#panellist input[type=checkbox]").forEach(cb => { cb.checked = !hidden.has(cb.dataset.id); });
+  store.set("monitor.hidden", JSON.stringify([...hidden]));
+  // the master card reads Bitwig (and selects its master track), so only do that once it is actually shown
+  if (!hidden.has("master") && !chainLoaded) { chainLoaded = true; loadChain(false); }
+  requestAnimationFrame(() => { drawHistory(); });   // canvases need a redraw at their new width
+}
+function setHidden(id, yes) { yes ? hidden.add(id) : hidden.delete(id); applyPanels(); }
+
+for (const [id, name] of PANELS) {
+  const b = document.createElement("button");
+  b.className = "x"; b.textContent = "×"; b.title = "Close " + name; b.setAttribute("aria-label", "Close " + name + " panel");
+  b.onclick = () => setHidden(id, true);
+  card(id).appendChild(b);
+}
+$("panellist").innerHTML = PANELS.map(([id, name]) =>
+  `<label><input type="checkbox" data-id="${id}" checked> ${name}</label>`).join("") +
+  '<hr><button id="showall">Show all panels</button><button id="onlymeters">Compact: loudness only</button>';
+$("panellist").addEventListener("change", e => { if (e.target.dataset.id) setHidden(e.target.dataset.id, !e.target.checked); });
+$("showall").onclick = () => { hidden.clear(); applyPanels(); };
+$("onlymeters").onclick = () => { hidden = new Set(PANELS.map(p => p[0]).filter(id => !["nums", "advice"].includes(id))); applyPanels(); };
+function placeMenu() {   // open towards the side that has room (the header wraps on narrow windows)
+  const l = $("panellist"); l.style.left = "auto"; l.style.right = "0";
+  const r = l.getBoundingClientRect();
+  if (r.left < 8) { l.style.left = "0"; l.style.right = "auto"; }
+}
+$("panelbtn").onclick = e => { e.stopPropagation(); const open = $("panelmenu").classList.toggle("open"); $("panelbtn").setAttribute("aria-expanded", open); if (open) placeMenu(); };
+document.addEventListener("click", e => { if (!$("panelmenu").contains(e.target)) { $("panelmenu").classList.remove("open"); $("panelbtn").setAttribute("aria-expanded", "false"); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("panelmenu").classList.remove("open"); });
+applyPanels();
 connect();
 </script>
 </body>

@@ -39,6 +39,8 @@ Ask Claude in plain language, for example:
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
 **Live monitor without Claude:** double-click `start_monitor.bat` (opens http://127.0.0.1:8780).
+Every panel has a × to close it; the **Panels** menu in the header brings them back (or *Compact* for loudness only).
+Your layout is remembered in the browser, and a closed Master-controls panel never touches Bitwig.
 
 ## Files
 
