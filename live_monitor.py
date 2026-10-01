@@ -1,6 +1,7 @@
 """Live master monitor: captures the Windows output (WASAPI loopback) and serves a real-time mastering
 dashboard at http://127.0.0.1:8780 (loudness, true peak, L/R + mid/side meters, correlation,
-vectorscope, spectrum, loudness history). Run: python live_monitor.py [--port 8780] [--target streaming]
+vectorscope, spectrum, loudness history, tuner, master-chain sliders, advice; UK time and weather header;
+panels can be closed from the Panels menu). Starts at login via autostart.py. Run: python live_monitor.py [--port 8780] [--target streaming]
 Needs Bitwig on a WASAPI ('Windows Audio') driver so its output can be captured."""
 import argparse
 import json

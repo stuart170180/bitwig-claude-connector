@@ -1674,6 +1674,9 @@ def live_monitor(action: str = "start", target: str = "streaming", open_browser:
     """Real-time mastering dashboard in your web browser at http://127.0.0.1:8780 - momentary / short-term
     / integrated LUFS, distance to target, true-peak hold, LRA, PLR, L/R and mid/side meters, phase
     correlation, stereo width, vectorscope, mid/side spectrum and a 60 s loudness graph, updating ~10x/s.
+    The page also has a pitch tuner, master-chain sliders, advice, a UK time and weather header, and
+    closable panels (Panels menu; layout remembered in the browser). It can start at Windows login
+    (python autostart.py).
     action: start (launches it in the background if not running, sets the target, opens the browser),
     reading (current numbers, so Claude can comment on what you're hearing), reset (restart integrated
     loudness / peak hold for a new pass), target (switch target), stop.

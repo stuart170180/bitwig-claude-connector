@@ -52,6 +52,8 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
 | `mastering.py`, `reference.py`, `pitch.py` | Loudness / M-S / spectrum, reference comparison, pitch and tuning |
 | `live_monitor.py` / `.html` | Live dashboard web server and page |
+| `autostart.py` | Starts the dashboard hidden at Windows login (`--status`, `--remove`) |
+| `start_monitor.bat` | Starts the dashboard in a window on demand |
 | `tests/live_test.py` | Regression test that calls every tool through a real MCP client |
 | `make_docs.py` | Regenerates `TOOLS.md` |
 | `backup.py` | Timestamped zip backups and restore |
@@ -78,6 +80,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 - **"No reply from Bitwig"** — Bitwig isn't open, or the controller isn't enabled (see Setup 1).
 - **"all Bitwig reply ports … are in use"** — close other Claude sessions or stray `python server.py` processes.
+- **Monitor page won't load** — it isn't running: `python autostart.py --status`, or double-click `start_monitor.bat`.
 - **Live capture says it can't capture** — Bitwig is on an exclusive driver; switch to Windows Audio (Setup 4).
 - **Script errors** — search `%LOCALAPPDATA%\Bitwig Studio\BitwigStudio.log` for "Bitwig MCP".
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.
