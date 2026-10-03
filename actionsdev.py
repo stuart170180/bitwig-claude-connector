@@ -36,6 +36,13 @@ def action_run(bw, action_id):
     return bw.call("action_run", id=action_id)
 
 
+def show_arranger(bw):
+    """Switch Bitwig to the ARRANGE panel layout: the track-header focus action (and so Group/Ungroup) only works while the
+    arranger's track list is on screen."""
+    bw.call("app_panel", layout="ARRANGE")
+    time.sleep(0.8)
+
+
 # ---- selection ---------------------------------------------------------------------------------------------------
 def select_tracks(bw, track_indices):
     """Select several tracks at once (any combination, flat get_session indices) so selection-based actions
@@ -51,6 +58,7 @@ def select_tracks(bw, track_indices):
     for g in bw.call("act_groups"):
         if not g["expanded"] and idx[0] <= g["index"] < idx[-1] and g["children"]:
             raise RuntimeError(f"group '{g['name']}' is collapsed; expand it first (children are skipped by the selection cursor)")
+    show_arranger(bw)
     bw.call("act_select", track_index=idx[0])
     time.sleep(STEP + 0.3)
     _run(bw, FOCUS)
@@ -93,6 +101,7 @@ def ungroup(bw, track_index):
     g = [x for x in bw.call("act_groups") if x["index"] == track_index]
     if not g:
         raise ValueError(f"track {track_index} ({tr[track_index]['name']}) is not a group track")
+    show_arranger(bw)
     bw.call("act_select", track_index=track_index)
     time.sleep(STEP + 0.3)
     _run(bw, FOCUS)

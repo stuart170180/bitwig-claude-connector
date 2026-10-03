@@ -117,8 +117,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Arranger clips:** `get_arranger_clip_notes` / `edit_arranger_clip` work on the arranger clip you have selected in Bitwig's Arrange view;
   they could not be pointed at a clip recorded from the script. After recording, `return_to_arrangement` (called automatically) makes tracks
   follow the arranger instead of their launcher clips.
-- **Bitwig actions:** `group_tracks` / `ungroup_track` only work while the Arranger timeline with track headers is on
-  screen (a script cannot show it, so switch Bitwig to the Arrange view first); the Group action also needs the track header focused; bounce, consolidate and normalize run but their
+- **Bitwig actions:** `group_tracks` / `ungroup_track` switch Bitwig to the ARRANGE layout and focus the track header themselves (verified live: works even when Bitwig was on the Mix layout); bounce, consolidate and normalize run but their
   effect cannot be confirmed from the script. Export Audio opens a dialog.
 
 - **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.

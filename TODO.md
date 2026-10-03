@@ -4,7 +4,8 @@ Last updated 2026-10-03. Connector: 102 tools, controller script 6.0. Repo: priv
 
 ## Needs you (Bitwig)
 - [ ] Reopen your song project in Bitwig. The open project is an empty "New 1"; everything below that touches your mix needs the song.
-- [ ] Group tracks: click a track header in the Arrange view, then run `group_tracks` (or group by hand with Ctrl+G), then ask for bus compressors on the new groups.
+- [x] Grouping fixed: `group_tracks` / `ungroup_track` now switch to the ARRANGE layout and focus the track header automatically.
+- [ ] Group the song's tracks with `group_tracks`, then ask for bus compressors on the new groups.
 - [ ] Share the portfolio page from its Share menu if other people should see it (it is private).
 - [ ] Confirm the live monitor starts by itself at your next Windows login (`python autostart.py --status`).
 
