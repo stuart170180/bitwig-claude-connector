@@ -142,6 +142,10 @@
       <span class="msg" id="mmsg">Sliders apply when you release them. Uses Bitwig's master track (it will be selected).</span>
     </div>
   </section>
+  <section class="card comps master"><h2>Compressors <span class="msg" style="text-transform:none;letter-spacing:0">· settings in real units</span></h2>
+    <div id="complist" class="dim">Press Read compressors (it selects each Compressor+ in Bitwig).</div>
+    <div class="actions"><button id="readcomps">Read compressors</button><span class="msg" id="cmsg">Bitwig does not report gain reduction, so no live GR meter.</span></div>
+  </section>
   <section class="card tuner"><h2>Tuner (single notes: vocals, leads, bass)</h2>
     <div id="tnote" class="dim">–</div>
     <div class="tmeter"><div class="tbar"><b id="tneedle"></b></div>
@@ -304,6 +308,17 @@ document.querySelectorAll("#ctls .ctl").forEach(div => {
     const n = parseFloat(shown); if (!isNaN(n)) { inp.value = n; showValue(div, n); }
   };
 });
+$("readcomps").onclick = async () => {
+  $("cmsg").textContent = "Reading…";
+  try {
+    const r = await (await fetch("/api/compressors")).json();
+    if (r.error) throw new Error(r.error);
+    const cols = [["ATTACK","Attack"],["RELEASE","Release"],["RATIO","Ratio"],["THRESHOLD","Threshold"],["SMOOTH","Knee"],["MAKEUP","Make-up"],["MIX","Mix"]];
+    $("complist").innerHTML = r.compressors.length ? "<table style='width:100%;border-collapse:collapse'><tr><th align=left>Track</th>" + cols.map(c => "<th align=right>" + c[1] + "</th>").join("") + "</tr>" +
+      r.compressors.map(c => "<tr><td>" + c.track.replace(/</g,"&lt;") + (c.enabled ? "" : " (off)") + "</td>" + cols.map(k => "<td align=right>" + (c.values[k[0]] || "–") + "</td>").join("") + "</tr>").join("") + "</table>" : "No Compressor+ in the project.";
+    $("cmsg").textContent = r.note;
+  } catch (e) { $("cmsg").textContent = "Couldn't read Bitwig: " + e.message; }
+};
 $("build").onclick = async () => { setMsg("Building " + $("style").value + " chain… (a few seconds)"); const r = await post("/api/master/build", {style: $("style").value, target: $("target").value});
   if (r.error) return setMsg(r.error, true); await loadChain(false); setMsg("Chain built."); };
 $("refresh").onclick = () => loadChain(true);
@@ -356,7 +371,7 @@ window.addEventListener("resize", () => { drawHistory(); });
 // ---- Panels: close what you don't need, bring it back from the Panels menu ----
 const PANELS = [
   ["nums", "Loudness readouts"], ["history", "Loudness history"], ["scope", "Vectorscope"], ["spectrum", "Spectrum"],
-  ["meters", "Levels & phase"], ["master", "Master chain controls"], ["tuner", "Tuner"], ["advice", "Advice"],
+  ["meters", "Levels & phase"], ["master", "Master chain controls"], ["comps", "Compressors"], ["tuner", "Tuner"], ["advice", "Advice"],
 ];
 const PAIRS = [["history", "scope"], ["spectrum", "meters"]];   // two cards sharing a row: the survivor takes the full width
 const card = id => document.querySelector("main > .card." + id);

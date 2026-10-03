@@ -36,3 +36,4 @@ Last updated 2026-10-03. Connector: 102 tools, controller script 6.0. Repo: priv
 - [x] Arranger clip reading for a selected clip; tracks return to the arrangement after recording
 - [x] Backups, git history, private GitHub repo, portfolio page
 - [ ] Sidechain: `sidechain_setup` builds the trigger bus, sends and ducking compressors. Still manual (not in the API): pick the bus as each Compressor+'s sidechain source, lower the bus fader, rename the FX track. Idea: patch the source into a preset (risky, see PRESET_FORMAT.md).
+- [ ] Compressor+ gain reduction has no API parameter (checked 10 guessed names); other devices' display text only works for Compressor+ and EQ+ (add their UUID + parameter ids to DISP_DEVICES in deep.js to extend).

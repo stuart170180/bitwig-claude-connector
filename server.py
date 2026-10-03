@@ -1811,6 +1811,7 @@ def _auto_name_one(track_index: int, loaded_path: str | None = None):
 
 # --- Deep device access: nested chains, every parameter, mid/side EQ (needs controller script 6.0+) ---
 import deepdev
+import compdev
 
 deep = deepdev.Deep(bw)
 
@@ -2307,10 +2308,10 @@ def edit_arranger_clip(operation: str, notes: list[dict] | None = None, name: st
     raise ValueError("operation must be write, clear, rename, transpose, quantize, duplicate or duplicate_content")
 
 # ---- advanced sidechain buses ---------------------------------------------------------------------------------------
-SC_STYLES = {   # Compressor+ parameters (normalized) for ducking; threshold/ratio/attack/release/knee/mix
-    "pump":   {"Attack": 0.05, "Release": 0.30, "Ratio": 0.85, "Threshold": 0.30, "Knee": 0.0, "Wet / Dry Mix": 1.0},
-    "tight":  {"Attack": 0.05, "Release": 0.18, "Ratio": 0.70, "Threshold": 0.45, "Knee": 0.1, "Wet / Dry Mix": 1.0},
-    "gentle": {"Attack": 0.15, "Release": 0.40, "Ratio": 0.55, "Threshold": 0.55, "Knee": 0.3, "Wet / Dry Mix": 1.0},
+SC_STYLES = {   # Compressor+ settings in real units, applied with compressor_set
+    "pump":   {"attack_ms": 1, "release_ms": 180, "ratio": 10, "threshold_db": -30, "knee_pct": 0},
+    "tight":  {"attack_ms": 2, "release_ms": 100, "ratio": 6, "threshold_db": -24, "knee_pct": 10},
+    "gentle": {"attack_ms": 8, "release_ms": 250, "ratio": 3, "threshold_db": -20, "knee_pct": 30},
 }
 
 
@@ -2319,7 +2320,7 @@ def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name
                     style: str = "pump", send_level: float = 0.79, use_send_index: int | None = None) -> dict:
     """Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from
     source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings (style: pump, tight or
-    gentle) on every target_track (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
+    gentle, real units) on every target_track (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
     the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus.
     Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not
     double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus
@@ -2347,11 +2348,33 @@ def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name
         deep.insert(t, "Compressor+", None, "end", None, True)
         time.sleep(SETTLE)
         di = len(deep.tree(t)) - 1
-        deep.goto(t, di)
-        r = deep.set_values(SC_STYLES[style])
-        out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di})
+        got = compdev.set_units(bw, deep, t, di, **SC_STYLES[style])
+        out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di, "set": {k: v["got"] for k, v in got.items()}})
     out["todo"] = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
     return out
+
+
+@tool()
+def compressor_read(track_index: int, device_index: int | None = None) -> dict:
+    """Read a Compressor+ in real units (attack ms, release ms, ratio, threshold dB, knee, make-up, ...). device_index
+    defaults to the first Compressor+ on the track. Bitwig's API does not expose gain reduction, so there is no
+    live GR meter; this shows the settings."""
+    if device_index is None:
+        device_index = next((d["index"] for d in deep.tree(track_index) if d["name"] == "Compressor+"), None)
+        if device_index is None:
+            raise ValueError("no Compressor+ on that track")
+    return {"track_index": track_index, "device_index": device_index, "values": compdev.read(bw, deep, track_index, device_index)}
+
+
+@tool()
+def compressor_set(track_index: int, device_index: int, attack_ms: float | None = None, release_ms: float | None = None,
+                   ratio: float | None = None, threshold_db: float | None = None, makeup_db: float | None = None,
+                   input_db: float | None = None, knee_pct: float | None = None, mix_pct: float | None = None) -> dict:
+    """Set a Compressor+ in real units (ratio as the N in N:1). Finds each value by reading Bitwig's own display text, so
+    the result is what Bitwig shows; returns wanted vs got for each."""
+    vals = {k: v for k, v in dict(attack_ms=attack_ms, release_ms=release_ms, ratio=ratio, threshold_db=threshold_db, makeup_db=makeup_db,
+                                  input_db=input_db, knee_pct=knee_pct, mix_pct=mix_pct).items() if v is not None}
+    return compdev.set_units(bw, deep, track_index, device_index, **vals)
 
 
 if __name__ == "__main__":

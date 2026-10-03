@@ -4,6 +4,11 @@
 var dpIds = [], dpName = {}, dpValue = {}, dpDisplay = {};
 var deepLayers, deepSlot, eqSpec, eqTypeParams = [], eqErr = null;
 var DEEP_LAYERS = 16;
+var dispSpecs = {};
+var DISP_DEVICES = { "42b32cd2-6275-4ff1-970f-4fac71d15ad9": ["ATTACK", "RELEASE", "RATIO", "THRESHOLD", "RELAX", "SMOOTH", "EXPAND_MID", "LINK_AMOUNT", "LINK_MODE",
+   "INTENSITY_LOW", "INTENSITY_LMID", "INTENSITY_MID", "INTENSITY_HIGH", "TIMING_LOW", "TIMING_LMID", "TIMING_MID", "TIMING_HIGH", "VCA_MODE", "MIX", "INPUT",
+   "ENVELOPE_MODE", "AUTO_TIMING", "GR_MODE", "RATIO_EXTENDED", "MAKEUP", "LATCH",
+   "GR", "GAIN_REDUCTION", "REDUCTION", "GR_METER", "METER", "GAIN_REDUCTION_L", "GAIN_REDUCTION_R", "DETECTOR", "OUTPUT_LEVEL", "INPUT_LEVEL"] };
 
 function initDeep() {
    interest(cursorDevice.hasLayers()); interest(cursorDevice.hasSlots()); interest(cursorDevice.isNested());
@@ -22,6 +27,14 @@ function initDeep() {
          interest(tp.value()); interest(tp.displayedValue()); eqTypeParams.push(tp);
       }
    } catch (e) { eqErr = String(e); }
+   // Direct-parameter display text never arrives, so real units come from device-specific parameter objects (init-time only).
+   for (var uu in DISP_DEVICES) {
+      try {
+         var dev = cursorDevice.createSpecificBitwigDevice(java.util.UUID.fromString(uu)), ps = {};
+         DISP_DEVICES[uu].forEach(function (id) { try { var q = dev.createParameter(id); interest(q.value()); interest(q.displayedValue()); ps[id] = q; } catch (e) {} });
+         dispSpecs[uu] = { dev: dev, params: ps };
+      } catch (e) { eqErr = (eqErr || "") + " disp " + uu + ": " + e; }
+   }
    cursorDevice.addDirectParameterIdObserver(function (ids) {
       dpIds = []; dpName = {}; dpValue = {}; dpDisplay = {};
       for (var i = 0; i < ids.length; i++) dpIds.push(String(ids[i]));
@@ -66,6 +79,16 @@ function deepInfo(a) {
 function handleDeep(cmd, a) {
    switch (cmd) {
       case "deep_info": return deepInfo(a);
+      case "deep_display": {   // real display text (e.g. "-18.0 dB") for a device's parameters, via device-specific parameter objects
+         var uuid = String(need(a, "uuid")), spec = dispSpecs[uuid];
+         if (!spec) throw "no display support for device " + uuid + " (supported: " + Object.keys(dispSpecs).join(", ") + ")";
+         var res = {}, want = a.ids || Object.keys(spec.params);
+         for (var i = 0; i < want.length; i++) {
+            var pid = String(want[i]), short = pid.indexOf("/") >= 0 ? pid.substring(pid.indexOf("/") + 1) : pid, pp = spec.params[short];
+            if (pp) res["CONTENTS/" + short] = { display: String(pp.displayedValue().get()), value: pp.value().get() };
+         }
+         return res;
+      }
       case "deep_eq_types": {
          if (eqErr) throw "EQ+ specific device unavailable: " + eqErr;
          var tl = [];

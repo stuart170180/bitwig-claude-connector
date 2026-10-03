@@ -294,6 +294,19 @@ def master_state(refresh=False):
         return data
 
 
+def compressors_state():
+    """Every Compressor+ in the project with its settings in real units (reading selects each device in Bitwig)."""
+    with _master_lock:
+        b = _bitwig()
+        out = []
+        for t in b.bw.call("get_session")["tracks"]:
+            for d in b.deep.tree(t["index"]):
+                if d["name"] == "Compressor+":
+                    out.append({"track": t["name"], "device_index": d["index"], "enabled": d["enabled"],
+                                "values": b.compdev.read(b.bw, b.deep, t["index"], d["index"])})
+        return {"compressors": out, "note": "Bitwig does not expose gain reduction, so this shows settings, not a live GR meter."}
+
+
 def master_set(body):
     allowed = {"width_pct", "limiter_gain_db", "ceiling_db", "output_gain_db"}
     args = {k: float(v) for k, v in body.items() if k in allowed and v is not None}
@@ -356,6 +369,11 @@ def make_handler(cap: Capture):
                 q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
                 try:
                     self._json(get_weather(q.get("city", ["London"])[0][:60]))
+                except Exception as e:
+                    self._json({"error": str(e)}, 502)
+            elif self.path.startswith("/api/compressors"):
+                try:
+                    self._json(compressors_state())
                 except Exception as e:
                     self._json({"error": str(e)}, 502)
             elif self.path.startswith("/api/master"):

@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-103 tools — the full list is in [TOOLS.md](TOOLS.md).
+105 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -61,7 +61,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 103 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 105 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
 | `midifile.py`, `reflib.py` | MIDI file read/write and clip import/export; reference-track library (`references.json`) |
@@ -107,6 +107,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.
 
 ## Known limits
+- **Display text:** Bitwig never sends parameter display text for direct parameters, so real units (ms, dB, 1:N) come from device-specific parameter objects, built at script start. Done for Compressor+ and EQ+ (`compressor_read` / `compressor_set`, and the Compressors card in the live monitor). Gain reduction is not exposed at all, so there is no live GR meter.
 
 - **Automation by performance** runs in real time and is audible. It records automation for track volume, pan, sends and the
   8 remote controls of a device (verified by replay, about 1 % error); direct parameters move but are never recorded. Re-recording
