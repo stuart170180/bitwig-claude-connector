@@ -1857,11 +1857,12 @@ def eq_set(track_index: int, device_index: int, bands: list[dict] | None = None,
 
 @tool()
 def device_insert(track_index: int, device: str, slot: str | None = None, device_index: int | None = None,
-                  where: str = "end") -> dict:
+                  where: str = "end", by_uuid: bool = False) -> dict:
     """Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or
     before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level
-    Mid-Side Split; the device goes to the end of that slot. Returns the tree afterwards."""
-    deep.insert(track_index, device, slot, where, device_index)
+    Mid-Side Split; the device goes to the end of that slot. by_uuid=True inserts a Bitwig device by name from the
+    built-in catalogue (see device_catalog), no preset file needed. Returns the tree afterwards."""
+    deep.insert(track_index, device, slot, where, device_index, by_uuid)
     return {"devices": deep.tree(track_index)}
 
 
@@ -2009,6 +2010,49 @@ def ab_test(track_index: int, device_index: int, values: dict, seconds: float = 
         deep.set_values(before_vals)
     return {"device": info["device"], "kept": keep, "changed": changed, "A_before": a, "B_after": b,
             "difference": {k: round(b[k] - a[k], 2) for k in a}}
+
+
+import presetpatch
+
+
+@tool()
+def device_catalog(query: str = "", limit: int = 40) -> dict:
+    """Search Bitwig's built-in devices (152 known, such as 'Polysynth', 'Poly Grid', 'FX Layer', 'Multiband FX-2') by
+    name. device_insert(..., by_uuid=True) inserts any of them directly, including ones that have no preset file."""
+    ids = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "bitwig_device_ids.json"), encoding="utf-8"))
+    q = query.lower()
+    rows = sorted((n, u) for u, n in ids.items() if n != "?" and q in n.lower())
+    return {"count": len(rows), "devices": [{"name": n, "uuid": u} for n, u in rows[:limit]]}
+
+
+@tool()
+def preset_inspect(preset: str) -> dict:
+    """Look inside a Bitwig preset file (a path, or a name from search_presets): device name, how many modules and
+    modulators it references, and every plain numeric value stored in it (name, occurrence, value). Works on
+    version-0002 presets (device-settings defaults and presets you saved); the factory device, module and modulator
+    files are scrambled and are refused."""
+    return presetpatch.inspect(preset if os.path.isfile(preset) else presets.resolve(preset, "preset"))
+
+
+@tool()
+def preset_patch_and_load(preset: str, values: dict, track_index: int | None = None) -> dict:
+    """Change numeric values inside a copy of a preset, then load the copy onto a track (omit track_index to only write
+    the copy; -1 = master). values: {name: number} or {name: {"value": n, "occurrence": k}} using names from
+    preset_inspect, in the preset's own units (PITCH_TRANSPOSE 7 = seven semitones). Same-length edits only: this
+    cannot add modules, cables or modulators. The original preset is never touched; the copy goes in patched_presets/."""
+    src = preset if os.path.isfile(preset) else presets.resolve(preset, "preset")
+    dst, report = presetpatch.patch(src, values)
+    out = {"patched_copy": dst, "changes": report}
+    if track_index is not None:
+        if track_index == -1:
+            bw.call("select_master")
+        else:
+            bw.call("select_track", track_index=track_index)
+        time.sleep(0.7)
+        bw.call("insert_file", path=dst)
+        time.sleep(1.2)
+        out["devices"] = bw.call("list_devices")["devices"]
+    return out
 
 if __name__ == "__main__":
     mcp.run()

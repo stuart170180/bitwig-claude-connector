@@ -43,7 +43,7 @@ function layerList() {
 function deepInfo(a) {
    var off = a.offset || 0, lim = a.limit != null ? a.limit : 80, filt = a.filter ? String(a.filter).toLowerCase() : null;
    var ids = dpIds;
-   if (filt) ids = ids.filter(function (id) { return String(dpName[id] || "").toLowerCase().indexOf(filt) >= 0; });
+   if (filt) ids = ids.filter(function (id) { return (String(dpName[id] || "") + " " + id).toLowerCase().indexOf(filt) >= 0; });
    var params = [];
    for (var i = off; i < ids.length && params.length < lim; i++) {
       var id = ids[i];
@@ -91,6 +91,18 @@ function handleDeep(cmd, a) {
          var id = String(need(a, "id"));
          if (dpIds.indexOf(id) < 0) throw "no parameter with id " + id + " on the selected device (use deep_info)";
          cursorDevice.setDirectParameterValueNormalized(id, clamp01(need(a, "value")) * 16384, 16384);  // value is in 0..resolution
+         return "ok";
+      }
+      case "deep_insert_uuid": {
+         // Insert any Bitwig device by UUID (no file needed): top level end/start/before/after, or the end of a slot.
+         var uid = java.util.UUID.fromString(String(need(a, "uuid"))), wh = a.where || "end";
+         if (wh === "slot_end") {
+            if (a.slot) deepSlot.selectSlot(String(a.slot));
+            deepSlot.endOfDeviceChainInsertionPoint().insertBitwigDevice(uid);
+         } else if (wh === "after") cursorDevice.afterDeviceInsertionPoint().insertBitwigDevice(uid);
+         else if (wh === "before") cursorDevice.beforeDeviceInsertionPoint().insertBitwigDevice(uid);
+         else if (wh === "start") cursorTrack.startOfDeviceChainInsertionPoint().insertBitwigDevice(uid);
+         else cursorTrack.endOfDeviceChainInsertionPoint().insertBitwigDevice(uid);
          return "ok";
       }
       case "deep_delete": cursorDevice.deleteObject(); return "ok";

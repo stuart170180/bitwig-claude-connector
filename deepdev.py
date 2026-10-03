@@ -5,6 +5,7 @@ Bitwig only lets a script act on its selected ("cursor") device, so every call f
 (track -> top-level device -> slot/layer -> device within it) and waits for Bitwig to follow."""
 import math
 import time
+from pathlib import Path
 
 import presets
 
@@ -231,18 +232,22 @@ class Deep:
         return bands
 
     # ---- editing ----------------------------------------------------------------------------------------------
-    def insert(self, track_index, device, slot=None, where="end", device_index=None):
+    def insert(self, track_index, device, slot=None, where="end", device_index=None, by_uuid=False):
         """Insert a device by name/path. slot=None: top level (end of chain, or before device_index).
         slot given: into that slot of top-level device `device_index`."""
         bw = self.bw
-        path = presets.resolve(device, None)
+        ref = self._uuid(device) if by_uuid else presets.resolve(device, None)
         if track_index == -1:
             bw.call("select_master")
         else:
             bw.call("select_track", track_index=track_index)
         time.sleep(STEP)
         if slot is None:
-            args = {"path": path}
+            if by_uuid:
+                bw.call("deep_insert_uuid", uuid=ref, where="start" if where == "start" else "end")
+                time.sleep(1.2)
+                return
+            args = {"path": ref}
             if where == "start":
                 args["where"] = "start"
             elif device_index is not None and where == "before":
@@ -255,8 +260,20 @@ class Deep:
             time.sleep(STEP)
             bw.call("deep_nav", action="select_slot", slot=slot)
             time.sleep(STEP + 0.3)
-            bw.call("deep_insert_file", where="slot_end", path=path)
+            if by_uuid:
+                bw.call("deep_insert_uuid", uuid=ref, where="slot_end")
+            else:
+                bw.call("deep_insert_file", where="slot_end", path=ref)
         time.sleep(1.2)
+
+    @staticmethod
+    def _uuid(name):
+        import json
+        ids = json.load(open(Path(__file__).resolve().parent / "bitwig_device_ids.json", encoding="utf-8"))
+        hits = [u for u, n in ids.items() if n.lower() == name.lower()]
+        if len(hits) != 1:
+            raise ValueError(f"no single Bitwig device named {name!r} (use device_catalog)")
+        return hits[0]
 
     def delete(self, track_index, device_index, slot=None, slot_index=0):
         if slot is None:

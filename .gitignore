@@ -16,3 +16,4 @@ Thumbs.db
 research/scratch/
 research/*.out
 *.bwpreset
+patched_presets/

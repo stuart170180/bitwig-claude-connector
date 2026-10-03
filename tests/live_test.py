@@ -118,6 +118,9 @@ async def main():
             await c("device_insert", {"track_index": k, "device": "EQ+", "slot": "Side", "device_index": ms_i})
             await c("device_delete", {"track_index": k, "device_index": ms_i, "slot": "Side", "slot_index": 1})
 
+            await c("device_catalog", {"query": "poly"})
+            await c("device_insert", {"track_index": k, "device": "Note Grid", "by_uuid": True})
+            await c("preset_inspect", {"preset": "Note Grid"}, expect_error=True)  # factory device file is scrambled
             await c("mix_audit", {"track_indices": [k], "include_master": False})
             await c("recipe", {"action": "save", "name": "t_recipe", "track_index": k})
             await c("recipe", {"action": "list"})

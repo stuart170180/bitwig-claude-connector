@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (75 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (78 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -250,9 +250,9 @@ Set any parameters on a device, nested or not. values: {parameter id or name: no
 
 Configure Bitwig's EQ+ in real units, anywhere (top level, master, or inside a Mid-Side Split slot). bands: [{"band": 1-8, "type": "Bell|Low-shelf|High-shelf|Notch|Low-cut 4P|High-cut 2P|Off|...", "freq_hz": 80, "gain_db": -3, "q": 1.0, "enabled": true}]; only given fields change. A fresh EQ+ has every band type Off, so set type for each band you use. Low-cut/High-cut have no gain. Returns all 8 bands as they now stand (omit bands to just read them).
 
-### `device_insert(track_index, device, slot, device_index, where)`
+### `device_insert(track_index, device, slot, device_index, where, by_uuid)`
 
-Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level Mid-Side Split; the device goes to the end of that slot. Returns the tree afterwards.
+Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level Mid-Side Split; the device goes to the end of that slot. by_uuid=True inserts a Bitwig device by name from the built-in catalogue (see device_catalog), no preset file needed. Returns the tree afterwards.
 
 ### `device_delete(track_index, device_index, slot, slot_index)`
 
@@ -273,6 +273,18 @@ Save and recall whole device chains. action: save (capture track_index's Bitwig 
 ### `ab_test(track_index, device_index, values, seconds, slot, slot_index, keep, target)`
 
 A/B a change by measurement: captures the playing master (play first), applies `values` ({parameter id or name: normalized 0..1}, see deep_params) to a device, captures again, and returns both sets of numbers (LUFS, true peak, crest, width, correlation, side/mid) with the difference. keep=False restores the original values afterwards; keep=True leaves the change in place. Needs live capture (WASAPI) and Bitwig playing.
+
+### `device_catalog(query, limit)`
+
+Search Bitwig's built-in devices (152 known, such as 'Polysynth', 'Poly Grid', 'FX Layer', 'Multiband FX-2') by name. device_insert(..., by_uuid=True) inserts any of them directly, including ones that have no preset file.
+
+### `preset_inspect(preset)`
+
+Look inside a Bitwig preset file (a path, or a name from search_presets): device name, how many modules and modulators it references, and every plain numeric value stored in it (name, occurrence, value). Works on version-0002 presets (device-settings defaults and presets you saved); the factory device, module and modulator files are scrambled and are refused.
+
+### `preset_patch_and_load(preset, values, track_index)`
+
+Change numeric values inside a copy of a preset, then load the copy onto a track (omit track_index to only write the copy; -1 = master). values: {name: number} or {name: {"value": n, "occurrence": k}} using names from preset_inspect, in the preset's own units (PITCH_TRANSPOSE 7 = seven semitones). Same-length edits only: this cannot add modules, cables or modulators. The original preset is never touched; the copy goes in patched_presets/.
 
 ## Mastering, metering & monitoring
 

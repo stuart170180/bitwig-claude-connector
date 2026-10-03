@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-75 tools — the full list is in [TOOLS.md](TOOLS.md).
+78 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -50,9 +50,10 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 75 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 78 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
+| `presetpatch.py`, `bitwig_device_ids.json` | Read/patch plain preset files; UUIDs of Bitwig's 152 built-in devices for `device_insert(by_uuid=True)` |
 | `audit.py`, `recipes.py` | Mix audit rules and fixes; saved device-chain recipes (`recipes/*.json`) |
 | `research/` | Notes and prototypes on modulators, Grid and preset files (see `MODULATORS_AND_GRID.md`); not used by the connector |
 | `deepdev.py` | Deep device access: walks into nested chains (Mid-Side Split slots), reads/sets every parameter, EQ+ in real units, mid/side EQ |
@@ -96,7 +97,8 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.
   `eq_set` sets the type (Bell, shelves, cuts, notch) explicitly; the older `set_param` remote controls cannot.
 - **Modulators and Grid:** the controller API cannot read, add or route modulators or Grid modules (see `research/`). Presets that
-  contain them can still be inserted.
+  contain them can still be inserted, and `preset_patch_and_load` can change the numeric values stored in a plain (version 0002)
+  preset before loading it. It cannot add modules, cables or modulators, and factory device/module/modulator files are scrambled.
 - **Deep device access** works by selecting each device in turn, so `device_tree` and the nested tools take a few seconds and
   briefly change which device is selected in Bitwig. Parameter *display text* is not available for most parameters
   (values are normalized 0..1); EQ+ is converted to real units (Hz, dB, Q).
