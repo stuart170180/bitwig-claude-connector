@@ -13,3 +13,6 @@ reports/
 # editor / OS
 .vscode/
 Thumbs.db
+research/scratch/
+research/*.out
+*.bwpreset

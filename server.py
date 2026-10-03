@@ -1934,5 +1934,81 @@ def mid_side_eq(track_index: int = -1, side_lowcut_hz: float = 120, side_air_db:
             "mid_eq": [b for b in mid_state if b["type"] != "Off"],
             "mid_gain_db": mid_gain_db, "side_gain_db": side_gain_db}
 
+
+import audit
+import recipes
+
+AB_KEYS = [("loudness", "integrated_lufs"), ("loudness", "short_term_max_lufs"), ("peaks", "true_peak_dbtp"),
+           ("dynamics", "crest_factor_db"), ("dynamics", "plr_db"), ("stereo", "width_pct"),
+           ("stereo", "correlation"), ("stereo", "side_vs_mid_db")]
+
+
+@tool()
+def mix_audit(track_indices: list[int] | None = None, fix: bool = False, include_master: bool = True) -> dict:
+    """Walk the project (all tracks, or track_indices) and report every device with its real state (EQ+ bands in
+    Hz/dB/Q), flagging problems: EQ+ bands that have a gain but type Off (they do nothing), EQ+ that is entirely
+    flat or Off, bypassed devices, several compressors stacked on one track, duplicate devices. fix=True applies
+    the safe repairs only: gives gain-but-Off EQ bands a sensible type (shelf at the ends, bell between) and
+    re-enables bypassed devices. Nothing is ever deleted. Takes about a second per device."""
+    return audit.run(deep, track_indices, fix, include_master)
+
+
+@tool()
+def recipe(action: str, name: str | None = None, track_index: int | None = None, note: str = "",
+           replace: bool = False) -> dict:
+    """Save and recall whole device chains. action: save (capture track_index's Bitwig devices and every parameter
+    under `name`; -1 = master; third-party plugins are skipped), apply (build recipe `name` on track_index,
+    appended after existing devices, or replace=True to clear the track's devices first), list, delete.
+    Recipes live in the repo's recipes/ folder as JSON."""
+    if action == "list":
+        return {"recipes": recipes.list_all()}
+    if not name:
+        raise ValueError("name is required")
+    if action == "delete":
+        recipes.delete(name)
+        return {"deleted": name}
+    if track_index is None:
+        raise ValueError("track_index is required")
+    if action == "save":
+        return recipes.save(deep, track_index, name, note)
+    if action == "apply":
+        return recipes.apply(deep, name, track_index, replace)
+    raise ValueError("action must be save, apply, list or delete")
+
+
+@tool()
+def ab_test(track_index: int, device_index: int, values: dict, seconds: float = 6, slot: str | None = None,
+            slot_index: int = 0, keep: bool = False, target: str = "streaming") -> dict:
+    """A/B a change by measurement: captures the playing master (play first), applies `values` ({parameter id or
+    name: normalized 0..1}, see deep_params) to a device, captures again, and returns both sets of numbers (LUFS,
+    true peak, crest, width, correlation, side/mid) with the difference. keep=False restores the original values
+    afterwards; keep=True leaves the change in place. Needs live capture (WASAPI) and Bitwig playing."""
+    if not bw.call("get_session")["playing"]:
+        raise ValueError("Bitwig isn't playing - start playback (or launch a scene) first")
+    deep.goto(track_index, device_index, slot, slot_index)
+    info = deep.params(None, 500)
+    before_vals = {}
+    for key in values:
+        hit = [p for p in info["params"] if p["id"] == key or p["name"].lower() == str(key).lower()]
+        if len(hit) != 1:
+            raise ValueError(f"{key!r} doesn't match exactly one parameter on {info['device']}")
+        before_vals[hit[0]["id"]] = hit[0]["value"]
+
+    def measure():
+        x, sr, _ = mastering.capture_loopback(seconds)
+        m = mastering.analyze(x, sr, target)
+        return {f"{a}.{b}": m[a][b] for a, b in AB_KEYS}
+
+    a = measure()
+    deep.goto(track_index, device_index, slot, slot_index)
+    changed = deep.set_values(values)
+    time.sleep(0.5)
+    b = measure()
+    if not keep:
+        deep.goto(track_index, device_index, slot, slot_index)
+        deep.set_values(before_vals)
+    return {"device": info["device"], "kept": keep, "changed": changed, "A_before": a, "B_after": b,
+            "difference": {k: round(b[k] - a[k], 2) for k in a}}
+
 if __name__ == "__main__":
     mcp.run()

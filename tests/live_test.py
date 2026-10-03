@@ -118,6 +118,12 @@ async def main():
             await c("device_insert", {"track_index": k, "device": "EQ+", "slot": "Side", "device_index": ms_i})
             await c("device_delete", {"track_index": k, "device_index": ms_i, "slot": "Side", "slot_index": 1})
 
+            await c("mix_audit", {"track_indices": [k], "include_master": False})
+            await c("recipe", {"action": "save", "name": "t_recipe", "track_index": k})
+            await c("recipe", {"action": "list"})
+            await c("recipe", {"action": "delete", "name": "t_recipe"})
+            await c("ab_test", {"track_index": k, "device_index": 0, "values": {"Mid Gain": 0.5}}, expect_error=True)  # not playing
+
             # presets / samples / bookmarks
             await c("search_presets", {"query": "pad", "limit": 3})
             await c("load_preset", {"name": "EQ+", "track_index": k})

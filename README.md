@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-72 tools — the full list is in [TOOLS.md](TOOLS.md).
+75 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -38,6 +38,7 @@ Ask Claude in plain language, for example:
 - "Show me the mid/side on the master" → `analyze_master` · "Start the live monitor" → `live_monitor`
 - "Is the lead in tune?" → `check_tuning` · "Compare to this reference" → `compare_reference`
 - "Put a mid/side EQ on the master, mono the bass" → `mid_side_eq` · "Show what is inside that device" → `device_tree`, `deep_params`
+- "Audit my mix and fix what does nothing" → `mix_audit` · "Save this vocal chain" → `recipe` · "Did that EQ help?" → `ab_test`
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
 **Live monitor without Claude:** double-click `start_monitor.bat` (opens http://127.0.0.1:8780).
@@ -49,9 +50,11 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 72 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 75 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
+| `audit.py`, `recipes.py` | Mix audit rules and fixes; saved device-chain recipes (`recipes/*.json`) |
+| `research/` | Notes and prototypes on modulators, Grid and preset files (see `MODULATORS_AND_GRID.md`); not used by the connector |
 | `deepdev.py` | Deep device access: walks into nested chains (Mid-Side Split slots), reads/sets every parameter, EQ+ in real units, mid/side EQ |
 | `mastering.py`, `reference.py`, `pitch.py` | Loudness / M-S / spectrum, reference comparison, pitch and tuning |
 | `live_monitor.py` / `.html` | Live dashboard web server and page |
@@ -92,6 +95,8 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 - **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.
   `eq_set` sets the type (Bell, shelves, cuts, notch) explicitly; the older `set_param` remote controls cannot.
+- **Modulators and Grid:** the controller API cannot read, add or route modulators or Grid modules (see `research/`). Presets that
+  contain them can still be inserted.
 - **Deep device access** works by selecting each device in turn, so `device_tree` and the nested tools take a few seconds and
   briefly change which device is selected in Bitwig. Parameter *display text* is not available for most parameters
   (values are normalized 0..1); EQ+ is converted to real units (Hz, dB, Q).

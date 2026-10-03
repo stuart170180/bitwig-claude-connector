@@ -22,7 +22,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
                                      "load_sample", "preview_sample", "sample_folders", "suggest_samples", "bookmark"]),
     ("Devices", ["list_devices", "get_device", "set_param", "set_device_enabled", "open_device_browser"]),
     ("Deep devices & mid/side EQ", ["device_tree", "deep_params", "deep_set", "eq_set", "device_insert", "device_delete",
-                                    "mid_side_eq"]),
+                                    "mid_side_eq", "mix_audit", "recipe", "ab_test"]),
     ("Mastering, metering & monitoring", ["get_levels", "gain_stage", "master_meters", "mastering_chain", "master_control",
                                           "analyze_master", "auto_master", "compare_reference", "live_monitor",
                                           "check_tuning"]),

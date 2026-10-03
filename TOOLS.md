@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (72 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (75 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -261,6 +261,18 @@ Remove a device from any track (-1 = master), including from inside a nested slo
 ### `mid_side_eq(track_index, side_lowcut_hz, side_air_db, side_air_hz, mid_bass_cut_db, mid_bass_hz, mid_presence_db, mid_presence_hz, mid_gain_db, side_gain_db)`
 
 Mid/side EQ on a track (-1 = master). Builds a Mid-Side Split with an EQ+ in each of its Mid and Side slots (re-uses ones already there; on the master it goes before the Peak Limiter) and sets: Side = low-cut at side_lowcut_hz (mono-ises the bass; 0 = off) and a high shelf of side_air_db at side_air_hz (widens the top); Mid = bell of mid_bass_cut_db at mid_bass_hz and bell of mid_presence_db at mid_presence_hz (0 dB = band off); mid_gain_db / side_gain_db trim the two halves (+-24 dB). Returns both EQs.
+
+### `mix_audit(track_indices, fix, include_master)`
+
+Walk the project (all tracks, or track_indices) and report every device with its real state (EQ+ bands in Hz/dB/Q), flagging problems: EQ+ bands that have a gain but type Off (they do nothing), EQ+ that is entirely flat or Off, bypassed devices, several compressors stacked on one track, duplicate devices. fix=True applies the safe repairs only: gives gain-but-Off EQ bands a sensible type (shelf at the ends, bell between) and re-enables bypassed devices. Nothing is ever deleted. Takes about a second per device.
+
+### `recipe(action, name, track_index, note, replace)`
+
+Save and recall whole device chains. action: save (capture track_index's Bitwig devices and every parameter under `name`; -1 = master; third-party plugins are skipped), apply (build recipe `name` on track_index, appended after existing devices, or replace=True to clear the track's devices first), list, delete. Recipes live in the repo's recipes/ folder as JSON.
+
+### `ab_test(track_index, device_index, values, seconds, slot, slot_index, keep, target)`
+
+A/B a change by measurement: captures the playing master (play first), applies `values` ({parameter id or name: normalized 0..1}, see deep_params) to a device, captures again, and returns both sets of numbers (LUFS, true peak, crest, width, correlation, side/mid) with the difference. keep=False restores the original values afterwards; keep=True leaves the change in place. Needs live capture (WASAPI) and Bitwig playing.
 
 ## Mastering, metering & monitoring
 
