@@ -17,3 +17,7 @@ research/scratch/
 research/*.out
 *.bwpreset
 patched_presets/
+research/bitwig.lock
+references.json
+research/features/*/scratch/
+research/features/**/library.json

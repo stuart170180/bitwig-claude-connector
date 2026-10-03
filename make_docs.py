@@ -27,7 +27,12 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Mastering, metering & monitoring", ["get_levels", "gain_stage", "master_meters", "mastering_chain", "master_control",
                                           "analyze_master", "auto_master", "compare_reference", "live_monitor",
                                           "check_tuning"]),
-    ("Arrangement", ["record_arrangement"]),
+    ("Arrangement", ["record_arrangement", "perform_plan", "perform_ramp", "perform_status", "perform_abort"]),
+    ("MIDI files & references", ["inspect_midi_file", "import_midi_file", "export_clip_midi", "add_reference",
+                                 "list_references", "remove_reference", "reference_target", "compare_to_library"]),
+    ("Mix problem-solving", ["masking_report", "masking_fix"]),
+    ("Bitwig actions & grouping", ["list_bitwig_actions", "run_bitwig_action", "group_tracks", "ungroup_track",
+                                   "get_groups", "select_tracks", "run_action_on_tracks"]),
 ]
 
 

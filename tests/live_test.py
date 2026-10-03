@@ -118,6 +118,12 @@ async def main():
             await c("device_insert", {"track_index": k, "device": "EQ+", "slot": "Side", "device_index": ms_i})
             await c("device_delete", {"track_index": k, "device_index": ms_i, "slot": "Side", "slot_index": 1})
 
+            await c("list_bitwig_actions", {"filter": "group", "limit": 5})
+            await c("get_groups", {})
+            await c("perform_status", {})
+            await c("list_references", {})
+            await c("inspect_midi_file", {"path": r"C:/Program Files/Cycling '74/Max 9/examples/legacy-examples/recycler-folder/drumLoop.mid"})
+            await c("run_bitwig_action", {"action_id": "File | Close"}, expect_error=True)  # deny-list must refuse
             await c("device_catalog", {"query": "poly"})
             await c("device_insert", {"track_index": k, "device": "Note Grid", "by_uuid": True})
             await c("preset_inspect", {"preset": "Note Grid"}, expect_error=True)  # factory device file is scrambled
@@ -153,6 +159,18 @@ async def main():
             await c("check_tuning", {"source": "live", "seconds": 0}, expect_error=True)
             await c("record_arrangement", {"scenes": [99]}, expect_error=True)
             await c("compare_reference", {"reference": wavs[0], "mix": wavs[-1], "seconds": 3, "ref_start": 0})
+
+            # MIDI file round trip, grouping (needs no audio)
+            mid = r"C:/Program Files/Cycling '74/Max 9/examples/legacy-examples/recycler-folder/drumLoop.mid"
+            tmp = str(Path(__file__).resolve().parent / "_t.mid")
+            imp = await c("import_midi_file", {"path": mid, "track_index": d, "slot": 7})
+            assert imp["notes_in_bitwig"] > 0, "imported clip is empty"
+            await c("export_clip_midi", {"track_index": d, "slot": 7, "path": tmp})
+            Path(tmp).unlink(missing_ok=True)
+            await c("select_tracks", {"track_indices": [d, k]})
+            grp = await c("group_tracks", {"track_indices": [d, k], "name": "T Group"})
+            await c("ungroup_track", {"track_index": grp["group_index"]})
+            # not run here (they play audio or change playback): masking_report/fix, perform_*, add_reference/compare_to_library
 
             # cleanup: delete created tracks (highest index first) and restore tempo
             sess = await c("get_session")

@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-78 tools — the full list is in [TOOLS.md](TOOLS.md).
+99 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -38,6 +38,9 @@ Ask Claude in plain language, for example:
 - "Show me the mid/side on the master" → `analyze_master` · "Start the live monitor" → `live_monitor`
 - "Is the lead in tune?" → `check_tuning` · "Compare to this reference" → `compare_reference`
 - "Put a mid/side EQ on the master, mono the bass" → `mid_side_eq` · "Show what is inside that device" → `device_tree`, `deep_params`
+- "Find what is clashing in the mix" → `masking_report` / `masking_fix` · "Group these tracks" → `group_tracks`
+- "Import this MIDI file" → `import_midi_file` · "Compare my mix to this reference" → `add_reference`, `compare_to_library`
+- "Fade the strings in over 8 bars" → `perform_ramp` (writes real automation) · any Bitwig command → `run_bitwig_action`
 - "Audit my mix and fix what does nothing" → `mix_audit` · "Save this vocal chain" → `recipe` · "Did that EQ help?" → `ab_test`
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
@@ -50,9 +53,12 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 78 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 99 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
+| `midifile.py`, `reflib.py` | MIDI file read/write and clip import/export; reference-track library (`references.json`) |
+| `masking.py` | Masking finder: solo each track, capture, score clashes, propose and apply EQ cuts |
+| `actionsdev.py`, `performdev.py` | Bitwig actions (group/ungroup, run by id) and automation by performance; script sides are `actions.js` and `perform.js` |
 | `presetpatch.py`, `bitwig_device_ids.json` | Read/patch plain preset files; UUIDs of Bitwig's 152 built-in devices for `device_insert(by_uuid=True)` |
 | `audit.py`, `recipes.py` | Mix audit rules and fixes; saved device-chain recipes (`recipes/*.json`) |
 | `research/` | Notes and prototypes on modulators, Grid and preset files (see `MODULATORS_AND_GRID.md`); not used by the connector |
@@ -93,6 +99,15 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.
 
 ## Known limits
+
+- **Automation by performance** runs in real time and is audible. It records automation for track volume, pan, sends and the
+  8 remote controls of a device (verified by replay, about 1 % error); direct parameters move but are never recorded. Re-recording
+  overwrites existing lane content.
+- **Masking finder** solos each track in turn, so it is audible, needs playback running and Windows loopback capture, and uses a
+  mono analysis. Use captures at least one loop long.
+- **Reference library** reads WAV and AIFF only (no MP3/FLAC decoder installed); use full songs, not loops, as references.
+- **Bitwig actions:** the Group action only works while the track header has focus; bounce, consolidate and normalize run but their
+  effect cannot be confirmed from the script. Export Audio opens a dialog.
 
 - **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.
   `eq_set` sets the type (Bell, shelves, cuts, notch) explicitly; the older `set_param` remote controls cannot.

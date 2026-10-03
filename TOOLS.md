@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (78 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (99 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -333,4 +333,94 @@ Pitch and tuning check, shown in chat. Single-note material (vocal, lead, bass, 
 ### `record_arrangement(action, scenes, bars, wait)`
 
 Turn launcher scenes into a real arrangement. Bitwig's API can't place arranger clips directly, so this records them: it starts arranger record and launches each scene on the bar, stopping tracks that have no clip in that scene (so a breakdown really drops the drums). Timing runs inside Bitwig. action: start, status, abort. scenes: scene numbers in song order, repeats allowed ([0, 1, 2, 3, 3, 4, 5, 6]), or dicts {"scene": 3, "bars": 8}; default = every scene that contains clips, in order. bars = bars per scene (sketch_song clips are 4 bars). The playhead restarts at 0 and the song plays out loud in real time; existing arranger content on the recorded tracks is overwritten. wait: block until finished (default: only when it takes under ~40 s; otherwise poll with action='status').
+
+### `perform_plan(moves, total_bars, record, scenes)`
+
+Write real automation by performing it: the script moves parameters in time while Bitwig records the arranger with automation write on, then the lanes replay on their own. Runs in REAL TIME and is audible. moves: [{"param": "volume"|"pan"|"send"|"remote", "track_index": n, "from": 0-1, "to": 0-1, "start_bar": 0, "bars": 2, "curve": linear|exp|log|ease|ease_in|ease_out|hold, "send": 0, "device_index": d, "remote_index": 0-7}]; values are Bitwig's normalized 0..1. Device automation goes through the 8 remote controls (page 0): direct parameters move but are not recordable. All remote moves in one plan must target the same device. Recording overwrites existing lane content. scenes: optional [{"scene": n, "start": beat}] launches during the take.
+
+### `perform_ramp(track_index, param, from_value, to_value, start_bar, bars, curve, send, device_index, remote_index, record)`
+
+One automated move (see perform_plan): param = volume, pan, send (send index) or remote (device_index + remote_index 0-7). Example: a 4-bar filter rise on a synth = param 'remote', device_index 0, remote_index 0 (the first knob on the device's current page), from 0.2 to 0.9. Real time and audible; overwrites existing lane content.
+
+### `perform_status()`
+
+State of a running perform_plan / perform_ramp.
+
+### `perform_abort()`
+
+Stop a running automation performance (turns record and write off).
+
+## MIDI files & references
+
+### `inspect_midi_file(path)`
+
+Summarise a .mid file: tracks (name, note count, channels), tempo map, time signatures, length in beats.
+
+### `import_midi_file(path, track_index, slot, midi_track, name)`
+
+Load a .mid file into a launcher clip. midi_track = which non-empty MIDI track (0, 1, ...), 'all' to merge them, or 'ch10' style to take one channel (ch10 = General MIDI drums). Clip length rounds up to whole bars. The file's tempo is reported but not applied. Waits for Bitwig to finish writing and reports the notes it holds.
+
+### `export_clip_midi(track_index, slot, path)`
+
+Write a launcher clip to a Standard MIDI File at the project tempo (waits for the clip to settle first).
+
+### `add_reference(path, label, start, seconds, note)`
+
+Analyse a reference track (WAV or AIFF; convert MP3/FLAC first) and store it in the reference library under a label: loudness, true peak, crest, loudness range, width, mid/side bands and a 1/3-octave tonal balance.
+
+### `list_references()`
+
+The stored reference tracks with their headline numbers.
+
+### `remove_reference(label)`
+
+Delete a stored reference.
+
+### `reference_target(labels)`
+
+Averaged tonal balance and headline numbers of several references (default: all stored): a target to mix toward.
+
+### `compare_to_library(label, source, seconds, start)`
+
+Compare a mix to a stored reference (or several: comma-separated labels, averaged). source = 'live' (what is playing, needs WASAPI capture) or a WAV/AIFF path. Returns loudness, crest, width and per-band tonal differences (mix minus reference) with plain advice. Use full songs as references: single loops give extreme differences.
+
+## Mix problem-solving
+
+### `masking_report(track_indices, seconds)`
+
+Find frequency clashes between tracks: solos each track in turn while the song plays (audible!), captures it, and scores where two tracks both carry energy in the same band. Returns ranked findings and the EQ cut it would make. Playback must be running. Use a capture of at least one loop length. About 'seconds' + 0.4 s per track.
+
+### `masking_fix(track_indices, seconds, max_fixes, min_score)`
+
+Run masking_report, then apply the proposed EQ cuts for the worst clashes (inserting EQ+ where needed, one band each) and re-measure. Returns what was cut and the clash score before and after; the 'after' number can be noisy if the capture doesn't cover a full loop.
+
+## Bitwig actions & grouping
+
+### `list_bitwig_actions(filter, limit)`
+
+Search Bitwig's ~780 built-in actions (category, id, name, 'blocked' if the safety deny-list refuses it).
+
+### `run_bitwig_action(action_id)`
+
+Run a Bitwig action by id on the current selection or focus. Dangerous ones (quit, close or switch project, delete everything, generic Delete) are refused. Results are not always visible to the script: check get_session.
+
+### `group_tracks(track_indices, name)`
+
+Group tracks (flat get_session indices, any combination) into a new group track and optionally name it. Collapsed groups between the first and last index aren't supported. Verified from the track bank.
+
+### `ungroup_track(track_index)`
+
+Dissolve a group track, keeping its children.
+
+### `get_groups()`
+
+All group tracks with their direct children.
+
+### `select_tracks(track_indices)`
+
+Select several tracks at once so a selection-based action can act on them (then run_bitwig_action).
+
+### `run_action_on_tracks(track_indices, action_id)`
+
+Select the tracks, then run a track-level action on all of them (e.g. bounce_in_place). Effects of bounce, consolidate and normalize cannot be confirmed from the script: check the result in Bitwig.
 
