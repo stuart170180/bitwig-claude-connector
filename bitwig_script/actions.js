@@ -1,7 +1,7 @@
 // Bitwig actions and project-level commands (group tracks, bounce, export, ...). Owned by the "actions" feature work.
 // Generic: action_list / action_run (with a deny-list). Track selection + grouping helpers: act_sel_state, act_select, act_groups.
 var ACT_TRACKS = 40, ACT_CHILDREN = 16;
-var actArrClip = null;
+var actArrClip = null, actLayout = "";
 var actSelMixer = [], actSelEditor = [], actChildBanks = [];
 var ACT_DENY = [/^document:(close|new|open|quit|exit|save_as|revert)/i, /quit|exit(?! group)|close_project|close project|new_project|new project|open_project|open project|revert|reload/i,
    /delete_all|delete everything|clear_all|empty_trash|purge|factory|reset_all|remove_all|discard|uninstall|shutdown|restart/i,
@@ -17,6 +17,7 @@ function actDenied(act) {
 }
 
 function initActions() {
+   try { application.panelLayout().addValueObserver(function (v) { actLayout = String(v); }); } catch (e) {}
    try { actArrClip = host.createArrangerCursorClip(16, 16); interest(actArrClip.exists()); interest(actArrClip.getLoopLength()); interest(actArrClip.getPlayStart()); interest(actArrClip.getPlayStop()); } catch (e) { actArrClip = null; }
    try { interest(trackBank.scrollPosition()); interest(trackBank.channelCount()); } catch (e) {}
    for (var t = 0; t < ACT_TRACKS; t++) {
@@ -127,6 +128,17 @@ function handleActions(cmd, a) {
          if (!actArrClip) return null;
          return { exists: actArrClip.exists().get(), loop_length: actArrClip.getLoopLength().get(),
                   play_start: actArrClip.getPlayStart().get(), play_stop: actArrClip.getPlayStop().get() };
+      }
+      case "app_panel": {   // what: mixer | inspector | devices | note_editor | automation_editor | browser ; layout: ARRANGE | MIX | EDIT
+         if (a.layout) application.setPanelLayout(String(a.layout));
+         var w = a.what;
+         if (w === "mixer") application.toggleMixer();
+         else if (w === "inspector") application.toggleInspector();
+         else if (w === "devices") application.toggleDevices();
+         else if (w === "note_editor") application.toggleNoteEditor();
+         else if (w === "automation_editor") application.toggleAutomationEditor();
+         else if (w === "browser") application.toggleBrowserVisibility();
+         return { layout: actLayout };
       }
       case "act_sel_state": return actSelState();
       case "act_groups": return actGroups();

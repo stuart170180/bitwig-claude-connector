@@ -73,7 +73,11 @@ def group_tracks(bw, track_indices, name=None):
     groups = bw.call("act_groups")
     new = [g for g in groups if g["name"] not in before]
     if not new:
-        raise RuntimeError("Group action did not create a group (focus lost? use get_session to check)")
+        raise RuntimeError("Group action did not create a group. Grouping only works while Bitwig's ARRANGER track list "
+                           "is on screen (the arrangement timeline with the track headers). If the main panel shows only the clip "
+                           "editor ('Select an arrangement clip to edit...') and no track list, switch Bitwig to the Arrange view "
+                           "with the arranger visible (click the ARRANGE tab / show the arranger timeline) and retry. "
+                           "Scripts cannot restore this panel themselves.")
     g = new[0]
     if name:
         bw.call("set_track_name", track_index=g["index"], name=name)

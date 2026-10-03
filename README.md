@@ -106,7 +106,8 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Masking finder** solos each track in turn, so it is audible, needs playback running and Windows loopback capture, and uses a
   mono analysis. Use captures at least one loop long.
 - **Reference library** reads WAV and AIFF only (no MP3/FLAC decoder installed); use full songs, not loops, as references.
-- **Bitwig actions:** the Group action only works while the track header has focus; bounce, consolidate and normalize run but their
+- **Bitwig actions:** `group_tracks` / `ungroup_track` only work while the Arranger timeline with track headers is on
+  screen (a script cannot show it, so switch Bitwig to the Arrange view first); the Group action also needs the track header focused; bounce, consolidate and normalize run but their
   effect cannot be confirmed from the script. Export Audio opens a dialog.
 
 - **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.

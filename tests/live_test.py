@@ -168,8 +168,8 @@ async def main():
             await c("export_clip_midi", {"track_index": d, "slot": 7, "path": tmp})
             Path(tmp).unlink(missing_ok=True)
             await c("select_tracks", {"track_indices": [d, k]})
-            grp = await c("group_tracks", {"track_indices": [d, k], "name": "T Group"})
-            await c("ungroup_track", {"track_index": grp["group_index"]})
+            # group_tracks/ungroup_track only work while Bitwig's Arranger timeline (track headers) is on screen, so
+            # they are not part of the automatic run; try them by hand from the Arrange view.
             # not run here (they play audio or change playback): masking_report/fix, perform_*, add_reference/compare_to_library
 
             # cleanup: delete created tracks (highest index first) and restore tempo
