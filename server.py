@@ -2308,3 +2308,51 @@ def edit_arranger_clip(operation: str, notes: list[dict] | None = None, name: st
 
 if __name__ == "__main__":
     mcp.run()
+
+
+# ---- advanced sidechain buses ---------------------------------------------------------------------------------------
+SC_STYLES = {   # Compressor+ parameters (normalized) for ducking; threshold/ratio/attack/release/knee/mix
+    "pump":   {"Attack": 0.05, "Release": 0.30, "Ratio": 0.85, "Threshold": 0.30, "Knee": 0.0, "Wet / Dry Mix": 1.0},
+    "tight":  {"Attack": 0.05, "Release": 0.18, "Ratio": 0.70, "Threshold": 0.45, "Knee": 0.1, "Wet / Dry Mix": 1.0},
+    "gentle": {"Attack": 0.15, "Release": 0.40, "Ratio": 0.55, "Threshold": 0.55, "Knee": 0.3, "Wet / Dry Mix": 1.0},
+}
+
+
+@tool()
+def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name: str = "SC Kick",
+                    style: str = "pump", send_level: float = 0.79, use_send_index: int | None = None) -> dict:
+    """Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from
+    source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings (style: pump, tight or
+    gentle) on every target_track (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
+    the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus.
+    Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not
+    double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus
+    is the new send slot (bus_name is only a label; it is called 'FX n' in Bitwig, rename it by hand). use_send_index
+    reuses an existing FX track instead of creating one."""
+    if style not in SC_STYLES:
+        raise ValueError(f"style must be one of {list(SC_STYLES)}")
+    overlap = set(source_tracks) & set(target_tracks)
+    if overlap:
+        raise ValueError(f"tracks {sorted(overlap)} are both source and target")
+    before = len(bw.call("get_track", track_index=source_tracks[0])["sends"])
+    if use_send_index is None:
+        create_track("effect")
+        time.sleep(SETTLE)
+        idx = before
+        if len(bw.call("get_track", track_index=source_tracks[0])["sends"]) <= before:
+            raise RuntimeError("the FX bus track did not appear as a new send")
+    else:
+        idx = use_send_index
+    sess_tracks = bw.call("get_session")["tracks"]
+    for s in source_tracks:
+        bw.call("set_send", track_index=s, send_index=idx, value=send_level)
+    out = {"bus": f"FX {idx + 1} ({bus_name})", "send_index": idx, "sources": [sess_tracks[i]["name"] for i in source_tracks], "targets": []}
+    for t in target_tracks:
+        deep.insert(t, "Compressor+", None, "end", None, True)
+        time.sleep(SETTLE)
+        di = len(deep.tree(t)) - 1
+        deep.goto(t, di)
+        r = deep.set_values(SC_STYLES[style])
+        out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di})
+    out["todo"] = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
+    return out
