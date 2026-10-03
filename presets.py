@@ -2,12 +2,14 @@
 import json
 import os
 import time
+
+import paths
 from pathlib import Path
 
 ROOTS = [
     Path(os.path.expandvars(r"%LOCALAPPDATA%\Bitwig Studio\installed-packages")),  # sound packages
     Path(os.path.expandvars(r"%USERPROFILE%\Documents\Bitwig Studio\Library")),    # user presets
-    Path(r"C:\Program Files\Bitwig Studio\Library\devices"),                       # built-in devices
+    paths.library_devices_dir(),                       # built-in devices
 ]
 EXTS = {".bwpreset", ".bwdevice", ".multisample", ".vstpreset"}
 CACHE = Path(__file__).with_name("preset_index.json")

@@ -13,7 +13,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO_COPY = HERE / "bitwig_script"
-SCRIPTS = Path.home() / "Documents" / "Bitwig Studio" / "Controller Scripts" / "BitwigMCP"
+import paths
+
+SCRIPTS = paths.scripts_dir()
 
 
 def js_files(folder: Path):

@@ -13,7 +13,9 @@ import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SCRIPTS = Path.home() / "Documents" / "Bitwig Studio" / "Controller Scripts" / "BitwigMCP"
+import paths
+
+SCRIPTS = paths.scripts_dir()
 BACKUPS = HERE.parent / "backups"
 KEEP = 10
 SKIP_DIRS = {"__pycache__", ".pytest_cache", ".git"}

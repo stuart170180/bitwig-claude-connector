@@ -18,6 +18,14 @@ Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP co
 
 Bitwig's script API cannot see audio, so analysis works on files or on Windows "loopback" capture of Bitwig's output.
 
+## Quick install (Windows)
+
+1. Install Python 3.10+, Bitwig Studio and Claude Code.
+2. Double-click `install.bat` (or run `python install.py`). It installs the packages, copies the controller script into
+   Bitwig's Controller Scripts folder, and registers the MCP server with Claude. Add `--autostart` to start the live monitor at login.
+3. In Bitwig: Settings > Controllers > Add controller > Claude > Bitwig MCP. For live measurements set the audio driver to Windows Audio (WASAPI).
+4. Start a new Claude session. `python install.py --check` tells you what works; `--dry-run` shows changes first; `--uninstall` removes it.
+
 ## Setup (already done on this machine)
 
 1. **Bitwig script:** `Documents\Bitwig Studio\Controller Scripts\BitwigMCP\` (`BitwigMCP.control.js`, `pro.js`, `expert.js`,
