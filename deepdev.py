@@ -242,6 +242,8 @@ class Deep:
         else:
             bw.call("select_track", track_index=track_index)
         time.sleep(STEP)
+        if len(bw.call("list_devices")["devices"]) >= 28:  # the script can only see 32 devices per track
+            raise ValueError("this track already has 28+ devices; put new ones on another track")
         if slot is None:
             if by_uuid:
                 bw.call("deep_insert_uuid", uuid=ref, where="start" if where == "start" else "end")
