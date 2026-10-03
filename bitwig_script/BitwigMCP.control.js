@@ -4,11 +4,12 @@ loadAPI(17);
 load("pro.js");
 load("expert.js");
 load("arranger.js");
+load("deep.js");
 
 host.defineController("Claude", "Bitwig MCP", "3.0", "6b1f3a52-9d1e-4c8e-a7a1-5c3f2b8e9d10", "Claude");
 host.defineMidiPorts(0, 0);
 
-var VERSION = "5.0";
+var VERSION = "6.0";
 var PORT = 8765, REPLY_PORTS = [8766, 8767, 8768, 8769, 8770, 8771];  // one per concurrent client
 var NUM_TRACKS = 64, NUM_SCENES = 32, NUM_SENDS = 8, NUM_DEVICES = 32;
 var deviceBank, transport, application, trackBank, cursorTrack, cursorDevice, remotePage, cursorClip, sceneBank;
@@ -92,6 +93,7 @@ function init() {
 
    initPro();
    initExpert();
+   initDeep();
 
    var osc = host.getOscModule();
    var space = osc.createAddressSpace();
@@ -383,6 +385,8 @@ function handle(cmd, a) {
    r = handleExpert(cmd, a);
    if (r !== undefined) return r;
    r = handleArranger(cmd, a);
+   if (r !== undefined) return r;
+   r = handleDeep(cmd, a);
    if (r !== undefined) return r;
    throw "unknown command: " + cmd;
 }

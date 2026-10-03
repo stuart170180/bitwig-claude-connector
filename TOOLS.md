@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (65 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (72 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -231,6 +231,36 @@ Enable or bypass a device.
 ### `open_device_browser(track_index)`
 
 Open Bitwig's browser to insert a device at the end of a track's chain (you pick it in Bitwig).
+
+## Deep devices & mid/side EQ
+
+### `device_tree(track_index)`
+
+Every device on a track (-1 = master) including what sits inside nested chains such as the Mid and Side slots of Mid-Side Split. Slow-ish (it selects each device in turn).
+
+### `deep_params(track_index, device_index, slot, slot_index, filter, limit)`
+
+All parameters of one device, not just its 8 remote controls: id, name and normalized 0..1 value. track_index -1 = master. device_index = top-level position. slot = enter a nested slot of that device ('Mid' / 'Side' on Mid-Side Split) and slot_index = which device inside it. filter = name substring.
+
+### `deep_set(track_index, device_index, values, slot, slot_index)`
+
+Set any parameters on a device, nested or not. values: {parameter id or name: normalized 0..1}, ids/names from deep_params. Returns what each parameter is now. For EQ+ use eq_set instead (real units).
+
+### `eq_set(track_index, device_index, bands, slot, slot_index)`
+
+Configure Bitwig's EQ+ in real units, anywhere (top level, master, or inside a Mid-Side Split slot). bands: [{"band": 1-8, "type": "Bell|Low-shelf|High-shelf|Notch|Low-cut 4P|High-cut 2P|Off|...", "freq_hz": 80, "gain_db": -3, "q": 1.0, "enabled": true}]; only given fields change. A fresh EQ+ has every band type Off, so set type for each band you use. Low-cut/High-cut have no gain. Returns all 8 bands as they now stand (omit bands to just read them).
+
+### `device_insert(track_index, device, slot, device_index, where)`
+
+Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level Mid-Side Split; the device goes to the end of that slot. Returns the tree afterwards.
+
+### `device_delete(track_index, device_index, slot, slot_index)`
+
+Remove a device from any track (-1 = master), including from inside a nested slot (slot + slot_index). Undo in Bitwig brings it back. Returns the tree afterwards.
+
+### `mid_side_eq(track_index, side_lowcut_hz, side_air_db, side_air_hz, mid_bass_cut_db, mid_bass_hz, mid_presence_db, mid_presence_hz, mid_gain_db, side_gain_db)`
+
+Mid/side EQ on a track (-1 = master). Builds a Mid-Side Split with an EQ+ in each of its Mid and Side slots (re-uses ones already there; on the master it goes before the Peak Limiter) and sets: Side = low-cut at side_lowcut_hz (mono-ises the bass; 0 = off) and a high shelf of side_air_db at side_air_hz (widens the top); Mid = bell of mid_bass_cut_db at mid_bass_hz and bell of mid_presence_db at mid_presence_hz (0 dB = band off); mid_gain_db / side_gain_db trim the two halves (+-24 dB). Returns both EQs.
 
 ## Mastering, metering & monitoring
 

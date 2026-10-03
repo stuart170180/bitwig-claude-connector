@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-65 tools — the full list is in [TOOLS.md](TOOLS.md).
+72 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -11,6 +11,7 @@ Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP co
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
                           ├── music.py / expert.py / variations.py   note generation and editing
                           ├── presets.py / samples.py / bookmarks.py sound libraries
+                          ├── deepdev.py                             nested devices, every parameter, mid/side EQ
                           ├── mastering.py / reference.py / pitch.py audio analysis (WAV files or live capture)
                           └── live_monitor.py ──> http://127.0.0.1:8780   live dashboard (loudness, M/S, tuner, master controls)
 ```
@@ -20,7 +21,7 @@ Bitwig's script API cannot see audio, so analysis works on files or on Windows "
 ## Setup (already done on this machine)
 
 1. **Bitwig script:** `Documents\Bitwig Studio\Controller Scripts\BitwigMCP\` (`BitwigMCP.control.js`, `pro.js`, `expert.js`,
-   `arranger.js`). In Bitwig: *Settings → Controllers → Add controller → Claude → Bitwig MCP*. Bitwig reloads the script
+   `arranger.js`, `deep.js`). In Bitwig: *Settings → Controllers → Add controller → Claude → Bitwig MCP*. Bitwig reloads the script
    whenever a file changes.
 2. **Python:** `pip install -r requirements.txt`
 3. **Claude:** `claude mcp add --scope user bitwig -- python C:/Users/stuar/Documents/Bitwig/bitwig_mcp/server.py`
@@ -36,6 +37,7 @@ Ask Claude in plain language, for example:
 - "Record those scenes into the arrangement" → `record_arrangement`
 - "Show me the mid/side on the master" → `analyze_master` · "Start the live monitor" → `live_monitor`
 - "Is the lead in tune?" → `check_tuning` · "Compare to this reference" → `compare_reference`
+- "Put a mid/side EQ on the master, mono the bass" → `mid_side_eq` · "Show what is inside that device" → `device_tree`, `deep_params`
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
 **Live monitor without Claude:** double-click `start_monitor.bat` (opens http://127.0.0.1:8780).
@@ -47,9 +49,10 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 65 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 72 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
+| `deepdev.py` | Deep device access: walks into nested chains (Mid-Side Split slots), reads/sets every parameter, EQ+ in real units, mid/side EQ |
 | `mastering.py`, `reference.py`, `pitch.py` | Loudness / M-S / spectrum, reference comparison, pitch and tuning |
 | `live_monitor.py` / `.html` | Live dashboard web server and page |
 | `autostart.py` | Starts the dashboard hidden at Windows login (`--status`, `--remove`) |
@@ -86,6 +89,12 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.
 
 ## Known limits
+
+- **EQ+ band types:** a freshly loaded EQ+ has every band set to *Off*, so changing gain or frequency alone does nothing.
+  `eq_set` sets the type (Bell, shelves, cuts, notch) explicitly; the older `set_param` remote controls cannot.
+- **Deep device access** works by selecting each device in turn, so `device_tree` and the nested tools take a few seconds and
+  briefly change which device is selected in Bitwig. Parameter *display text* is not available for most parameters
+  (values are normalized 0..1); EQ+ is converted to real units (Hz, dB, Q).
 
 - Bitwig's API can't place or read **arranger clips**; `record_arrangement` records scenes instead, and the arrangement can't
   be read back (check the Arrange view yourself).

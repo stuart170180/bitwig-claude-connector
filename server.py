@@ -1804,5 +1804,135 @@ def _auto_name_one(track_index: int, loaded_path: str | None = None):
     return r["tracks"][0]["new"]
 
 
+
+# --- Deep device access: nested chains, every parameter, mid/side EQ (needs controller script 6.0+) ---
+import deepdev
+
+deep = deepdev.Deep(bw)
+
+
+@tool()
+def device_tree(track_index: int = -1) -> dict:
+    """Every device on a track (-1 = master) including what sits inside nested chains such as the Mid and Side
+    slots of Mid-Side Split. Slow-ish (it selects each device in turn)."""
+    return {"track_index": track_index, "devices": deep.tree(track_index)}
+
+
+@tool()
+def deep_params(track_index: int, device_index: int, slot: str | None = None, slot_index: int = 0,
+                filter: str | None = None, limit: int = 60) -> dict:
+    """All parameters of one device, not just its 8 remote controls: id, name and normalized 0..1 value.
+    track_index -1 = master. device_index = top-level position. slot = enter a nested slot of that device
+    ('Mid' / 'Side' on Mid-Side Split) and slot_index = which device inside it. filter = name substring."""
+    deep.goto(track_index, device_index, slot, slot_index)
+    r = deep.params(filter, limit)
+    return {"device": r["device"], "nested": r["nested"], "slots": r["slots"], "layers": r["layers"],
+            "param_count": r["param_count"], "params": r["params"]}
+
+
+@tool()
+def deep_set(track_index: int, device_index: int, values: dict, slot: str | None = None,
+             slot_index: int = 0) -> dict:
+    """Set any parameters on a device, nested or not. values: {parameter id or name: normalized 0..1}, ids/names
+    from deep_params. Returns what each parameter is now. For EQ+ use eq_set instead (real units)."""
+    deep.goto(track_index, device_index, slot, slot_index)
+    return deep.set_values(values)
+
+
+@tool()
+def eq_set(track_index: int, device_index: int, bands: list[dict] | None = None, slot: str | None = None,
+           slot_index: int = 0) -> list:
+    """Configure Bitwig's EQ+ in real units, anywhere (top level, master, or inside a Mid-Side Split slot).
+    bands: [{"band": 1-8, "type": "Bell|Low-shelf|High-shelf|Notch|Low-cut 4P|High-cut 2P|Off|...", "freq_hz": 80,
+    "gain_db": -3, "q": 1.0, "enabled": true}]; only given fields change. A fresh EQ+ has every band type Off, so
+    set type for each band you use. Low-cut/High-cut have no gain. Returns all 8 bands as they now stand
+    (omit bands to just read them)."""
+    deep.goto(track_index, device_index, slot, slot_index)
+    for b in bands or []:
+        b = dict(b)
+        band = b.pop("band")
+        deep.eq_band(band, **b)
+    return deep.eq_state()
+
+
+@tool()
+def device_insert(track_index: int, device: str, slot: str | None = None, device_index: int | None = None,
+                  where: str = "end") -> dict:
+    """Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or
+    before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level
+    Mid-Side Split; the device goes to the end of that slot. Returns the tree afterwards."""
+    deep.insert(track_index, device, slot, where, device_index)
+    return {"devices": deep.tree(track_index)}
+
+
+@tool()
+def device_delete(track_index: int, device_index: int, slot: str | None = None, slot_index: int = 0) -> dict:
+    """Remove a device from any track (-1 = master), including from inside a nested slot (slot + slot_index).
+    Undo in Bitwig brings it back. Returns the tree afterwards."""
+    deep.delete(track_index, device_index, slot, slot_index)
+    return {"devices": deep.tree(track_index)}
+
+
+@tool()
+def mid_side_eq(track_index: int = -1, side_lowcut_hz: float = 120, side_air_db: float = 2.0,
+                side_air_hz: float = 8000, mid_bass_cut_db: float = 0, mid_bass_hz: float = 80,
+                mid_presence_db: float = 0, mid_presence_hz: float = 3000, mid_gain_db: float = 0,
+                side_gain_db: float = 0) -> dict:
+    """Mid/side EQ on a track (-1 = master). Builds a Mid-Side Split with an EQ+ in each of its Mid and Side
+    slots (re-uses ones already there; on the master it goes before the Peak Limiter) and sets: Side = low-cut at
+    side_lowcut_hz (mono-ises the bass; 0 = off) and a high shelf of side_air_db at side_air_hz (widens the top);
+    Mid = bell of mid_bass_cut_db at mid_bass_hz and bell of mid_presence_db at mid_presence_hz (0 dB = band off);
+    mid_gain_db / side_gain_db trim the two halves (+-24 dB). Returns both EQs."""
+    if track_index == -1:
+        bw.call("select_master")
+    else:
+        bw.call("select_track", track_index=track_index)
+    time.sleep(deepdev.STEP)
+    devs = bw.call("list_devices")["devices"]
+    ms = next((d["index"] for d in devs if d["name"] == deepdev.MID_SIDE), None)
+    if ms is None:
+        lim = next((d["index"] for d in devs if d["name"] == "Peak Limiter"), None)
+        deep.insert(track_index, deepdev.MID_SIDE, None, "before" if lim is not None else "end", lim)
+        devs = bw.call("list_devices")["devices"]
+        ms = next(d["index"] for d in devs if d["name"] == deepdev.MID_SIDE)
+    for slot in ("Mid", "Side"):
+        try:
+            info = deep.goto(track_index, ms, slot=slot)
+            has_eq = info["device"] == "EQ+"
+        except ValueError:
+            has_eq = False
+        if not has_eq:
+            deep.insert(track_index, "EQ+", slot, "end", ms)
+    # side EQ
+    deep.goto(track_index, ms, slot="Side")
+    side = [{"band": b, "type": "Off"} for b in range(1, 9)]
+    if side_lowcut_hz:
+        side[0] = {"band": 1, "type": "Low-cut 4P", "freq_hz": side_lowcut_hz, "enabled": True}
+    if side_air_db:
+        side[6] = {"band": 7, "type": "High-shelf", "freq_hz": side_air_hz, "gain_db": side_air_db, "q": 0.7,
+                   "enabled": True}
+    for b in side:
+        b = dict(b)
+        deep.eq_band(b.pop("band"), **b)
+    side_state = deep.eq_state()
+    deep.goto(track_index, ms, slot="Mid")
+    mid = [{"band": b, "type": "Off"} for b in range(1, 9)]
+    if mid_bass_cut_db:
+        mid[2] = {"band": 3, "type": "Bell", "freq_hz": mid_bass_hz, "gain_db": mid_bass_cut_db, "q": 1.0,
+                  "enabled": True}
+    if mid_presence_db:
+        mid[4] = {"band": 5, "type": "Bell", "freq_hz": mid_presence_hz, "gain_db": mid_presence_db, "q": 0.8,
+                  "enabled": True}
+    for b in mid:
+        b = dict(b)
+        deep.eq_band(b.pop("band"), **b)
+    mid_state = deep.eq_state()
+    deep.goto(track_index, ms)
+    deep.set_values({"CONTENTS/MID_GAIN": 0.5 + mid_gain_db / 48, "CONTENTS/SIDE_GAIN": 0.5 + side_gain_db / 48})
+    return {"mid_side_split_index": ms,
+            "side_eq": [b for b in side_state if b["type"] != "Off"],
+            "mid_eq": [b for b in mid_state if b["type"] != "Off"],
+            "mid_gain_db": mid_gain_db, "side_gain_db": side_gain_db}
+
 if __name__ == "__main__":
     mcp.run()

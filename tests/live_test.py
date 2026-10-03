@@ -105,6 +105,19 @@ async def main():
             await c("set_param", {"track_index": d, "device_index": 0, "index": 0, "value": 0.5})
             await c("set_device_enabled", {"enabled": True, "track_index": d, "device_index": 0})
 
+            # deep device access (nested chains, every parameter, mid/side EQ)
+            ms = await c("mid_side_eq", {"track_index": k, "mid_bass_cut_db": -2, "side_gain_db": -1})
+            assert any(b["type"].startswith("Low-cut") for b in ms["side_eq"]), "side low-cut not set"
+            tree = await c("device_tree", {"track_index": k})
+            assert tree["devices"][-1]["chains"]["Side"][0]["name"] == "EQ+", "Side slot has no EQ+"
+            ms_i = ms["mid_side_split_index"]
+            await c("deep_params", {"track_index": k, "device_index": ms_i, "slot": "Mid", "filter": "Band 3"})
+            await c("eq_set", {"track_index": k, "device_index": ms_i, "slot": "Mid",
+                               "bands": [{"band": 3, "type": "Bell", "freq_hz": 250, "gain_db": -1.5}]})
+            await c("deep_set", {"track_index": k, "device_index": ms_i, "values": {"Side Gain": 0.5}})
+            await c("device_insert", {"track_index": k, "device": "EQ+", "slot": "Side", "device_index": ms_i})
+            await c("device_delete", {"track_index": k, "device_index": ms_i, "slot": "Side", "slot_index": 1})
+
             # presets / samples / bookmarks
             await c("search_presets", {"query": "pad", "limit": 3})
             await c("load_preset", {"name": "EQ+", "track_index": k})
@@ -139,8 +152,9 @@ async def main():
                     await c("delete_track", {"track_index": tr["index"]})
             await c("set_scene_name", {"scene": 7, "name": ""})
             await c("set_tempo", {"bpm": orig_tempo})
+            await asyncio.sleep(1.5)  # let Bitwig finish removing tracks before counting
             final = await c("get_session")
-            assert len(final["tracks"]) == n0, "cleanup left tracks behind"
+            assert len(final["tracks"]) == n0, f"cleanup left tracks behind: {len(final['tracks'])} vs {n0}"
 
             untested = sorted(names - tested - {"sketch_song", "auto_master", "refresh_preset_index", "save_project",
                                                 "open_device_browser", "delete_track", "undo", "redo"})
