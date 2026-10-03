@@ -2306,10 +2306,6 @@ def edit_arranger_clip(operation: str, notes: list[dict] | None = None, name: st
         return {"result": arrclipsdev.arrclip_op(bw, operation, **extra)}
     raise ValueError("operation must be write, clear, rename, transpose, quantize, duplicate or duplicate_content")
 
-if __name__ == "__main__":
-    mcp.run()
-
-
 # ---- advanced sidechain buses ---------------------------------------------------------------------------------------
 SC_STYLES = {   # Compressor+ parameters (normalized) for ducking; threshold/ratio/attack/release/knee/mix
     "pump":   {"Attack": 0.05, "Release": 0.30, "Ratio": 0.85, "Threshold": 0.30, "Knee": 0.0, "Wet / Dry Mix": 1.0},
@@ -2356,3 +2352,7 @@ def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name
         out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di})
     out["todo"] = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
     return out
+
+
+if __name__ == "__main__":
+    mcp.run()

@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (102 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (103 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -69,6 +69,10 @@ Change track properties; only given fields change. Returns the track state read 
 ### `set_send(track_index, send_index, value)`
 
 Set a track's send level to an FX track, normalized 0..1.
+
+### `sidechain_setup(source_tracks, target_tracks, bus_name, style, send_level, use_send_index)`
+
+Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings (style: pump, tight or gentle) on every target_track (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus. Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus is the new send slot (bus_name is only a label; it is called 'FX n' in Bitwig, rename it by hand). use_send_index reuses an existing FX track instead of creating one.
 
 ### `mix(tracks)`
 
