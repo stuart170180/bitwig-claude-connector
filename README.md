@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-99 tools — the full list is in [TOOLS.md](TOOLS.md).
+102 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -53,7 +53,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 99 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 102 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
 | `midifile.py`, `reflib.py` | MIDI file read/write and clip import/export; reference-track library (`references.json`) |
@@ -106,6 +106,9 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 - **Masking finder** solos each track in turn, so it is audible, needs playback running and Windows loopback capture, and uses a
   mono analysis. Use captures at least one loop long.
 - **Reference library** reads WAV and AIFF only (no MP3/FLAC decoder installed); use full songs, not loops, as references.
+- **Arranger clips:** `get_arranger_clip_notes` / `edit_arranger_clip` work on the arranger clip you have selected in Bitwig's Arrange view;
+  they could not be pointed at a clip recorded from the script. After recording, `return_to_arrangement` (called automatically) makes tracks
+  follow the arranger instead of their launcher clips.
 - **Bitwig actions:** `group_tracks` / `ungroup_track` only work while the Arranger timeline with track headers is on
   screen (a script cannot show it, so switch Bitwig to the Arrange view first); the Group action also needs the track header focused; bounce, consolidate and normalize run but their
   effect cannot be confirmed from the script. Export Audio opens a dialog.

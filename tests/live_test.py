@@ -118,6 +118,8 @@ async def main():
             await c("device_insert", {"track_index": k, "device": "EQ+", "slot": "Side", "device_index": ms_i})
             await c("device_delete", {"track_index": k, "device_index": ms_i, "slot": "Side", "slot_index": 1})
 
+            await c("return_to_arrangement", {})
+            await c("get_arranger_clip_notes", {})
             await c("list_bitwig_actions", {"filter": "group", "limit": 5})
             await c("get_groups", {})
             await c("perform_status", {})

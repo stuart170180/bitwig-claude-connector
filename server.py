@@ -1654,8 +1654,12 @@ def record_arrangement(action: str = "start", scenes: list | None = None, bars: 
     if st["phase"] != "done":
         raise RuntimeError(f"recording ended early: {st['phase']} {st.get('error') or ''}")
     late = [x for x in st["launched"] if x["at_position"] > x["start_beat"] + 0.05]
+    try:  # tracks keep playing their launcher clips until told to follow the arranger again
+        bw.call("arrclip_op", op="return_to_arrangement")
+    except RuntimeError:
+        pass
     return {**out, "state": "done", "launches": len(st["launched"]) + 1, "late_launches": late,
-            "note": "Recorded into the arranger. Open Bitwig's Arrange view to see the clips."}
+            "note": "Recorded into the arranger and tracks returned to the arrangement. Open Bitwig's Arrange view to see the clips."}
 
 
 # --- Live monitor web dashboard ---
@@ -2260,6 +2264,47 @@ def perform_status() -> dict:
 def perform_abort() -> dict:
     """Stop a running automation performance (turns record and write off)."""
     return performdev.Perform(bw).abort()
+
+
+import arrclipsdev
+
+
+@tool()
+def return_to_arrangement() -> dict:
+    """Make every track follow the arrangement again. After launching clips, a track keeps playing its launcher clip
+    and ignores the arranger (recorded arranger content is silent) until this is called. record_arrangement now calls it."""
+    return {"result": arrclipsdev.return_to_arrangement(bw)}
+
+
+@tool()
+def get_arranger_clip_notes(limit: int = 200) -> dict:
+    """Notes, loop and name of the ARRANGER clip currently selected in Bitwig (select one in the Arrange view first;
+    it reports exists=false when none is focused). Same 1/32 grid as launcher clips. Limitation: it follows Bitwig's own
+    selection and could not be pointed at a clip recorded by record_arrangement from the script, so select the clip by hand."""
+    info = arrclipsdev.arrclip_info(bw)
+    if not info.get("exists"):
+        return {"exists": False, "hint": "no arranger clip is selected: click one in Bitwig's Arrange view first", "info": info}
+    return {"info": info, **arrclipsdev.arrclip_notes(bw, limit=limit)}
+
+
+@tool()
+def edit_arranger_clip(operation: str, notes: list[dict] | None = None, name: str | None = None,
+                       length_beats: float | None = None, semitones: int = 0) -> dict:
+    """Edit the arranger clip currently selected in Bitwig. operation: write (replace its notes with `notes`, optional
+    length_beats), clear, rename (name), transpose (semitones), quantize, duplicate, duplicate_content. Select the clip in
+    the Arrange view first. Not verified against arrangement playback in live tests: read it back with get_arranger_clip_notes."""
+    if not arrclipsdev.arrclip_info(bw).get("exists"):
+        raise ValueError("no arranger clip is selected: click one in Bitwig's Arrange view first")
+    if operation == "write":
+        return {"result": arrclipsdev.arrclip_write(bw, notes or [], True, length_beats)}
+    if operation == "clear":
+        return {"result": arrclipsdev.arrclip_clear(bw)}
+    if operation == "rename":
+        return {"result": arrclipsdev.arrclip_set_name(bw, name or "")}
+    if operation in ("transpose", "quantize", "duplicate", "duplicate_content"):
+        extra = {"semitones": semitones} if operation == "transpose" else {}
+        return {"result": arrclipsdev.arrclip_op(bw, operation, **extra)}
+    raise ValueError("operation must be write, clear, rename, transpose, quantize, duplicate or duplicate_content")
 
 if __name__ == "__main__":
     mcp.run()

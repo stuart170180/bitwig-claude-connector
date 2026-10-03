@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (99 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (102 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -349,6 +349,18 @@ State of a running perform_plan / perform_ramp.
 ### `perform_abort()`
 
 Stop a running automation performance (turns record and write off).
+
+### `return_to_arrangement()`
+
+Make every track follow the arrangement again. After launching clips, a track keeps playing its launcher clip and ignores the arranger (recorded arranger content is silent) until this is called. record_arrangement now calls it.
+
+### `get_arranger_clip_notes(limit)`
+
+Notes, loop and name of the ARRANGER clip currently selected in Bitwig (select one in the Arrange view first; it reports exists=false when none is focused). Same 1/32 grid as launcher clips. Limitation: it follows Bitwig's own selection and could not be pointed at a clip recorded by record_arrangement from the script, so select the clip by hand.
+
+### `edit_arranger_clip(operation, notes, name, length_beats, semitones)`
+
+Edit the arranger clip currently selected in Bitwig. operation: write (replace its notes with `notes`, optional length_beats), clear, rename (name), transpose (semitones), quantize, duplicate, duplicate_content. Select the clip in the Arrange view first. Not verified against arrangement playback in live tests: read it back with get_arranger_clip_notes.
 
 ## MIDI files & references
 

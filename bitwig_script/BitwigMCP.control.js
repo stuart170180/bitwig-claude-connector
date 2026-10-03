@@ -7,6 +7,7 @@ load("arranger.js");
 load("deep.js");
 load("actions.js");
 load("perform.js");
+load("arrangerclips.js");
 
 host.defineController("Claude", "Bitwig MCP", "3.0", "6b1f3a52-9d1e-4c8e-a7a1-5c3f2b8e9d10", "Claude");
 host.defineMidiPorts(0, 0);
@@ -98,6 +99,7 @@ function init() {
    initDeep();
    initActions();
    initPerform();
+   initArrClips();
 
    var osc = host.getOscModule();
    var space = osc.createAddressSpace();
@@ -395,6 +397,8 @@ function handle(cmd, a) {
    r = handleActions(cmd, a);
    if (r !== undefined) return r;
    r = handlePerform(cmd, a);
+   if (r !== undefined) return r;
+   r = handleArrClips(cmd, a);
    if (r !== undefined) return r;
    throw "unknown command: " + cmd;
 }
