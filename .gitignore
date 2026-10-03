@@ -21,3 +21,4 @@ research/bitwig.lock
 references.json
 research/features/*/scratch/
 research/features/**/library.json
+research/shots/*.wav
