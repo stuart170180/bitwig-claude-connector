@@ -4,6 +4,7 @@ import time
 from bwmcp.core.bridge import bw, deep, tool
 from bwmcp.devices import presetlib
 from bwmcp.devices import units as devunits
+from bwmcp.tools import uitools
 
 COMP_KEYS = {"ratio": "RATIO", "attack_ms": "ATTACK", "release_ms": "RELEASE", "threshold_db": "THRESHOLD", "makeup_db": "MAKEUP",
              "knee_pct": "SMOOTH", "mix_pct": "MIX", "input_db": "INPUT"}
@@ -48,3 +49,52 @@ def save_device_preset(track_index: int, device_index: int, name: str, about: st
     values = {k: devunits.number(v) for k, v in cur["values"].items() if devunits.number(v) is not None}
     presetlib.save_user_preset(cur["device"], name, values, about)
     return {"saved": f"{cur['device']} / {name}", "values": values}
+
+
+def _apply_values(track_index, device_index, device, preset, bpm, nest=None, as_send=False):
+    values = presetlib.resolve(device, preset, bpm, as_send)
+    if device == "Compressor+":
+        values = {COMP_KEYS.get(k, k.upper()): v for k, v in values.items()}
+    return values
+
+
+@tool()
+def layer_chain(track_index: int, layers: list[list[str]], layer_device: str = "FX Layer", device_index: int | None = None) -> dict:
+    """Build parallel chains: an FX Layer (or Instrument Layer) whose layers each hold their own devices. layers = one list per layer,
+    e.g. [[], ["Compressor+:parallel_smash", "Saturator:warm"]] = a dry layer plus a compressed and saturated one. An entry is a device name,
+    or 'Device:preset' to also apply a library preset (see device_presets). The layer device is added if the track has none; missing layers are
+    added by clicking Bitwig's screen (the API cannot make layers), so Bitwig must be visible. Returns the resulting tree."""
+    bpm = float(bw.call("get_session")["tempo"])
+    if device_index is None:
+        device_index = next((d["index"] for d in deep.tree(track_index) if d["name"] == layer_device), None)
+        if device_index is None:
+            deep.insert(track_index, layer_device, None, "end", None, True)
+            time.sleep(1.2)
+            device_index = next(d["index"] for d in deep.tree(track_index) if d["name"] == layer_device)
+    have = len(deep.params(None, 1, 0)["layers"]) if deep.goto(track_index, device_index) else 0
+    while have < len(layers):
+        have = uitools.add_layer(track_index, device_index)["layers_after"]
+    applied = []
+    for li, entries in enumerate(layers):
+        for k, entry in enumerate(entries):
+            name, _, preset = entry.partition(":")
+            deep.insert(track_index, name, None, "end", device_index, True, li)
+            time.sleep(1.0)
+            if preset:
+                values = _apply_values(track_index, device_index, name, preset, bpm)
+                res = devunits.set_values(bw, deep, track_index, device_index, values, nest={"layer": li, "slot_index": k})
+                applied.append({"layer": li, "device": name, "preset": preset, "set": {p: v.get("shown") for p, v in res["set"].items()}})
+    return {"track_index": track_index, "device_index": device_index, "tree": deep.tree(track_index), "presets_applied": applied}
+
+
+@tool()
+def parallel_compression(track_index: int, preset: str = "parallel_smash", level_db: float = -6.0) -> dict:
+    """Parallel compression on a track: an FX Layer with a dry layer (left empty, so the original signal passes) and a layer with a hard-squashed
+    Compressor+ (library preset, default parallel_smash) at 100 % wet, whose level is set with its make-up gain (level_db, relative blend). Needs
+    Bitwig visible (a layer is added by clicking)."""
+    r = layer_chain(track_index, [[], [f"Compressor+:{preset}"]])
+    comp_layer = 1
+    values = {"MIX": 100.0, "MAKEUP": level_db}
+    res = devunits.set_values(bw, deep, track_index, r["device_index"], values, nest={"layer": comp_layer, "slot_index": 0})
+    r["parallel_level"] = {k: v.get("shown") for k, v in res["set"].items()}
+    return r

@@ -232,9 +232,9 @@ class Deep:
         return bands
 
     # ---- editing ----------------------------------------------------------------------------------------------
-    def insert(self, track_index, device, slot=None, where="end", device_index=None, by_uuid=False):
+    def insert(self, track_index, device, slot=None, where="end", device_index=None, by_uuid=False, layer=None):
         """Insert a device by name/path. slot=None: top level (end of chain, or before device_index).
-        slot given: into that slot of top-level device `device_index`."""
+        slot given: into that slot of top-level device `device_index`.  layer given: into the end of that layer of the layer device `device_index`."""
         bw = self.bw
         ref = self._uuid(device) if by_uuid else presets.resolve(device, None)
         if track_index == -1:
@@ -244,7 +244,16 @@ class Deep:
         time.sleep(STEP)
         if len(bw.call("list_devices")["devices"]) >= 28:  # the script can only see 32 devices per track
             raise ValueError("this track already has 28+ devices; put new ones on another track")
-        if slot is None:
+        if layer is not None:
+            if device_index is None:
+                raise ValueError("device_index (the FX Layer etc.) is required with layer")
+            bw.call("select_device", device_index=device_index)
+            time.sleep(STEP)
+            if by_uuid:
+                bw.call("deep_insert_uuid", uuid=ref, where="layer_end", layer=layer)
+            else:
+                bw.call("deep_insert_file", where="layer_end", path=ref, layer=layer)
+        elif slot is None:
             if by_uuid:
                 bw.call("deep_insert_uuid", uuid=ref, where="start" if where == "start" else "end")
                 time.sleep(1.2)

@@ -35,20 +35,25 @@ def number(text: str):
     return v
 
 
-def _device(deep, track_index, device_index):
-    tree = deep.tree(track_index)
-    d = next((x for x in tree if x["index"] == device_index), None)
-    if d is None:
-        raise ValueError(f"no device {device_index} on track {track_index}")
-    u = uuid_of(d["name"])
-    return d["name"], u
+def _device(deep, track_index, device_index, nest=None):
+    """(device name, uuid). nest = {"layer": n, "slot_index": k} or {"slot": name, "slot_index": k} reaches a device inside a layer / slot."""
+    if nest:
+        info = deep.goto(track_index, device_index, **nest)
+        name = info["device"]
+    else:
+        tree = deep.tree(track_index)
+        d = next((x for x in tree if x["index"] == device_index), None)
+        if d is None:
+            raise ValueError(f"no device {device_index} on track {track_index}")
+        name = d["name"]
+    return name, uuid_of(name)
 
 
-def read(bw, deep, track_index, device_index) -> dict:
-    name, u = _device(deep, track_index, device_index)
+def read(bw, deep, track_index, device_index, nest=None) -> dict:
+    name, u = _device(deep, track_index, device_index, nest)
     if not u:
         raise ValueError(f"{name} is not in the device catalogue")
-    deep.goto(track_index, device_index)
+    deep.goto(track_index, device_index, **(nest or {}))
     time.sleep(0.6)
     try:
         bw.call("deep_display", uuid=u)
@@ -74,10 +79,11 @@ def _guess(lo, hi, vlo, vhi, target, step):
     return lo + (hi - lo) * f
 
 
-def set_values(bw, deep, track_index, device_index, targets: dict) -> dict:
-    """Set parameters in displayed units by searching for the normalized value whose display matches (interpolation search, 4-7 reads each)."""
-    name, u = _device(deep, track_index, device_index)
-    deep.goto(track_index, device_index)
+def set_values(bw, deep, track_index, device_index, targets: dict, nest=None) -> dict:
+    """Set parameters in displayed units by searching for the normalized value whose display matches (interpolation search, 4-7 reads each).
+    nest reaches a device inside a layer or slot (see _device)."""
+    name, u = _device(deep, track_index, device_index, nest)
+    deep.goto(track_index, device_index, **(nest or {}))
     time.sleep(0.5)
     out = {}
 

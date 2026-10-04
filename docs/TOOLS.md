@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (137 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (140 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -266,9 +266,9 @@ Set any parameters on a device, nested or not. values: {parameter id or name: no
 
 Configure Bitwig's EQ+ in real units, anywhere (top level, master, or inside a Mid-Side Split slot). bands: [{"band": 1-8, "type": "Bell|Low-shelf|High-shelf|Notch|Low-cut 4P|High-cut 2P|Off|...", "freq_hz": 80, "gain_db": -3, "q": 1.0, "enabled": true}]; only given fields change. A fresh EQ+ has every band type Off, so set type for each band you use. Low-cut/High-cut have no gain. Returns all 8 bands as they now stand (omit bands to just read them).
 
-### `device_insert(track_index, device, slot, device_index, where, by_uuid)`
+### `device_insert(track_index, device, slot, device_index, where, by_uuid, layer)`
 
-Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level Mid-Side Split; the device goes to the end of that slot. by_uuid=True inserts a Bitwig device by name from the built-in catalogue (see device_catalog), no preset file needed. Returns the tree afterwards.
+Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level Mid-Side Split; the device goes to the end of that slot. by_uuid=True inserts a Bitwig device by name from the built-in catalogue (see device_catalog), no preset file needed. layer = insert at the end of that layer (0-based) of the layer device device_index (FX Layer, Instrument Layer, Drum Machine ...). Returns the tree afterwards.
 
 ### `device_delete(track_index, device_index, slot, slot_index)`
 
@@ -520,6 +520,10 @@ Rename an FX (send) track, which the API cannot do: double-clicks its name in th
 
 Delete an FX (send) track by name, which the API cannot do: right-clicks it, checks that Bitwig's inspector says 'FX TRACK' with exactly that name (so nothing else can be deleted by mistake), then presses DELETE in the context menu and checks the track is gone. Undo restores it.
 
+### `add_layer(track_index, device_index)`
+
+Add a layer (a parallel chain) to a layer device such as FX Layer or Instrument Layer, which the API cannot do: shows the device on screen and double-clicks its empty layer area (Bitwig's 'Add layer' gesture). Checks the layer count afterwards. Then fill the layers with device_insert(..., layer=N).
+
 ## Device presets
 
 ### `device_presets(device)`
@@ -533,6 +537,14 @@ Put a library preset on a track: inserts the device if the track has none (or us
 ### `save_device_preset(track_index, device_index, name, about)`
 
 Save a device's current numeric settings (as Bitwig displays them) as your own preset in the library, under the device's name.
+
+### `layer_chain(track_index, layers, layer_device, device_index)`
+
+Build parallel chains: an FX Layer (or Instrument Layer) whose layers each hold their own devices. layers = one list per layer, e.g. [[], ["Compressor+:parallel_smash", "Saturator:warm"]] = a dry layer plus a compressed and saturated one. An entry is a device name, or 'Device:preset' to also apply a library preset (see device_presets). The layer device is added if the track has none; missing layers are added by clicking Bitwig's screen (the API cannot make layers), so Bitwig must be visible. Returns the resulting tree.
+
+### `parallel_compression(track_index, preset, level_db)`
+
+Parallel compression on a track: an FX Layer with a dry layer (left empty, so the original signal passes) and a layer with a hard-squashed Compressor+ (library preset, default parallel_smash) at 100 % wet, whose level is set with its make-up gain (level_db, relative blend). Needs Bitwig visible (a layer is added by clicking).
 
 ## Audio pitch & colour
 

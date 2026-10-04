@@ -136,6 +136,10 @@ function handleDeep(cmd, a) {
          if (wh === "slot_end") {
             if (a.slot) deepSlot.selectSlot(String(a.slot));
             deepSlot.endOfDeviceChainInsertionPoint().insertBitwigDevice(uid);
+         } else if (wh === "layer_end") {   // end of layer a.layer of the selected layer device (FX Layer, Instrument Layer, ...)
+            var lyr = deepLayers.getItemAt(need(a, "layer"));
+            if (!lyr.exists().get() && !a.create) throw "no layer " + a.layer + " (pass create to try making it)";
+            lyr.endOfDeviceChainInsertionPoint().insertBitwigDevice(uid);
          } else if (wh === "after") cursorDevice.afterDeviceInsertionPoint().insertBitwigDevice(uid);
          else if (wh === "before") cursorDevice.beforeDeviceInsertionPoint().insertBitwigDevice(uid);
          else if (wh === "start") cursorTrack.startOfDeviceChainInsertionPoint().insertBitwigDevice(uid);

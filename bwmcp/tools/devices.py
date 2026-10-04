@@ -130,12 +130,13 @@ def eq_set(track_index: int, device_index: int, bands: list[dict] | None = None,
 
 @tool()
 def device_insert(track_index: int, device: str, slot: str | None = None, device_index: int | None = None,
-                  where: str = "end", by_uuid: bool = False) -> dict:
+                  where: str = "end", by_uuid: bool = False, layer: int | None = None) -> dict:
     """Insert a device (name like 'EQ+' or a file path) on a track (-1 = master). Top level: where = end, start or
     before (needs device_index). Inside a nested chain: slot = 'Mid'/'Side' and device_index = the top-level
     Mid-Side Split; the device goes to the end of that slot. by_uuid=True inserts a Bitwig device by name from the
-    built-in catalogue (see device_catalog), no preset file needed. Returns the tree afterwards."""
-    deep.insert(track_index, device, slot, where, device_index, by_uuid)
+    built-in catalogue (see device_catalog), no preset file needed. layer = insert at the end of that layer (0-based) of the layer device
+    device_index (FX Layer, Instrument Layer, Drum Machine ...). Returns the tree afterwards."""
+    deep.insert(track_index, device, slot, where, device_index, by_uuid, layer)
     return {"devices": deep.tree(track_index)}
 
 

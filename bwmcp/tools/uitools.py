@@ -183,3 +183,31 @@ def delete_fx_track(name: str) -> dict:
     time.sleep(1.2)
     gone = not _shows(ui.read_text(region=TRACK_LIST), name)
     return {"deleted": name, "verified": gone}
+
+
+@tool()
+def add_layer(track_index: int, device_index: int) -> dict:
+    """Add a layer (a parallel chain) to a layer device such as FX Layer or Instrument Layer, which the API cannot do: shows the device on screen and
+    double-clicks its empty layer area (Bitwig's 'Add layer' gesture). Checks the layer count afterwards. Then fill the layers with
+    device_insert(..., layer=N)."""
+    def layer_count():
+        deep.goto(track_index, device_index)
+        time.sleep(0.5)
+        return len(deep.params(None, 1, 0)["layers"])
+
+    before = layer_count()
+    bw.call("app_panel", layout="ARRANGE")
+    time.sleep(0.6)
+    items = ui.read_text(region=DEVICE_PANEL)
+    if not any(i["text"].lower().startswith("layer") for i in items):
+        bw.call("app_panel", what="devices")
+        time.sleep(1.0)
+        items = ui.read_text(region=DEVICE_PANEL)
+    layers = sorted((i for i in items if i["text"].lower().startswith("layer") and i["cx"] < 480), key=lambda i: i["cy"])
+    if not layers:
+        raise RuntimeError(f"no layer list on screen (is the device panel showing the layer device?). Saw: {[i['text'] for i in items][:20]}")
+    last = layers[-1]
+    ui.click(last["cx"] + 50, last["cy"] + 28 * (before - len(layers) + 1) + 30, double=True)
+    time.sleep(1.2)
+    after = layer_count()
+    return {"track_index": track_index, "device_index": device_index, "layers_before": before, "layers_after": after, "added": after > before}
