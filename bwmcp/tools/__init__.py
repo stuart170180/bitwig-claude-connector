@@ -3,6 +3,7 @@ from bwmcp.tools import (  # noqa: F401  (registration happens on import)
     clips,
     devices,
     extras,
+    grid,
     library,
     mixing,
     presets,

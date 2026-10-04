@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (117 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (121 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -497,4 +497,22 @@ Read a device's parameters in real units ('125 ms', '-12.0 dB', '3.08 kHz', ...)
 ### `edit_action(action, track_indices)`
 
 Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit. These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
+
+### `engine_recover(wait_seconds)`
+
+Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this clicks Bitwig's 'Activate Audio Engine' button (only when that exact button is showing) and waits for the script to return. Safe to call when everything is fine: it then does nothing.
+
+## Grid patch editing
+
+### `grid_templates()`
+
+The Grid modules that grid_add_module can add (name and category), harvested from Bitwig's factory presets.
+
+### `grid_inspect(base)`
+
+Readable view of a Grid preset: device values, modulators, every module with its parameters, and all cables. base = 'fx' (FX Grid), 'poly' (Poly Grid) or the path of a plain .bwpreset file.
+
+### `grid_add_module(base, module, between, params, x, y, name, load_to_track)`
+
+Add one module to a copy of a Grid preset (the original is never changed). base: 'fx' (FX Grid), 'poly' (Poly Grid) or a plain .bwpreset path. module: a name from grid_templates (e.g. 'Low-pass'). between: [source, destination] module names or ids to wire the new module into the signal path, e.g. ['Audio In', 'Audio Out'] (FX Grid) - the cable from source to destination is replaced by source -> new -> destination. params: {PARAMETER: value} on the new module, e.g. {'CUTOFF': 20} (look at grid_inspect for names and units). x, y: grid cell (default: next free spot). load_to_track: also insert the edited device on that track and check that Bitwig accepted it and the audio engine stayed up. Refuses Polymer files (more than 19 modules crash the audio engine) and anything over 32 modules.
 

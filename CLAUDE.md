@@ -55,6 +55,9 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - The controller script runs at `loadAPI(25)` (v6.1, `extras.js`). Real-unit display text exists for Compressor+, EQ+, Delay+, Reverb,
   Peak Limiter, Tool, De-Esser, Gate, Saturator (`DISP_DEVICES` in deep.js; `device_units`). No device exposes gain reduction or meters:
   read those with `look_at_bitwig` (a window picture; Windows UI Automation finds nothing because Bitwig draws its own window).
+- Grid editing (`grid_add_module`): proven to work with audio on effects Grids and Poly Grid. NEVER load an edited Polymer file: more than 19
+  modules crashes the audio engine (tool refuses it). After any engine crash: Bitwig shows an 'Audio Engine Crashed' dialog; press Cancel (never
+  Send Report), the crashed track must be deleted (manual: the auto-mode check blocks my click+Delete), then `engine_recover` clicks Activate Audio Engine.
 - Evidence for all of this: `research/discoveries/FULL_LOG.md` and `CANDIDATES.md`.
 - Music is original only: no copyrighted melodies. Keys/tempo are generic; do not assume a genre or 140 bpm.
 

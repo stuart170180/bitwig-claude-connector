@@ -1,6 +1,6 @@
 # To do
 
-Last updated 2026-10-04. Connector: 117 tools, controller script 6.1. Repo: private GitHub `stuart170180/bitwig-claude-connector`.
+Last updated 2026-10-04. Connector: 121 tools, controller script 6.1. Repo: private GitHub `stuart170180/bitwig-claude-connector`.
 
 ## Needs you (Bitwig)
 - [ ] Reopen your song project in Bitwig. The open project is an empty "New 1"; everything below that touches your mix needs the song.
@@ -43,3 +43,7 @@ Last updated 2026-10-04. Connector: 117 tools, controller script 6.1. Repo: priv
 - [ ] Sidechain source / FX track names: only by clicking Bitwig's UI (screenshot-verified, fragile). `look_at_bitwig` can at least confirm what is set. A click-driver is possible but untested and could damage a project.
 - [ ] Test on a real song: `edit_action` (consolidate, normalize, quantize audio, stretch to tempo, bounce) needs a selected arranger clip; `undo_redo`; `project_notes` look in Bitwig's controller settings (user view unverified); `last_clicked` needs a knob touch.
 - [ ] PopupBrowser (real browser-based preset loading) and the project file's track tree are not done; see research/discoveries/CANDIDATES.md.
+- [x] Grid research: added modules proven with audio (effects Grid, Poly Grid); Polymer crash narrowed to a 19-module limit; tools `grid_templates`, `grid_inspect`, `grid_add_module`, `engine_recover` built.
+- [ ] Why Polymer cannot take a 20th module (Poly Grid can take 32). Decisive test: add one module to Polymer in Bitwig's own UI, save the preset, diff it against the factory file.
+- [ ] Modulators: `add_modulator` / `add_mapping` load without error but their audible effect is not proven yet (an LFO mapped to a filter on an effects Grid, measured over time, is the test).
+- [ ] Automatic deletion of a crashed track needs a permission rule for the click tool (blocked by auto mode); until then it is manual.

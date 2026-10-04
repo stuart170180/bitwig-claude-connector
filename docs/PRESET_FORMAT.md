@@ -246,3 +246,56 @@ All write a **copy** to `patched_presets/`, run `check()`, and (optionally) load
 5. Implement `grid_inspect`, `preset_templates`, `preset_add_module`, `preset_connect`, `preset_add_modulator` in server.py on top of `bwformat.py` with the load-and-verify helper.
 6. Extend the harvest technique to the remaining unknown ids (`0x1b75`, `0x3a3c`, `0x2643`, `0x2651/2`) and to `.bwremotecontrols` (also 100% round-trip) so remote-control pages can be authored.
 7. Identify how names are shown (`0x2b9` vs `0x9a` vs `0x12de`) with a visual check in the UI.
+
+
+## 11. Crash isolation and audio proof (second session, with the user's OK)
+
+Harness: `research/grid/` (`lab.py` loads one variant on a fresh scratch track, watches the audio engine, recovers, cleans up;
+`variants.py` builds the files; `proof.py`, `proof_fx.py` render a note and measure the master with Bitwig's own recorder).
+
+### 11.1 An added module PROCESSES AUDIO (effects Grid) - PROVEN
+Polysynth note -> effects Grid with a Low-pass module wired between Audio In and Audio Out (module copied from Filter+, wired with
+`insert_module_between`, CUTOFF set offline), master recorded for 3 s:
+
+| Variant | RMS | Centroid | Energy above 1 kHz |
+|---|---|---|---|
+| Plain Grid (control) | -31.4 dB | 876 Hz | 32.2 % |
+| + Low-pass, cutoff 144 (open) | -31.4 dB | 875 Hz | 32.1 % |
+| + Low-pass, cutoff 20 (closed) | -58.9 dB | 573 Hz | 7.3 % |
+
+So the byte-edited file has a working module: the cables carry the signal, the new module's parameter value is honoured, the engine stays up.
+
+### 11.2 The synth-Grid crash (Polymer) - ISOLATED PARTIALLY
+Control: the untouched factory Polymer loads fine. Every Polymer file with ONE added module crashes the engine (exit
+0xC0000005, 1-2 s after load), whatever else is varied:
+
+| Variant | Result |
+|---|---|
+| D5 (effects-family Low-pass wired between Pan and Voice Level) | crash |
+| Synth-native Low-pass MG wired between Pan and Voice Level | crash |
+| Synth-native Low-pass MG added, **not connected** | crash |
+| Same, placed **inside** the existing grid area | crash |
+| Same, Polymer's remote-control pages emptied | crash |
+| Poly Grid (factory, 3 modules) + 1 module | OK |
+| Poly Grid + 17 modules (20 total) | OK |
+| Poly Grid set to 12 voices (`0x28ff`) + 1 module | OK |
+| Polymer with its modulators removed + module | refused by the loader (modulators are required) |
+
+Ruled out: module family, wiring, placement, 12-voice setting, remote pages. The cause is something specific to the
+Polymer file that a module addition breaks (candidates left: its two modulators and their mapping, the `0x2901`/`0x2904` voice
+flags, 19 existing modules/22 cables, a derived structure that is only checked for this device). Use **Poly Grid** or an effects
+Grid for edited modules; do not load edited Polymer files.
+Decisive next step: have Bitwig itself add a module to Polymer in the UI, save the preset, and diff it against the factory file.
+
+### 11.3 Later results (same session)
+* Removing ANY single existing module from Polymer (and adding one) avoided the crash; removing one and adding two (20 modules) crashed
+  again. So Polymer crashes when it has **more than 19 modules**. A value change alone is harmless.
+* The same limit does NOT exist in Poly Grid: 20, 21, 24 and 32 modules loaded fine, also with Polymer's two modulators added, and with
+  Polymer's voice settings (12 voices, `0x2901`, `0x2904`) copied in. Why Polymer specifically cannot take a 20th module is still unknown.
+* Productised: `bwmcp/devices/gridedit.py` (the file editor) and the tools `grid_templates`, `grid_inspect`, `grid_add_module` (effects Grid and Poly
+  Grid only, Polymer refused, 32-module cap, optional load-and-verify). The tool path reproduces the audio proof (-58.9 dB, centroid 573 Hz).
+* Crash recovery (observed): Bitwig shows an "Audio Engine Crashed" dialog (Cancel / Send Report; never press Send Report). The crashed
+  track stays in the project and must be deleted before the engine is reactivated, otherwise the bad device reloads. While the engine is down the
+  controller script is disconnected; `engine_recover` / `bwmcp/control/uiclick.py` can cancel nothing itself but click "Activate Audio Engine"
+  (only when that exact button is recognised). Clicking the crashed track and pressing Delete was blocked by Claude Code's auto-mode check, so
+  that step is manual.

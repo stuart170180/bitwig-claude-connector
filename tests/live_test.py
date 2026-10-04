@@ -184,6 +184,10 @@ async def main():
             await c("record_master", {"action": "status"})
             await c("sidechain_genres")
             await c("edit_action", {"action": "zoom_to_fit"})
+            await c("grid_templates")
+            await c("grid_inspect", {"base": "fx"})
+            await c("grid_add_module", {"base": "fx", "module": "Low-pass", "between": ["Audio In", "Audio Out"], "params": {"CUTOFF": 60}, "name": "live_test_grid"})
+            await c("engine_recover", {"wait_seconds": 5})
             # not run here (they change or play things): undo_redo, device_units set, sidechain_setup, record_master capture
 
             # not run here (they play audio or change playback): masking_report/fix, perform_*, add_reference/compare_to_library

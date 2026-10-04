@@ -2,14 +2,14 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-117 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
+121 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
 
 ## How it fits together
 
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          └── bwmcp/    tools/ (the 117 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                          └── bwmcp/    tools/ (the 121 MCP tools, by topic) · core/ (connection) · music/ · devices/
                                         analysis/ · control/ · library/ · monitor/ ──> http://127.0.0.1:8780 live dashboard
 ```
 
@@ -71,6 +71,7 @@ bwmcp/               the Python package
                        presets.py   preset search/loading, automatic track naming
                        mixing.py    levels, mastering chain, analysis, references, masking, mix audit, sidechain, live monitor
                        library.py   samples and bookmarks
+                       grid.py      Grid patch editing: add modules to effects Grid / Poly Grid presets, verified
                        extras.py    master recorder, project state/notes, UI layout, window picture, project file report, device units, editing actions
   music/             theory and generators (music) · expert note edits · variations · pitch/tuning · MIDI files · track naming
   devices/           deep device access (deepdev) · Compressor+ units (compdev) · recipes · presets · preset patching · sidechain genres

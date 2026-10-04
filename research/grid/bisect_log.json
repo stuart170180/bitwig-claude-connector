@@ -1,0 +1,29 @@
+{
+ "kept_removed": [],
+ "log": [
+  {
+   "removed": [
+    18
+   ],
+   "devices_added": 1,
+   "crashed": false,
+   "verdict": "NO CRASH -> this module matters"
+  },
+  {
+   "removed": [
+    17
+   ],
+   "devices_added": 1,
+   "crashed": false,
+   "verdict": "NO CRASH -> this module matters"
+  },
+  {
+   "removed": [
+    16
+   ],
+   "devices_added": 1,
+   "crashed": false,
+   "verdict": "NO CRASH -> this module matters"
+  }
+ ]
+}

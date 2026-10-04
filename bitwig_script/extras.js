@@ -49,6 +49,11 @@ function handleExtras(cmd, a) {
          has_soloed: exProject ? exBool(exProject.hasSoloedTracks()) : null, has_muted: exProject ? exBool(exProject.hasMutedTracks()) : null,
          has_armed: exProject ? exBool(exProject.hasArmedTracks()) : null
       };
+      case "engine": {   // action: state | activate | deactivate (recovering after an audio-engine crash)
+         if (a.action === "activate") application.activateEngine();
+         else if (a.action === "deactivate") application.deactivateEngine();
+         return { active: exBool(application.hasActiveEngine()) };
+      }
       case "app_undo": application.undo(); return "ok";
       case "app_redo": application.redo(); return "ok";
       case "ui_get": {

@@ -164,3 +164,29 @@ def edit_action(action: str, track_indices: list[int] | None = None) -> dict:
     else:
         actionsdev.action_run(bw, EDIT_ACTIONS[action])
     return {"ran": action, "action_id": EDIT_ACTIONS[action], "note": "effect is not reported by Bitwig; verify visually or with get_session"}
+
+
+@tool()
+def engine_recover(wait_seconds: float = 60.0) -> dict:
+    """Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this
+    clicks Bitwig's 'Activate Audio Engine' button (only when that exact button is showing) and waits for the script to return.
+    Safe to call when everything is fine: it then does nothing."""
+    from bwmcp.control import uiclick
+
+    def state():
+        try:
+            return bool(bw.call("engine", action="state")["active"])
+        except Exception:
+            return None
+
+    if state():
+        return {"engine": "active", "clicked": False}
+    clicked = False
+    t0 = time.time()
+    while time.time() - t0 < wait_seconds:
+        if state() is None or state() is False:
+            clicked = uiclick.reactivate_engine() or clicked
+        if state():
+            return {"engine": "active", "clicked": clicked, "seconds": round(time.time() - t0, 1)}
+        time.sleep(2.5)
+    return {"engine": "still down", "clicked": clicked, "hint": "Bitwig may be showing a dialog; look with look_at_bitwig"}

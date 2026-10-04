@@ -1,0 +1,3 @@
+{'file': 'B_18.bwpreset', 'devices_added': 1, 'engine_died_after_s': None, 'log_problems': [], 'load_errors': [], 'case': 'remove [18]', 'tracks_after': ['Inst 1', 'Audio 2']}
+{'file': 'B_17.bwpreset', 'devices_added': 1, 'engine_died_after_s': None, 'log_problems': [], 'load_errors': [], 'case': 'remove [17]', 'tracks_after': ['Inst 1', 'Audio 2']}
+{'file': 'B_16.bwpreset', 'devices_added': 1, 'engine_died_after_s': None, 'log_problems': [], 'load_errors': [], 'case': 'remove [16]', 'tracks_after': ['Inst 1', 'Audio 2']}
