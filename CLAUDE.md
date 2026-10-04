@@ -37,9 +37,9 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 ## Hard-won rules (do not rediscover)
 - The Bitwig API has no access to: modulators, Grid, sidechain source choice, FX track names/faders, compressor gain
   reduction. Do not promise these. Direct parameters are not recordable; use remote controls for automation recording.
+- Keep the `mcp` package current (>=2.3): older versions made `claude mcp get bitwig` fail its handshake check (-32022).
 - Direct-parameter display text never arrives. Real units (ms, dB, 1:N) come from `createSpecificBitwigDevice` parameter
   objects, which can only be created at script start (`DISP_DEVICES` in `deep.js`)
-- The `claude mcp get bitwig` health check shows a protocol-handshake error (-32022) even on the original code; the tools still load in sessions.. Done for Compressor+ and EQ+.
 - `setDirectParameterValueNormalized(id, value*16384, 16384)`: pass value in 0..resolution, not 0..1.
 - A fresh EQ+ has all bands Off; set types explicitly (`eq_set`). Mid/side EQ gain = 0.5 + dB/48.
 - Grouping works only with the ARRANGE layout showing and the track header focused; `group_tracks` does both itself.

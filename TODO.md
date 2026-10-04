@@ -38,5 +38,4 @@ Last updated 2026-10-04. Connector: 106 tools, controller script 6.0. Repo: priv
 - [ ] Sidechain: `sidechain_setup` builds the trigger bus, sends and ducking compressors. Still manual (not in the API): pick the bus as each Compressor+'s sidechain source, lower the bus fader, rename the FX track. Idea: patch the source into a preset (risky, see docs/PRESET_FORMAT.md).
 - [ ] Compressor+ gain reduction has no API parameter (checked 10 guessed names); other devices' display text only works for Compressor+ and EQ+ (add their UUID + parameter ids to DISP_DEVICES in deep.js to extend).
 - [ ] Sidechain presets are starting points per genre (`genres.py`); tune by ear on a real song and adjust the rows.
-- [ ] The Claude CLI health check (`claude mcp get bitwig`, and the installer's registration check) reports a -32022 protocol-handshake failure (also on the old code). Try `pip install -U mcp` and re-test; the tools themselves load fine.
 - [x] Repo reorganised into the `bwmcp/` package (tools by topic, helpers by area), `manage.py` front door, `data/`, `docs/`, `scripts/`.

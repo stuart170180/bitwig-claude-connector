@@ -1,4 +1,4 @@
-mcp>=2.0
+mcp>=2.3
 numpy>=2.0
 scipy>=1.13
 pyloudnorm>=0.1.1
