@@ -1,6 +1,6 @@
 # To do
 
-Connector v7.4.1 (141 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v7.4.2 (141 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-04.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
@@ -28,7 +28,7 @@ Updated 2026-10-04.
 - [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
 - [x] Parallel compression and layer chains (v7.4.0: `layer_chain`, `parallel_compression`, `add_layer`).
 - [x] Reference library decodes MP3, FLAC and OGG (soundfile).
-- [ ] `masking_fix` verifies its own improvement; confirm bounce / consolidate / normalize worked.
+- [x] `masking_fix` verifies its own improvement (v7.4.2). [ ] confirm bounce / consolidate / normalize worked.
 - [ ] PopupBrowser (browser-based preset loading) and the project file's track tree.
 
 ## Done

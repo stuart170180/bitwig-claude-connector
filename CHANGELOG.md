@@ -2,6 +2,9 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.4.2 - 2026-10-04 (script 6.1)
+- `masking_fix` captures at least one full loop and reports a verdict (clash score before/after, per-cut measured level change). Live test: two clashing synths, -4 dB cut measured -3.3 dB, score 9.7 -> 7.6.
+
 ## 7.4.1 - 2026-10-04 (script 6.1)
 - `select_arranger_clip`: clicks a clip in the Arrange view and reads its notes, so clips recorded by `record_arrangement` can be read and edited (the old limitation).
 

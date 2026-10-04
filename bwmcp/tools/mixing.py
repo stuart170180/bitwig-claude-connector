@@ -15,6 +15,7 @@ from bwmcp.devices import compdev, genres, presets
 from bwmcp.library import samples
 from bwmcp.music import music, naming
 from bwmcp.tools import uitools
+from bwmcp.tools.clips import clip_settings
 from bwmcp.tools.tracks import create_track
 
 
@@ -546,11 +547,30 @@ def masking_fix(track_indices: list[int] | None = None, seconds: float = 5.0, ma
     """Run masking_report, then apply the proposed EQ cuts for the worst clashes (inserting EQ+ where needed, one band
     each) and re-measure. Returns what was cut and the clash score before and after; the 'after' number can be noisy
     if the capture doesn't cover a full loop."""
+    sess = bw.call("get_session", with_clips=True)
+    loop_beats, reads = 0.0, 0
+    for t in sess["tracks"]:                                   # longest launcher clip (at most 12 reads, each focuses a clip)
+        for c in t.get("clips", []):
+            if reads >= 12:
+                break
+            try:
+                loop_beats = max(loop_beats, float(clip_settings(t["index"], c["slot"]).get("loop_length") or 0))
+            except Exception:
+                pass
+            reads += 1
+    loop_s = loop_beats * 60.0 / sess["tempo"]
+    seconds = max(seconds, min(loop_s, 40.0))          # capture at least one full loop so 'before' and 'after' see the same material
     rep = masking.report(track_indices, seconds)
     res = masking.apply(rep, max_fixes, min_score)
     if res.get("after_report"):
         res["after_report"].pop("_spectra", None)
         res["after_report"].pop("spectra", None)
+    delta = round(res["before"] - res["after"], 3)
+    res["capture_seconds"] = round(seconds, 1)
+    res["score_change"] = delta
+    res["verdict"] = ("no cuts were applied" if not res["applied"] else
+                      f"improved: clash score {res['before']} -> {res['after']}" if delta > 0.02 else
+                      f"no clear improvement (score {res['before']} -> {res['after']}); check each cut's measured_change_db, undo with undo_redo if unwanted")
     return res
 
 
