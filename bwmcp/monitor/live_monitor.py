@@ -308,6 +308,34 @@ def compressors_state():
         return {"compressors": out, "note": "Bitwig does not expose gain reduction, so this shows settings, not a live GR meter."}
 
 
+def chords_lib():
+    from bwmcp.music import voicings
+
+    return {"styles": voicings.STYLES, "genre_styles": voicings.GENRE_STYLES, "qualities": [k or "maj" for k in voicings.CHORD_TYPES]}
+
+
+def chords_voice(q):
+    """q: dict of query values (chords, style, key, scale, bass, lead, center). Pure Python: needs no Bitwig."""
+    from bwmcp.music import voicings
+
+    chords = [c.strip() for c in q.get("chords", "Dm7,G7,Cmaj7").split(",") if c.strip()]
+    symbols = voicings.resolve(chords, q.get("key", "C"), q.get("scale", "major"))
+    voiced = voicings.voice_progression(symbols, q.get("style", "drop2"), center=int(q.get("center", 60)),
+                                        voice_lead=q.get("lead", "1") != "0", add_bass=q.get("bass", "0") == "1")
+    return {"chords": symbols, "voicings": [{"chord": c, "pitches": v, "notes": voicings.describe(v)} for c, v in zip(symbols, voiced)]}
+
+
+def chords_write(body):
+    b = _bitwig()
+    chords = [c.strip() for c in str(body.get("chords", "")).split(",") if c.strip()]
+    with _master_lock:
+        r = b.write_voiced_chords(int(body["track"]), int(body.get("slot", 0)), chords=chords, key=body.get("key", "C"),
+                                  scale=body.get("scale", "major"), style=body.get("style", "drop2"), rhythm=body.get("rhythm", "sustained"),
+                                  bars_per_chord=float(body.get("bars", 1)), add_bass=bool(body.get("bass")),
+                                  voice_lead=body.get("lead", True) is not False)
+    return {k: r[k] for k in ("notes", "verified", "chords", "voicings")}
+
+
 def master_set(body):
     allowed = {"width_pct", "limiter_gain_db", "ceiling_db", "output_gain_db"}
     args = {k: float(v) for k, v in body.items() if k in allowed and v is not None}
@@ -372,6 +400,15 @@ def make_handler(cap: Capture):
                     self._json(get_weather(q.get("city", ["London"])[0][:60]))
                 except Exception as e:
                     self._json({"error": str(e)}, 502)
+            elif self.path.startswith("/api/chords/lib"):
+                self._json(chords_lib())
+            elif self.path.startswith("/api/chords/voice"):
+                import urllib.parse
+                q = {k: v[0] for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query).items()}
+                try:
+                    self._json(chords_voice(q))
+                except Exception as e:
+                    self._json({"error": str(e)}, 400)
             elif self.path.startswith("/api/compressors"):
                 try:
                     self._json(compressors_state())
@@ -412,6 +449,11 @@ def make_handler(cap: Capture):
                 body = json.loads(self.rfile.read(n)) if n else {}
             except ValueError:
                 body = {}
+            if self.path == "/api/chords/write":
+                try:
+                    return self._json(chords_write(body))
+                except Exception as e:
+                    return self._json({"error": str(e)}, 500)
             if self.path in ("/api/master/set", "/api/master/build", "/api/report"):
                 try:
                     fn = {"/api/master/set": master_set, "/api/master/build": master_build,
