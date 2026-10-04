@@ -1,49 +1,41 @@
 # To do
 
-Last updated 2026-10-04. Connector: 121 tools, controller script 6.1. Repo: private GitHub `stuart170180/bitwig-claude-connector`.
+Connector v7.0.0 (121 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Updated 2026-10-04.
 
-## Needs you (Bitwig)
-- [ ] Reopen your song project in Bitwig. The open project is an empty "New 1"; everything below that touches your mix needs the song.
-- [x] Grouping fixed: `group_tracks` / `ungroup_track` now switch to the ARRANGE layout and focus the track header automatically.
-- [ ] Group the song's tracks with `group_tracks`, then ask for bus compressors on the new groups.
+## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
+- [ ] Update the portfolio with version numbers at every milestone (v7.0.0 done on 2026-10-04).
+- [ ] Chords and voicings: research, add voicing styles to the generators, show them in the live remote.
+- [ ] Audio pitch controls and colour controls (clips, tracks, scenes).
+- [ ] Preset library: reverb and other devices built as real-unit presets (`device_units`) saved as recipes.
+- [ ] Live remote as a desktop app (and/or plugin) with chords, controls and meters.
+- [ ] Work through the build list below.
+
+## Needs the user's song (needs a real project open)
+- [ ] Reopen the song project (the open project is an empty "New 1").
+- [ ] Group the song's tracks with `group_tracks`, then bus compressors on the groups.
+- [ ] Run `mix_audit`, master `mid_side_eq`, `masking_report` / `masking_fix`, `perform_ramp` builds, save chains with `recipe`.
+- [ ] Try plugin control on Serum and Spire with `deep_params` / `deep_set`.
+- [ ] Test `edit_action` (consolidate, normalize, quantize audio, stretch, bounce) on a selected arranger clip; `undo_redo`; `last_clicked`; look at `project_notes` in Bitwig's controller settings.
+- [ ] Tune the genre sidechain presets by ear (`genres.py`).
 - [ ] Share the portfolio page from its Share menu if other people should see it (it is private).
-- [ ] Confirm the live monitor starts by itself at your next Windows login (`python autostart.py --status`).
-
-## Next, on your song
-- [ ] Run `mix_audit` and let it fix EQ+ bands that have a gain but type Off (earlier EQ moves may have done nothing).
-- [ ] Add the master `mid_side_eq` (low-cut on the Side, a little air) and re-measure with `analyze_master`.
-- [ ] Run `masking_report` with a capture at least one loop long, then `masking_fix` if the clashes are real.
-- [ ] Try `perform_ramp` for builds (strings volume, filter rise) and check the lanes in the Arrange view.
-- [ ] Save your good chains with `recipe` (vocal chain, master chain) so they can be rebuilt.
-- [ ] Try plugin control on Serum and Spire by parameter name with `deep_params` / `deep_set`.
 
 ## Build
-- [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded (unsolved; works on a clip you select by hand).
-- [ ] Real-unit mappings for more Bitwig devices (Compressor, Filter, Delay+), as `eq_set` does for EQ+.
-- [ ] Parallel compression and layer chains (needs a way to add layers to FX Layer from a script).
-- [ ] Grid and modulators: isolate the engine crash from `D5_polymer_insert_lowpass.bwpreset` on a fresh track (with your OK), then prove an added module works with audio.
-- [ ] Reference library: decode MP3 and FLAC (no decoder installed) and add full songs as references, not loops.
-- [ ] Make `masking_fix` verify its improvement (captures cover a full loop; per-fix level change).
-- [ ] Bounce in place / consolidate / normalize: find a way to confirm they worked.
+- [ ] Sidechain source, FX track names and faders: only possible by clicking Bitwig's UI (read by `look_at_bitwig`); build a click driver now that mouse control is allowed.
+- [ ] Why Polymer cannot take a 20th module (Poly Grid takes 32). Decisive test: a module added in Bitwig's own UI, saved, diffed against the factory file.
+- [ ] Modulators: prove an added modulator changes the sound (LFO on a filter in an effects Grid, measured over time).
+- [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded.
+- [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
+- [ ] Parallel compression and layer chains.
+- [ ] Reference library: decode MP3 and FLAC.
+- [ ] `masking_fix` verifies its own improvement; confirm bounce / consolidate / normalize worked.
+- [ ] PopupBrowser (browser-based preset loading) and the project file's track tree.
 
 ## Done
-- [x] Bitwig controller script and Python MCP server: 102 tools, 105 live checks passing
-- [x] Music generation, expert note editing, sounds, samples, bookmarks, auto-naming
-- [x] Mastering analysis (LUFS, true peak, mid/side), live monitor web page, tuner, UK time and weather
-- [x] Deep device access, EQ+ in real units, mid/side EQ, mix audit, recipes, A/B test
-- [x] Insert devices by UUID, preset inspect and patch, preset file parser (396 of 396 round trip)
-- [x] MIDI file import/export, reference library, masking finder, Bitwig actions, automation by performance
-- [x] Arranger clip reading for a selected clip; tracks return to the arrangement after recording
-- [x] Backups, git history, private GitHub repo, portfolio page
-- [ ] Sidechain: `sidechain_setup` builds the trigger bus, sends and ducking compressors. Still manual (not in the API): pick the bus as each Compressor+'s sidechain source, lower the bus fader, rename the FX track. Idea: patch the source into a preset (risky, see docs/PRESET_FORMAT.md).
-- [ ] Compressor+ gain reduction has no API parameter (checked 10 guessed names); other devices' display text only works for Compressor+ and EQ+ (add their UUID + parameter ids to DISP_DEVICES in deep.js to extend).
-- [ ] Sidechain presets are starting points per genre (`genres.py`); tune by ear on a real song and adjust the rows.
-- [x] Repo reorganised into the `bwmcp/` package (tools by topic, helpers by area), `manage.py` front door, `data/`, `docs/`, `scripts/`.
-- [x] Exploration worker findings built: master recorder capture (now the default for all live analysis), loadAPI(25), `project_state`, `ui_layout`, `project_notes`, `last_clicked`, `transport_extras`, `undo_redo`, `look_at_bitwig`, `project_file_report`, `device_units` (7 more stock devices), `edit_action`.
-- [ ] Sidechain source / FX track names: only by clicking Bitwig's UI (screenshot-verified, fragile). `look_at_bitwig` can at least confirm what is set. A click-driver is possible but untested and could damage a project.
-- [ ] Test on a real song: `edit_action` (consolidate, normalize, quantize audio, stretch to tempo, bounce) needs a selected arranger clip; `undo_redo`; `project_notes` look in Bitwig's controller settings (user view unverified); `last_clicked` needs a knob touch.
-- [ ] PopupBrowser (real browser-based preset loading) and the project file's track tree are not done; see research/discoveries/CANDIDATES.md.
-- [x] Grid research: added modules proven with audio (effects Grid, Poly Grid); Polymer crash narrowed to a 19-module limit; tools `grid_templates`, `grid_inspect`, `grid_add_module`, `engine_recover` built.
-- [ ] Why Polymer cannot take a 20th module (Poly Grid can take 32). Decisive test: add one module to Polymer in Bitwig's own UI, save the preset, diff it against the factory file.
-- [ ] Modulators: `add_modulator` / `add_mapping` load without error but their audible effect is not proven yet (an LFO mapped to a filter on an effects Grid, measured over time, is the test).
-- [x] Crash recovery is automatic: `python manage.py recover --tracks N` / tool `engine_recover` (cancel dialog, delete the crashed track after checking, reactivate). Allowing it without a prompt needs a permission rule the user adds (see README).
+- [x] v7.0.0: package reorganised, installer, `manage.py`, `CLAUDE.md`, docs.
+- [x] Genre-aware sidechain, Compressor+ in real units, Compressors card in the live monitor.
+- [x] Master recorder capture, API 25, project state / notes / UI layout / undo / window picture / project file report, device units, edit actions.
+- [x] Grid editing: added modules proven with audio (effects Grid, Poly Grid), `grid_*` tools, Polymer 19-module limit found.
+- [x] Crash recovery: `manage.py recover` / `engine_recover` (cancel dialog, delete crashed track, reactivate).
+- [x] Grouping fixed; deep device access, EQ+ in real units, mid/side EQ, mix audit, recipes, A/B; MIDI files, reference library, masking finder, actions, automation by performance.
+- [x] Backups, git history, private GitHub repo, portfolio page.

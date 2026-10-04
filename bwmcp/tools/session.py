@@ -21,8 +21,11 @@ def get_track(track_index: int) -> dict:
 
 @tool()
 def health_check() -> dict:
-    """Check the Bitwig connection, script version and any API features missing in this Bitwig version."""
-    return bw.call("capabilities")
+    """Check the Bitwig connection, script version and any API features missing in this Bitwig version. Also reports the
+    connector (Python package) version."""
+    import bwmcp
+
+    return {**bw.call("capabilities"), "connector_version": bwmcp.__version__}
 
 
 @tool()

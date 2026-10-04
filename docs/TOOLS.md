@@ -14,7 +14,7 @@ Detailed info for one track including sends and launcher clips.
 
 ### `health_check()`
 
-Check the Bitwig connection, script version and any API features missing in this Bitwig version.
+Check the Bitwig connection, script version and any API features missing in this Bitwig version. Also reports the connector (Python package) version.
 
 ### `transport(action)`
 
@@ -498,9 +498,9 @@ Read a device's parameters in real units ('125 ms', '-12.0 dB', '3.08 kHz', ...)
 
 Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit. These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
 
-### `engine_recover(wait_seconds)`
+### `engine_recover(wait_seconds, normal_tracks)`
 
-Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this clicks Bitwig's 'Activate Audio Engine' button (only when that exact button is showing) and waits for the script to return. Safe to call when everything is fine: it then does nothing.
+Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this presses Cancel on Bitwig's crash dialog (never Send Report), deletes the crashed track (only when the window clearly shows its 'Device missing' panel), clicks 'Activate Audio Engine' and waits for the script to return. normal_tracks = how many tracks the project had before the crash. Safe to call when everything is fine: it then does nothing.
 
 ## Grid patch editing
 
