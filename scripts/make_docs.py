@@ -41,7 +41,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Device presets", ["device_presets", "apply_device_preset", "save_device_preset", "layer_chain", "parallel_compression"]),
     ("Audio pitch & colour", ["pitch_shift", "fix_tuning", "colour_schemes", "color_tracks", "color_clips"]),
     ("Chords & voicings", ["chord_library", "suggest_voicing", "chord_voicings", "write_voiced_chords"]),
-    ("Grid patch editing", ["grid_templates", "grid_inspect", "grid_add_module"]),
+    ("Grid patch editing", ["grid_templates", "grid_inspect", "grid_add_module", "grid_add_modulator"]),
 ]
 
 

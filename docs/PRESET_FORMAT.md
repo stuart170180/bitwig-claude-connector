@@ -311,3 +311,16 @@ Harness: `research/grid/modproof*.py`, `vibrato_proof.py`. Noise through the fac
   cannot separate "my mapping is wrong" from "that modulator needs a controller input (mod wheel)".
 * Status: modulators are NOT proven. Open ideas: modulate a parameter with an LFO whose output is known to run free (a Bitwig preset with an audible LFO
   on a filter), or build the preset in Bitwig's UI, save it and diff it against the generated one.
+
+### 11.5 CORRECTION: added modulators DO work (fourth round)
+The Bitwig Phaser factory preset carries the same generic LFO mapped to `CONTENTS/FREQ` with `amount 20.4` over a range of 15..135: the mapping **amount is in
+the parameter's own units**, not a 0..1 fraction. My earlier amounts (0.45, 1.0) were fractions of a semitone / dB, hence inaudible. With realistic amounts:
+
+| Variant (noise through the factory Filter) | Level std | Centre std |
+|---|---|---|
+| plain | 1.1 dB | 14 Hz |
+| LFO -> CUTOFF, amount 30 (semitones) | 5.9 dB | **431 Hz** |
+| LFO -> POST_GAIN, amount 12 dB | **8.6 dB** | 14 Hz (centre unchanged) |
+
+So an added modulator and its mapping are valid and functional; the range-snapshot hints do not matter (the POST_GAIN case used guessed hints). Tool: `grid_add_modulator`.
+The earlier claim in 11.4 that no effect was found is superseded by this section.

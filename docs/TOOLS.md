@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (141 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (142 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -603,4 +603,8 @@ Readable view of a Grid preset: device values, modulators, every module with its
 ### `grid_add_module(base, module, between, params, x, y, name, load_to_track)`
 
 Add one module to a copy of a Grid preset (the original is never changed). base: 'fx' (FX Grid), 'poly' (Poly Grid) or a plain .bwpreset path. module: a name from grid_templates (e.g. 'Low-pass'). between: [source, destination] module names or ids to wire the new module into the signal path, e.g. ['Audio In', 'Audio Out'] (FX Grid) - the cable from source to destination is replaced by source -> new -> destination. params: {PARAMETER: value} on the new module, e.g. {'CUTOFF': 20} (look at grid_inspect for names and units). x, y: grid cell (default: next free spot). load_to_track: also insert the edited device on that track and check that Bitwig accepted it and the audio engine stayed up. Refuses Polymer files (more than 19 modules crash the audio engine) and anything over 32 modules.
+
+### `grid_add_modulator(base, target, amount, modulator, target_range, mod_params, name, load_to_track)`
+
+Add a modulator (LFO, Vibrato, Expressions) to a copy of a plain preset and map it to one of the device's parameters. PROVEN with audio: an LFO mapped to a Filter's cutoff swung the sound's centre by 431 Hz (about 30x the plain filter) and an LFO on gain swung the level 8.6 dB. base: a plain .bwpreset path (e.g. a factory Filter in Library/device-settings) or 'fx' / 'poly'. target: parameter id as grid_inspect shows it ('CUTOFF' or 'CONTENTS/CUTOFF'). amount: IN THE PARAMETER'S OWN UNITS (30 = +-30 semitones on a cutoff, 12 = +-12 dB on a gain; a value like 0.45 is almost nothing: the Phaser factory preset uses 20.4 on a 15..135 range). target_range: [min, max] of that parameter (known for CUTOFF, FREQ, POST_GAIN, PRE_GAIN, RESONANCE, PITCH_TRANSPOSE, PAN, WIDTH, MIX; otherwise required). mod_params sets modulator values, e.g. {'RATE': 1.0}. The original is never changed; the copy goes to data/patched_presets/. load_to_track also loads and checks it. Not for Polymer.
 

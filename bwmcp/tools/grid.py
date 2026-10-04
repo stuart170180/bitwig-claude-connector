@@ -159,3 +159,64 @@ def _load_and_verify(path, track_index, watch=6.0):
     after = len(bw.call("list_devices")["devices"])
     return {"accepted": after > before, "engine_crashed": False, "devices": after,
             "note": None if after > before else "Bitwig refused the file (see its log)"}
+
+
+KNOWN_RANGES = {   # parameter name -> (min, max) in the parameter's own units, for the common Filter / level targets
+    "CUTOFF": (15.0, 144.0), "FREQ": (15.0, 135.0), "POST_GAIN": (-24.0, 24.0), "PRE_GAIN": (-24.0, 24.0), "RESONANCE": (0.0, 1.0),
+    "PITCH_TRANSPOSE": (-36.0, 36.0), "PAN": (-1.0, 1.0), "WIDTH": (0.0, 2.0), "MIX": (0.0, 1.0),
+}
+
+
+def _set_modulator_param(mod, name, value):
+    node = ge.member(mod, name)
+    for kind, fid in (("real", ge.F_REAL), ("int", ge.F_INT), ("enum", ge.F_ENUM)):
+        n = node.node(fid)
+        if n is None:
+            continue
+        if kind == "real":
+            ge.set_f64(n, float(value))
+        else:
+            n.v = int(value)
+        return kind
+    raise ValueError(f"modulator has no parameter '{name}'")
+
+
+@tool()
+def grid_add_modulator(base: str, target: str, amount: float, modulator: str = "LFO", target_range: list[float] | None = None,
+                       mod_params: dict | None = None, name: str | None = None, load_to_track: int | None = None) -> dict:
+    """Add a modulator (LFO, Vibrato, Expressions) to a copy of a plain preset and map it to one of the device's parameters. PROVEN with audio: an LFO
+    mapped to a Filter's cutoff swung the sound's centre by 431 Hz (about 30x the plain filter) and an LFO on gain swung the level 8.6 dB.
+    base: a plain .bwpreset path (e.g. a factory Filter in Library/device-settings) or 'fx' / 'poly'. target: parameter id as grid_inspect shows it
+    ('CUTOFF' or 'CONTENTS/CUTOFF'). amount: IN THE PARAMETER'S OWN UNITS (30 = +-30 semitones on a cutoff, 12 = +-12 dB on a gain; a value like 0.45 is almost
+    nothing: the Phaser factory preset uses 20.4 on a 15..135 range). target_range: [min, max] of that parameter (known for CUTOFF, FREQ,
+    POST_GAIN, PRE_GAIN, RESONANCE, PITCH_TRANSPOSE, PAN, WIDTH, MIX; otherwise required). mod_params sets modulator values, e.g. {'RATE': 1.0}.
+    The original is never changed; the copy goes to data/patched_presets/. load_to_track also loads and checks it. Not for Polymer."""
+    f = ge.load(_base_path(base))
+    dev = ge.device_info(f)
+    if "polymer" in str(dev.get("name") if isinstance(dev, dict) else dev).lower():
+        raise ValueError("Polymer is refused (see grid_add_module)")
+    tid = target if "/" in target else f"CONTENTS/{target}"
+    short = tid.split("/")[-1]
+    rng = target_range or KNOWN_RANGES.get(short)
+    if rng is None:
+        raise ValueError(f"give target_range=[min, max] for '{short}' (known: {sorted(KNOWN_RANGES)})")
+    tpl = ge.modulator_templates([str(_settings_dir())])
+    hit = next(((u, v) for u, v in tpl.items() if v[0].lower() == modulator.lower()), None)
+    if hit is None:
+        raise ValueError(f"unknown modulator '{modulator}'; available: {sorted({v[0] for v in tpl.values()})}")
+    _uuid, (mname, _cat, file, mid) = hit
+    m = ge.add_modulator(f, ge.extract_modulator(ge.load(file), mid))
+    for k, v in (mod_params or {}).items():
+        _set_modulator_param(m, k, v)
+    ge.add_mapping(f, m.get(ge.F_NAME), tid, float(amount), rng_min=float(rng[0]), rng_max=float(rng[1]), base=float(rng[0] + rng[1]) / 2 if short in ("CUTOFF", "FREQ") else 0.0)
+    problems = ge.check(f)
+    if problems:
+        raise RuntimeError(f"the edited preset failed validation: {problems[:3]}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    stem = re.sub(r"[^A-Za-z0-9_-]+", "_", name or f"{str(dev.get('name') if isinstance(dev, dict) else dev)}_{mname}_{short}")
+    out = OUT / f"{stem}.bwpreset"
+    ge.save(f, out)
+    result = {"file": str(out), "modulator": mname, "target": tid, "amount": amount, "range": list(rng)}
+    if load_to_track is not None:
+        result["load"] = _load_and_verify(out, load_to_track)
+    return result
