@@ -12,7 +12,7 @@ sys.path.insert(0, str(HERE))
 GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Session & transport", ["get_session", "get_track", "health_check", "transport", "set_tempo", "set_position",
                              "set_metronome", "get_transport", "set_transport", "set_groove", "cue_markers", "save_project"]),
-    ("Tracks & mixing", ["create_track", "delete_track", "set_track", "set_send", "sidechain_setup", "sidechain_genres", "compressor_read", "compressor_set", "mix", "select_track", "snapshot",
+    ("Tracks & mixing", ["create_track", "delete_track", "set_track", "set_send", "sidechain_setup", "sidechain_genres", "compressor_read", "compressor_set", "compressor_mode", "mix", "select_track", "snapshot",
                          "auto_name_tracks"]),
     ("Clips & scenes", ["launch", "stop_clips", "set_scene_name", "delete_clip", "clip_settings"]),
     ("Writing music", ["write_notes", "write_drums", "write_bass", "write_chords", "write_melody", "write_euclidean",
@@ -38,7 +38,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Project, window & recording", ["project_state", "undo_redo", "ui_layout", "project_notes", "last_clicked", "transport_extras",
                                      "look_at_bitwig", "project_file_report", "record_master", "device_units", "edit_action", "engine_recover"]),
     ("Driving the Bitwig window", ["read_window_text", "sidechain_source", "rename_fx_track", "delete_fx_track", "add_layer", "select_arranger_clip"]),
-    ("Bitwig user guide (local copy)", ["manual_search", "manual_section"]),
+    ("Bitwig user guide (local copy)", ["manual_search", "manual_section", "device_manual"]),
     ("Device presets", ["device_presets", "apply_device_preset", "save_device_preset", "layer_chain", "parallel_compression"]),
     ("Audio pitch & colour", ["pitch_shift", "fix_tuning", "colour_schemes", "color_tracks", "color_clips"]),
     ("Chords & voicings", ["chord_library", "suggest_voicing", "chord_voicings", "write_voiced_chords"]),

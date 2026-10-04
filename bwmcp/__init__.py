@@ -1,2 +1,2 @@
 """Claude <-> Bitwig Studio connector."""
-__version__ = "7.6.0"
+__version__ = "7.7.0"

@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (144 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (146 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -85,6 +85,10 @@ Read a Compressor+ in real units (attack ms, release ms, ratio, threshold dB, kn
 ### `compressor_set(track_index, device_index, attack_ms, release_ms, ratio, threshold_db, makeup_db, input_db, knee_pct, mix_pct)`
 
 Set a Compressor+ in real units (ratio as the N in N:1). Finds each value by reading Bitwig's own display text, so the result is what Bitwig shows; returns wanted vs got for each.
+
+### `compressor_mode(track_index, device_index, character, vca_color, gr_mode, stereo_mode, auto_timing_pct, stereo_independence_pct)`
+
+Set the Compressor+ choosers from the user guide (all verified live against Bitwig's display text): character = Vanilla, Smooth, Over, Glue (mix bus), Resist (keeps bass), Smash; vca_color = Clear, Prism, Transistor, Saturate (colours only the compressed signal); gr_mode = Standard, Beyond (upward and negative-ratio compression), Dual; stereo_mode = Flat, Low, Air, Max; plus auto_timing_pct and stereo_independence_pct (0-100).
 
 ### `mix(tracks)`
 
@@ -537,6 +541,10 @@ Search the Bitwig Studio user guide (v5.3). Returns the best-matching pages with
 ### `manual_section(title, page, pages, max_chars)`
 
 Read part of the user guide: either a section by (part of) its title, e.g. 'Operators', 'Polymer', 'Unified Modulation System', or `pages` pages starting at a page number. Long text is cut at max_chars (ask for a later page to continue).
+
+### `device_manual(name, max_chars)`
+
+What the user guide says about a Bitwig device, modulator or Grid module (e.g. 'Compressor+', 'Delay+', 'LFO', 'Wavefolder', 'Ø Shift'). Gives its description, modes and parameter meanings. Several matches are listed by name first so you can ask again with the exact one.
 
 ## Device presets
 

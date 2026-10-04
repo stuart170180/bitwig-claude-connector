@@ -417,3 +417,16 @@ def compressor_set(track_index: int, device_index: int, attack_ms: float | None 
     vals = {k: v for k, v in dict(attack_ms=attack_ms, release_ms=release_ms, ratio=ratio, threshold_db=threshold_db, makeup_db=makeup_db,
                                   input_db=input_db, knee_pct=knee_pct, mix_pct=mix_pct).items() if v is not None}
     return compdev.set_units(bw, deep, track_index, device_index, **vals)
+
+
+@tool()
+def compressor_mode(track_index: int, device_index: int, character: str | None = None, vca_color: str | None = None, gr_mode: str | None = None,
+                    stereo_mode: str | None = None, auto_timing_pct: float | None = None, stereo_independence_pct: float | None = None) -> dict:
+    """Set the Compressor+ choosers from the user guide (all verified live against Bitwig's display text): character = Vanilla, Smooth, Over, Glue
+    (mix bus), Resist (keeps bass), Smash; vca_color = Clear, Prism, Transistor, Saturate (colours only the compressed signal); gr_mode = Standard,
+    Beyond (upward and negative-ratio compression), Dual; stereo_mode = Flat, Low, Air, Max; plus auto_timing_pct and stereo_independence_pct (0-100)."""
+    vals = {k: v for k, v in dict(character=character, vca_color=vca_color, gr_mode=gr_mode, stereo_mode=stereo_mode, auto_timing_pct=auto_timing_pct,
+                                  stereo_independence_pct=stereo_independence_pct).items() if v is not None}
+    if not vals:
+        raise ValueError("give at least one setting")
+    return compdev.set_modes(bw, deep, track_index, device_index, **vals)

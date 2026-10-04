@@ -2,6 +2,13 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.7.0 - 2026-10-04 (script 6.1)
+- `device_manual`: the guide's text for any stock device, modulator or Grid module (local copy, 445 entries).
+- `compressor_mode`: Compressor+ Character (Vanilla/Smooth/Over/Glue/Resist/Smash), VCA colour, Gain Reduction mode, Stereo Independence mode, Auto Timing %,
+  Stereo Independence % - all checked live against Bitwig's display text (enum option i = i/(n-1); the two percentages are not linear, so they are found by display).
+- Checked: Bitwig's own `Library/modules` and `modulators` files are the scrambled version 0004 (not a route); Compressor+ exposes 26 parameters that match the guide.
+- A bulk "dump every device's parameters" script was tried and dropped: device_delete did not remove each probe device in the loop (left 10 test devices on Inst 1, cleaned up by hand).
+
 ## 7.6.0 - 2026-10-04 (script 6.1)
 - Bitwig user guide (v5.3, 800+ sections) indexed locally: tools `manual_search`, `manual_section`, command `python manage.py manual <pdf>`; the text is never committed (copyrighted).
 - `docs/BITWIG_MANUAL.md`: chapter map, Grid/voicing/signal facts, clip/bounce/operator facts, and ideas.
