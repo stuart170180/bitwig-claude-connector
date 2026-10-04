@@ -301,3 +301,13 @@ Decisive next step: have Bitwig itself add a module to Polymer in the UI, save t
   that step is manual. LATER: with the user's approval the whole recovery (`python manage.py recover --tracks N`, also the tool `engine_recover`) was run end to end and worked: it cancels the dialog, deletes the crashed track only when the 'Device missing' panel is visible, then clicks Activate Audio Engine.
 * More Poly Grid tests (all fine): 19 and 20 modules wired in series between ADSR and Audio Out (connected modules, 20 total). So the
   Polymer limit is not about unconnected modules being pruned either. Still unexplained; needs a Bitwig-made reference file.
+
+### 11.4 Added modulators: no audible effect found (third session)
+Harness: `research/grid/modproof*.py`, `vibrato_proof.py`. Noise through the factory Filter, measured with the master recorder.
+* Plain value edits DO work: Filter CUTOFF 60 -> 100 moved the spectral centre 239 Hz -> 2366 Hz and the level -34.5 -> -24.5 dB.
+* An added LFO modulator (copied from a factory preset, mapped to CUTOFF or to POST_GAIN at amount 1.0, range snapshot hints copied from Bitwig's own cutoff
+  mapping, timebase 0-3, rate 1.0) loaded without error but changed nothing measurable (level std 1.1 dB, centre std 14 Hz in every case).
+* Control: the factory Polymer vibrato LFO also produced no measurable pitch wobble (0.0 cents), even with the mapping amount raised to 3.0, so that probe
+  cannot separate "my mapping is wrong" from "that modulator needs a controller input (mod wheel)".
+* Status: modulators are NOT proven. Open ideas: modulate a parameter with an LFO whose output is known to run free (a Bitwig preset with an audible LFO
+  on a filter), or build the preset in Bitwig's UI, save it and diff it against the generated one.

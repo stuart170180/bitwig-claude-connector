@@ -23,7 +23,7 @@ Updated 2026-10-04.
 ## Build
 - [x] Sidechain source and FX track names/deletion by driving the UI (v7.3.0). [ ] FX track fader (pull the bus down) not done: the tap is pre-fader so ducking is unaffected.
 - [ ] Why Polymer cannot take a 20th module (Poly Grid takes 32). Decisive test: a module added in Bitwig's own UI, saved, diffed against the factory file.
-- [ ] Modulators: prove an added modulator changes the sound (LFO on a filter in an effects Grid, measured over time).
+- [ ] Modulators: three measurement rounds found NO audible effect from an added LFO (docs/PRESET_FORMAT.md 11.4); needs a Bitwig-made reference preset to diff.
 - [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded.
 - [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
 - [ ] Parallel compression and layer chains.
