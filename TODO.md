@@ -46,4 +46,4 @@ Last updated 2026-10-04. Connector: 121 tools, controller script 6.1. Repo: priv
 - [x] Grid research: added modules proven with audio (effects Grid, Poly Grid); Polymer crash narrowed to a 19-module limit; tools `grid_templates`, `grid_inspect`, `grid_add_module`, `engine_recover` built.
 - [ ] Why Polymer cannot take a 20th module (Poly Grid can take 32). Decisive test: add one module to Polymer in Bitwig's own UI, save the preset, diff it against the factory file.
 - [ ] Modulators: `add_modulator` / `add_mapping` load without error but their audible effect is not proven yet (an LFO mapped to a filter on an effects Grid, measured over time, is the test).
-- [ ] Automatic deletion of a crashed track needs a permission rule for the click tool (blocked by auto mode); until then it is manual.
+- [x] Crash recovery is automatic: `python manage.py recover --tracks N` / tool `engine_recover` (cancel dialog, delete the crashed track after checking, reactivate). Allowing it without a prompt needs a permission rule the user adds (see README).

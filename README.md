@@ -102,6 +102,13 @@ All commands go through `python manage.py <command>` (run it with no arguments f
   calls every tool through a real MCP client; it creates its own tracks and removes them. Lint: `python -m pyflakes bwmcp`.
 - **After adding a tool:** `manage.py docs` to refresh `docs/TOOLS.md`.
 
+## After an audio-engine crash
+
+Test files can crash Bitwig's audio engine. `python manage.py recover --tracks N` (or the tool `engine_recover`) presses Cancel on the crash dialog
+(never Send Report), deletes the crashed track only when the window clearly shows its 'Device missing' panel, and clicks Activate Audio Engine.
+N = how many tracks the project had before the test. To run it without an approval prompt add `Bash(python manage.py recover:*)` (and
+`mcp__bitwig__engine_recover`) to `permissions.allow` in `.claude/settings.json`.
+
 ## Ports
 
 `8765` requests to Bitwig · `8766–8771` replies (a client takes the first free one, so up to 6 can run at once) ·

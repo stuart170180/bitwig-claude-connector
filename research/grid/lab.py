@@ -73,6 +73,8 @@ def recover(timeout=90):
     """Re-activate the audio engine after a crash (script command if reachable, else click Bitwig's button); returns seconds, or None."""
     from bwmcp.control import uiclick
     t0 = time.time()
+    if engine_active() is None:
+        uiclick.recover_after_crash(normal_tracks=2)       # dialog -> delete crashed track -> activate
     while time.time() - t0 < timeout:
         if engine_active():
             return round(time.time() - t0, 1)

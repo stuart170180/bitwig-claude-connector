@@ -167,10 +167,11 @@ def edit_action(action: str, track_indices: list[int] | None = None) -> dict:
 
 
 @tool()
-def engine_recover(wait_seconds: float = 60.0) -> dict:
+def engine_recover(wait_seconds: float = 60.0, normal_tracks: int = 2) -> dict:
     """Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this
-    clicks Bitwig's 'Activate Audio Engine' button (only when that exact button is showing) and waits for the script to return.
-    Safe to call when everything is fine: it then does nothing."""
+    presses Cancel on Bitwig's crash dialog (never Send Report), deletes the crashed track (only when the window clearly shows its 'Device
+    missing' panel), clicks 'Activate Audio Engine' and waits for the script to return. normal_tracks = how many tracks the project had
+    before the crash. Safe to call when everything is fine: it then does nothing."""
     from bwmcp.control import uiclick
 
     def state():
@@ -183,10 +184,12 @@ def engine_recover(wait_seconds: float = 60.0) -> dict:
         return {"engine": "active", "clicked": False}
     clicked = False
     t0 = time.time()
+    steps = uiclick.recover_after_crash(normal_tracks=normal_tracks)      # dialog -> delete the crashed track -> activate
+    clicked = "engine" in steps
     while time.time() - t0 < wait_seconds:
         if state() is None or state() is False:
             clicked = uiclick.reactivate_engine() or clicked
         if state():
-            return {"engine": "active", "clicked": clicked, "seconds": round(time.time() - t0, 1)}
+            return {"engine": "active", "clicked": clicked, "steps": steps, "seconds": round(time.time() - t0, 1)}
         time.sleep(2.5)
     return {"engine": "still down", "clicked": clicked, "hint": "Bitwig may be showing a dialog; look with look_at_bitwig"}

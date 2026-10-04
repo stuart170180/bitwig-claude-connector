@@ -63,3 +63,66 @@ def reactivate_engine() -> bool:
     x0, y0, x1, y1 = BUTTON_BOX
     _click((x0 + x1) // 2, (y0 + y1) // 2)
     return True
+
+
+# ---- crash recovery: cancel the dialog, delete the crashed track, reactivate -------------------------------------------------------
+CRASH_TITLE = (555, 165, 785, 196)       # "Audio Engine Crashed" heading
+CANCEL_BTN = (852, 709)                  # Cancel (NEVER Send Report at 940,709: that would transmit data)
+DEVICE_MISSING = (272, 697, 352, 716)    # "Device missing" box shown for the crashed track's device
+FIRST_TRACK_Y, TRACK_STEP = 122, 44      # track header rows in the Arrange view (default heights)
+TRACK_NAME_X = 222
+
+
+def _matches(box, template_name, arr=None, tol=8.0):
+    arr = _window_array() if arr is None else arr
+    x0, y0, x1, y1 = box
+    crop = arr[y0:y1, x0:x1].astype(float)
+    tpl = np.asarray(PILImage.open(TEMPLATE.parent / template_name).convert("RGB")).astype(float)
+    return crop.shape == tpl.shape and float(np.abs(crop - tpl).mean()) < tol
+
+
+def crash_dialog_visible() -> bool:
+    try:
+        return _matches(CRASH_TITLE, "crash_dialog_title.png")
+    except Exception:
+        return False
+
+
+def recover_after_crash(normal_tracks: int = 2, log=print) -> dict:
+    """Bring Bitwig back after an audio-engine crash caused by a test file:
+    1. press Cancel on the crash dialog (never Send Report); 2. delete the crashed track, but only if it is clearly the one (the engine
+    is off, the device panel shows 'Device missing' and the project has more than `normal_tracks` tracks); 3. click Activate Audio Engine.
+    normal_tracks = how many tracks the project had before the test (the crashed one is the row after them)."""
+    steps = {}
+    if crash_dialog_visible():
+        _click(*CANCEL_BTN)
+        steps["dialog"] = "cancelled"
+        time.sleep(1.5)
+    arr = _window_array()
+    if not engine_off_visible():
+        steps["note"] = "engine is not showing as off: nothing more to do"
+        return steps
+    if _matches(DEVICE_MISSING, "device_missing.png", arr):
+        _click(TRACK_NAME_X, FIRST_TRACK_Y + TRACK_STEP * normal_tracks)      # select the crashed (last test) track
+        time.sleep(0.8)
+        if _matches(DEVICE_MISSING, "device_missing.png"):                    # still the crashed track's device panel
+            user32.keybd_event(0x2E, 0, 0, 0)
+            time.sleep(0.05)
+            user32.keybd_event(0x2E, 0, 2, 0)                                 # Delete
+            time.sleep(1.5)
+            steps["track"] = "deleted" if not _matches(DEVICE_MISSING, "device_missing.png") else "delete did not take effect"
+        else:
+            steps["track"] = "selection changed, nothing deleted"
+    else:
+        steps["track"] = "no 'Device missing' panel, nothing deleted"
+    if engine_off_visible():
+        _click((BUTTON_BOX[0] + BUTTON_BOX[2]) // 2, (BUTTON_BOX[1] + BUTTON_BOX[3]) // 2)
+        steps["engine"] = "activate clicked"
+    return steps
+
+
+if __name__ == "__main__":
+    import sys
+
+    n = int(sys.argv[sys.argv.index("--tracks") + 1]) if "--tracks" in sys.argv else 2
+    print(recover_after_crash(n))

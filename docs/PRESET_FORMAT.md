@@ -298,4 +298,6 @@ Decisive next step: have Bitwig itself add a module to Polymer in the UI, save t
   track stays in the project and must be deleted before the engine is reactivated, otherwise the bad device reloads. While the engine is down the
   controller script is disconnected; `engine_recover` / `bwmcp/control/uiclick.py` can cancel nothing itself but click "Activate Audio Engine"
   (only when that exact button is recognised). Clicking the crashed track and pressing Delete was blocked by Claude Code's auto-mode check, so
-  that step is manual.
+  that step is manual. LATER: with the user's approval the whole recovery (`python manage.py recover --tracks N`, also the tool `engine_recover`) was run end to end and worked: it cancels the dialog, deletes the crashed track only when the 'Device missing' panel is visible, then clicks Activate Audio Engine.
+* More Poly Grid tests (all fine): 19 and 20 modules wired in series between ADSR and Audio Out (connected modules, 20 total). So the
+  Polymer limit is not about unconnected modules being pruned either. Still unexplained; needs a Bitwig-made reference file.
