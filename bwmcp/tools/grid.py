@@ -187,7 +187,8 @@ def grid_add_modulator(base: str, target: str, amount: float, modulator: str = "
     """Add a modulator (LFO, Vibrato, Expressions) to a copy of a plain preset and map it to one of the device's parameters. PROVEN with audio: an LFO
     mapped to a Filter's cutoff swung the sound's centre by 431 Hz (about 30x the plain filter) and an LFO on gain swung the level 8.6 dB.
     base: a plain .bwpreset path (e.g. a factory Filter in Library/device-settings) or 'fx' / 'poly'. target: parameter id as grid_inspect shows it
-    ('CUTOFF' or 'CONTENTS/CUTOFF'). amount: IN THE PARAMETER'S OWN UNITS (30 = +-30 semitones on a cutoff, 12 = +-12 dB on a gain; a value like 0.45 is almost
+    ('CUTOFF' for a device parameter, or '3/CUTOFF' for parameter CUTOFF of grid module 3 - PROVEN: LFO on an added Low-pass in a Poly Grid
+    moved the spectral centroid 1106 -> 1722 Hz; the full path is CONTENTS/MODULES/3/CONTENTS/CUTOFF). amount: IN THE PARAMETER'S OWN UNITS (30 = +-30 semitones on a cutoff, 12 = +-12 dB on a gain; a value like 0.45 is almost
     nothing: the Phaser factory preset uses 20.4 on a 15..135 range). target_range: [min, max] of that parameter (known for CUTOFF, FREQ,
     POST_GAIN, PRE_GAIN, RESONANCE, PITCH_TRANSPOSE, PAN, WIDTH, MIX; otherwise required). mod_params sets modulator values, e.g. {'RATE': 1.0}.
     The original is never changed; the copy goes to data/patched_presets/. load_to_track also loads and checks it. Not for Polymer."""
@@ -195,7 +196,10 @@ def grid_add_modulator(base: str, target: str, amount: float, modulator: str = "
     dev = ge.device_info(f)
     if "polymer" in str(dev.get("name") if isinstance(dev, dict) else dev).lower():
         raise ValueError("Polymer is refused (see grid_add_module)")
-    tid = target if "/" in target else f"CONTENTS/{target}"
+    if re.fullmatch(r"\d+/\w+", target):                      # '3/CUTOFF' = parameter CUTOFF of grid module 3
+        mid, par = target.split("/")
+        target = f"MODULES/{mid}/CONTENTS/{par}"
+    tid = target if target.startswith("CONTENTS/") else (f"CONTENTS/{target}" if target.startswith("MODULES/") or "/" not in target else target)
     short = tid.split("/")[-1]
     rng = target_range or KNOWN_RANGES.get(short)
     if rng is None:
