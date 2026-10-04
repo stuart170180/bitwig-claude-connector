@@ -26,6 +26,7 @@ COMMANDS = {
     "backup": ("module", "bwmcp.library.backup"),
     "recover": ("module", "bwmcp.control.uiclick"),
     "app": ("module", "bwmcp.monitor.desktop"),
+    "manual": ("module", "bwmcp.tools.manual"),
 }
 
 

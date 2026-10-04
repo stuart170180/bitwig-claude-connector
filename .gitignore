@@ -23,3 +23,7 @@ data/sample_folders.json
 research/features/*/scratch/
 research/features/**/library.json
 research/shots/*.wav
+
+# the Bitwig user guide is copyrighted: keep local only
+data/manual/
+research/manual/

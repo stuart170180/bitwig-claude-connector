@@ -7,6 +7,7 @@ from bwmcp.tools import (  # noqa: F401  (registration happens on import)
     extras,
     grid,
     library,
+    manual,
     mixing,
     pitchcolour,
     presets,

@@ -148,6 +148,9 @@ EDIT_ACTIONS = {   # friendly name -> Bitwig action id (from list_bitwig_actions
     "stretch_to_project_tempo": "stretch_to_project_tempo", "detect_tempo": "stretch_to_analyzed_tempo",
     "merge_duplicate_patterns": "merge_duplicate_patterns", "transpose_semitone_up": "transpose_semitone_up",
     "transpose_semitone_down": "transpose_semitone_down", "transpose_octave_up": "transpose_octave_up", "transpose_octave_down": "transpose_octave_down", "zoom_to_fit": "arranger_zoom_to_fit_selection_or_all",
+    # from the user guide (v5.3): slicing at repeats (chapter 12), take selection (comping), global groove, unwrap
+    "slice_in_place": "slice_in_place", "slice_at_repeats": "slice_at_repeats", "next_take": "select_next_take", "previous_take": "select_previous_take",
+    "toggle_groove": "toggle_groove", "unwrap": "unwrap",
 }
 
 
@@ -156,7 +159,7 @@ def edit_action(action: str, track_indices: list[int] | None = None) -> dict:
     """Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first).
     action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize,
     quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo,
-    detect_tempo, merge_duplicate_patterns, zoom_to_fit, transpose_semitone_up/down, transpose_octave_up/down (clips or notes selected in the Arrange view or editor). These act on what is selected in the Arrange view (clips need to be
+    detect_tempo, merge_duplicate_patterns, zoom_to_fit, slice_in_place, slice_at_repeats, next_take, previous_take, toggle_groove, unwrap, transpose_semitone_up/down, transpose_octave_up/down (clips or notes selected in the Arrange view or editor). These act on what is selected in the Arrange view (clips need to be
     selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig."""
     if action not in EDIT_ACTIONS:
         raise ValueError(f"unknown action '{action}'; use one of {sorted(EDIT_ACTIONS)}")

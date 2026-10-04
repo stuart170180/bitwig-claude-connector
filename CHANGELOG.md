@@ -2,6 +2,11 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.6.0 - 2026-10-04 (script 6.1)
+- Bitwig user guide (v5.3, 800+ sections) indexed locally: tools `manual_search`, `manual_section`, command `python manage.py manual <pdf>`; the text is never committed (copyrighted).
+- `docs/BITWIG_MANUAL.md`: chapter map, Grid/voicing/signal facts, clip/bounce/operator facts, and ideas.
+- `edit_action`: slice_in_place, slice_at_repeats, next_take, previous_take, toggle_groove, unwrap.
+
 ## 7.5.1 - 2026-10-04 (script 6.1)
 - Modulators can target a parameter of a grid MODULE, not just the device: `grid_add_modulator(..., target='3/CUTOFF')` (full path CONTENTS/MODULES/3/CONTENTS/CUTOFF).
   PROVEN in a Poly Grid (Union -> ADSR -> added Low-pass, LFO on its cutoff): spectral centroid swept 1106 -> 1722 Hz over the chord clip; same patch without the mapping stays flat.

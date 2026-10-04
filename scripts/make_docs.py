@@ -38,6 +38,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Project, window & recording", ["project_state", "undo_redo", "ui_layout", "project_notes", "last_clicked", "transport_extras",
                                      "look_at_bitwig", "project_file_report", "record_master", "device_units", "edit_action", "engine_recover"]),
     ("Driving the Bitwig window", ["read_window_text", "sidechain_source", "rename_fx_track", "delete_fx_track", "add_layer", "select_arranger_clip"]),
+    ("Bitwig user guide (local copy)", ["manual_search", "manual_section"]),
     ("Device presets", ["device_presets", "apply_device_preset", "save_device_preset", "layer_chain", "parallel_compression"]),
     ("Audio pitch & colour", ["pitch_shift", "fix_tuning", "colour_schemes", "color_tracks", "color_clips"]),
     ("Chords & voicings", ["chord_library", "suggest_voicing", "chord_voicings", "write_voiced_chords"]),
