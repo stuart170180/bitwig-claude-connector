@@ -1,6 +1,6 @@
 # To do
 
-Last updated 2026-10-03. Connector: 102 tools, controller script 6.0. Repo: private GitHub `stuart170180/bitwig-claude-connector`.
+Last updated 2026-10-03. Connector: 106 tools, controller script 6.0. Repo: private GitHub `stuart170180/bitwig-claude-connector`.
 
 ## Needs you (Bitwig)
 - [ ] Reopen your song project in Bitwig. The open project is an empty "New 1"; everything below that touches your mix needs the song.
@@ -37,3 +37,4 @@ Last updated 2026-10-03. Connector: 102 tools, controller script 6.0. Repo: priv
 - [x] Backups, git history, private GitHub repo, portfolio page
 - [ ] Sidechain: `sidechain_setup` builds the trigger bus, sends and ducking compressors. Still manual (not in the API): pick the bus as each Compressor+'s sidechain source, lower the bus fader, rename the FX track. Idea: patch the source into a preset (risky, see PRESET_FORMAT.md).
 - [ ] Compressor+ gain reduction has no API parameter (checked 10 guessed names); other devices' display text only works for Compressor+ and EQ+ (add their UUID + parameter ids to DISP_DEVICES in deep.js to extend).
+- [ ] Sidechain presets are starting points per genre (`genres.py`); tune by ear on a real song and adjust the rows.

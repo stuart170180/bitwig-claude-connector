@@ -2,7 +2,7 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-105 tools — the full list is in [TOOLS.md](TOOLS.md).
+106 tools — the full list is in [TOOLS.md](TOOLS.md).
 
 ## How it fits together
 
@@ -61,7 +61,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 | File | Purpose |
 |---|---|
-| `server.py` | MCP server: all 105 tools, the Bitwig bridge |
+| `server.py` | MCP server: all 106 tools, the Bitwig bridge |
 | `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
 | `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
 | `midifile.py`, `reflib.py` | MIDI file read/write and clip import/export; reference-track library (`references.json`) |

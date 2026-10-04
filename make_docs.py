@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 GROUPS = [  # (heading, tool-name prefixes/names in that group)
     ("Session & transport", ["get_session", "get_track", "health_check", "transport", "set_tempo", "set_position",
                              "set_metronome", "get_transport", "set_transport", "set_groove", "cue_markers", "save_project"]),
-    ("Tracks & mixing", ["create_track", "delete_track", "set_track", "set_send", "sidechain_setup", "compressor_read", "compressor_set", "mix", "select_track", "snapshot",
+    ("Tracks & mixing", ["create_track", "delete_track", "set_track", "set_send", "sidechain_setup", "sidechain_genres", "compressor_read", "compressor_set", "mix", "select_track", "snapshot",
                          "auto_name_tracks"]),
     ("Clips & scenes", ["launch", "stop_clips", "set_scene_name", "delete_clip", "clip_settings"]),
     ("Writing music", ["write_notes", "write_drums", "write_bass", "write_chords", "write_melody", "write_euclidean",

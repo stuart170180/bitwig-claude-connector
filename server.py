@@ -2308,26 +2308,25 @@ def edit_arranger_clip(operation: str, notes: list[dict] | None = None, name: st
     raise ValueError("operation must be write, clear, rename, transpose, quantize, duplicate or duplicate_content")
 
 # ---- advanced sidechain buses ---------------------------------------------------------------------------------------
-SC_STYLES = {   # Compressor+ settings in real units, applied with compressor_set
-    "pump":   {"attack_ms": 1, "release_ms": 180, "ratio": 10, "threshold_db": -30, "knee_pct": 0},
-    "tight":  {"attack_ms": 2, "release_ms": 100, "ratio": 6, "threshold_db": -24, "knee_pct": 10},
-    "gentle": {"attack_ms": 8, "release_ms": 250, "ratio": 3, "threshold_db": -20, "knee_pct": 30},
-}
+import genres
 
 
 @tool()
 def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name: str = "SC Kick",
-                    style: str = "pump", send_level: float = 0.79, use_send_index: int | None = None) -> dict:
+                    genre: str = "house", depth: str = "medium", send_level: float = 0.79,
+                    use_send_index: int | None = None) -> dict:
     """Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from
-    source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings (style: pump, tight or
-    gentle, real units) on every target_track (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
+    source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings for the genre on every
+    target_track. genre: house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, pop,
+    edm_pop, disco_funk, reggaeton, rock, lofi, ambient (see sidechain_genres). The release follows the project tempo
+    (a fraction of a beat), so it works at any bpm. depth: light, medium or heavy (threshold +-6 dB). Targets (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
     the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus.
     Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not
     double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus
     is the new send slot (bus_name is only a label; it is called 'FX n' in Bitwig, rename it by hand). use_send_index
     reuses an existing FX track instead of creating one."""
-    if style not in SC_STYLES:
-        raise ValueError(f"style must be one of {list(SC_STYLES)}")
+    tempo = bw.call("get_session")["tempo"]
+    cfg = genres.settings(genre, depth, tempo)
     overlap = set(source_tracks) & set(target_tracks)
     if overlap:
         raise ValueError(f"tracks {sorted(overlap)} are both source and target")
@@ -2343,15 +2342,22 @@ def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name
     sess_tracks = bw.call("get_session")["tracks"]
     for s in source_tracks:
         bw.call("set_send", track_index=s, send_index=idx, value=send_level)
-    out = {"bus": f"FX {idx + 1} ({bus_name})", "send_index": idx, "sources": [sess_tracks[i]["name"] for i in source_tracks], "targets": []}
+    out = {"bus": f"FX {idx + 1} ({bus_name})", "send_index": idx, "genre": genre, "depth": depth, "tempo": tempo, "settings": cfg, "sources": [sess_tracks[i]["name"] for i in source_tracks], "targets": []}
     for t in target_tracks:
         deep.insert(t, "Compressor+", None, "end", None, True)
         time.sleep(SETTLE)
         di = len(deep.tree(t)) - 1
-        got = compdev.set_units(bw, deep, t, di, **SC_STYLES[style])
+        got = compdev.set_units(bw, deep, t, di, **cfg)
         out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di, "set": {k: v["got"] for k, v in got.items()}})
     out["todo"] = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
     return out
+
+
+@tool()
+def sidechain_genres() -> list:
+    """The genre presets sidechain_setup uses: attack, release as a fraction of a beat, ratio, threshold, knee and a note
+    on how that genre uses ducking."""
+    return genres.describe()
 
 
 @tool()
