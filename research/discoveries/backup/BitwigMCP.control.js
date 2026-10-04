@@ -1,6 +1,6 @@
 // Bitwig MCP bridge: OSC over UDP. Request /mcp "<json {id, cmd, args}>" on 8765; reply /reply "<json {id, ok, result|error}>" to 8766.
 // The Python MCP server (Documents/Bitwig/bitwig_mcp/server.py) builds musical content; this script only executes primitives.
-loadAPI(25);
+loadAPI(17);
 load("pro.js");
 load("expert.js");
 load("arranger.js");
@@ -8,12 +8,11 @@ load("deep.js");
 load("actions.js");
 load("perform.js");
 load("arrangerclips.js");
-load("extras.js");
 
 host.defineController("Claude", "Bitwig MCP", "3.0", "6b1f3a52-9d1e-4c8e-a7a1-5c3f2b8e9d10", "Claude");
 host.defineMidiPorts(0, 0);
 
-var VERSION = "6.1";
+var VERSION = "6.0";
 var PORT = 8765, REPLY_PORTS = [8766, 8767, 8768, 8769, 8770, 8771];  // one per concurrent client
 var NUM_TRACKS = 64, NUM_SCENES = 32, NUM_SENDS = 8, NUM_DEVICES = 32;
 var deviceBank, transport, application, trackBank, cursorTrack, cursorDevice, remotePage, cursorClip, sceneBank;
@@ -101,7 +100,6 @@ function init() {
    initActions();
    initPerform();
    initArrClips();
-   initExtras();
 
    var osc = host.getOscModule();
    var space = osc.createAddressSpace();
@@ -401,8 +399,6 @@ function handle(cmd, a) {
    r = handlePerform(cmd, a);
    if (r !== undefined) return r;
    r = handleArrClips(cmd, a);
-   if (r !== undefined) return r;
-   r = handleExtras(cmd, a);
    if (r !== undefined) return r;
    throw "unknown command: " + cmd;
 }

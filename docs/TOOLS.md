@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (106 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (117 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -326,7 +326,7 @@ Set mastering controls by real value (verified from Bitwig's display): stereo wi
 
 ### `analyze_master(seconds, source, target, start, show_image)`
 
-Mastering analysis shown directly in the chat (data + a dashboard image): integrated / short-term / momentary LUFS, loudness range, true peak, sample peak, clipping, crest factor, PLR, L/R balance, MID/SIDE levels and width, phase correlation (overall and worst 400 ms), mono-compatibility loss, per-band mid/side (sub, bass, low-mid, high-mid, air), DC offset, and advice vs a target (streaming, spotify, youtube, apple, soundcloud, club, cd, broadcast). source='live' records what's playing right now through Windows loopback (play your song first; needs Bitwig on a WASAPI/'Windows Audio' driver, not exclusive ASIO). source=<wav path> analyzes an exported bounce or recording (start/seconds pick a section; seconds=0 = whole file).
+Mastering analysis shown directly in the chat (data + a dashboard image): integrated / short-term / momentary LUFS, loudness range, true peak, sample peak, clipping, crest factor, PLR, L/R balance, MID/SIDE levels and width, phase correlation (overall and worst 400 ms), mono-compatibility loss, per-band mid/side (sub, bass, low-mid, high-mid, air), DC offset, and advice vs a target (streaming, spotify, youtube, apple, soundcloud, club, cd, broadcast). source='live' records what's playing right now: through Bitwig's own master recorder (any audio driver, exact timing; play your song first), falling back to Windows loopback if that is unavailable. source=<wav path> analyzes an exported bounce or recording (start/seconds pick a section; seconds=0 = whole file).
 
 ### `auto_master(target, seconds, passes, show_image)`
 
@@ -451,4 +451,50 @@ Select several tracks at once so a selection-based action can act on them (then 
 ### `run_action_on_tracks(track_indices, action_id)`
 
 Select the tracks, then run a track-level action on all of them (e.g. bounce_in_place). Effects of bounce, consolidate and normalize cannot be confirmed from the script: check the result in Bitwig.
+
+## Project, window & recording
+
+### `project_state()`
+
+Quick state of the open project: name, whether undo / redo are available, whether the audio engine is active, and whether any track is soloed, muted or armed (handy before a mix audit: a forgotten solo ruins every measurement).
+
+### `undo_redo(action, steps)`
+
+Undo or redo in Bitwig (action: undo or redo), up to 20 steps. Returns the new undo/redo availability.
+
+### `ui_layout(arranger, mixer)`
+
+Show or hide parts of Bitwig's arranger and mixer, or just read them (call with no arguments). arranger keys: cue_markers, follow (playback follow), double_row (tall track rows) can be changed; timeline, launcher, io, fx_tracks are read-only here. mixer keys (all changeable): launcher, crossfade, devices, io, meters, sends. Example: ui_layout(mixer={"meters": True, "io": False}).
+
+### `project_notes(action, notes, genre, mix_target)`
+
+Claude's per-project notebook, stored inside the Bitwig project (it shows in Bitwig's controller settings, so you can read and edit it too). Fields: notes (500 characters), genre, mix_target (e.g. '-14 LUFS'). action: get or set. Use it to remember decisions per song, such as the genre for sidechain_setup or the loudness goal.
+
+### `last_clicked()`
+
+The parameter you last touched in Bitwig (name, value, display text), e.g. after you move a knob and ask 'what is this one?'. Empty name = nothing touched yet in this session.
+
+### `transport_extras(punch_in, punch_out, pre_roll, loop_start, loop_length)`
+
+Read or set punch in/out, count-in pre-roll (none, one_bar, two_bars, four_bars) and the arranger loop range (beats). Call with no arguments to read. Returns the state after a short wait.
+
+### `look_at_bitwig(max_width)`
+
+A picture of Bitwig's window right now, for reading what the API cannot show: FX track names and faders, which sidechain source a compressor uses, gain-reduction and level meters, device displays. Read-only (nothing is clicked, focus does not change). Bitwig must not be minimized.
+
+### `project_file_report(path)`
+
+Read-only report on a Bitwig project FILE, without opening it: the Bitwig version that saved it, the stock devices it uses, audio files it references (and which are missing on disk), plug-ins, presets, and how much disk its folder uses (master recordings, bounces, auto-backups). path = a .bwproject file; default = the most recently changed project in your Documents\Bitwig Studio\Projects. It cannot read the track tree or parameter values.
+
+### `record_master(action, seconds)`
+
+Record Bitwig's own master output to a WAV, no Windows loopback and any audio driver. action: start, stop, status, or capture (record `seconds`, keep the file and return its path; play the song first). The analysis tools (analyze_master and the others with source='live') already use this recorder automatically. Files land in the project's master-recordings folder and can get big; delete the ones you do not need.
+
+### `device_units(track_index, device_index, set)`
+
+Read a device's parameters in real units ('125 ms', '-12.0 dB', '3.08 kHz', ...) and optionally set them in those units. Works for Compressor+, Delay+, Reverb, Peak Limiter, Tool, De-Esser, Gate, Saturator (EQ+ has eq_set). set = {PARAM_ID: number}, ids as in the result, e.g. {"FEEDBACK": 40, "HICUT": 6000}: time in ms, frequency in Hz, otherwise the displayed unit (dB, %). Non-numeric choices (modes, on/off) can only be read here; use deep_set for them.
+
+### `edit_action(action, track_indices)`
+
+Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit. These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
 

@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from bwmcp.analysis import mastering
+from bwmcp.analysis import capture, mastering
 from bwmcp.control import actionsdev, performdev
 from bwmcp.core import paths
 from bwmcp.core.bridge import SETTLE, bw, deep, tool
@@ -256,7 +256,7 @@ def ab_test(track_index: int, device_index: int, values: dict, seconds: float = 
         before_vals[hit[0]["id"]] = hit[0]["value"]
 
     def measure():
-        x, sr, _ = mastering.capture_loopback(seconds)
+        x, sr, _ = capture.capture_live(seconds)
         m = mastering.analyze(x, sr, target)
         return {f"{a}.{b}": m[a][b] for a, b in AB_KEYS}
 

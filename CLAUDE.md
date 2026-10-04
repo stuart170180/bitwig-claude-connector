@@ -13,7 +13,7 @@ Full docs: `README.md` (overview, install, known limits), `docs/TOOLS.md` (gener
 
 ## Layout (details in README "Project layout")
 - `server.py` is only the entry point (registered with `claude mcp add`). The tools live in `bwmcp/tools/` by topic:
-  `session`, `tracks`, `clips`, `devices`, `presets`, `mixing`, `library`. Shared connection and helpers: `bwmcp/core/`
+  `session`, `tracks`, `clips`, `devices`, `presets`, `mixing`, `library`, `extras`. Shared connection and helpers: `bwmcp/core/`
   (`bridge.py` has `mcp`, `tool`, `bw`, `deep`; `util.py`; `paths.py` has `ROOT` and `DATA`).
 - Helper packages by area: `bwmcp/music/`, `devices/` (deepdev, compdev, recipes, presets, presetpatch, genres), `analysis/`,
   `control/` (actions, performance, arranger clips), `library/` (samples, bookmarks, backup, sync), `monitor/`.
@@ -48,7 +48,14 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - Preset files: container "BtWg00030002" parses and round-trips; same-length patches work, length-changing edits are
   unproven and one edited Grid file crashed the audio engine. Never load experimental patched presets into a real project.
 - Parallel workers that each build tracks will wipe each other's project. Run live Bitwig tests one at a time.
-- Audio analysis: BS.1770 LUFS, true peak, mid/side; capture needs Windows Audio (WASAPI) driver in Bitwig.
+- Audio analysis: BS.1770 LUFS, true peak, mid/side. Live capture uses Bitwig's own master recorder first (`bwmcp/analysis/capture.py`, any
+  driver, exact length, temp file deleted after reading) and falls back to WASAPI loopback.
+- NEVER call `Signal.fire()` (document-state signal) from the controller script: it throws inside Bitwig and crashes the whole app.
+  `markInterested()` only works during init, so any new readable value needs an `extras.js`-style init edit and a reload.
+- The controller script runs at `loadAPI(25)` (v6.1, `extras.js`). Real-unit display text exists for Compressor+, EQ+, Delay+, Reverb,
+  Peak Limiter, Tool, De-Esser, Gate, Saturator (`DISP_DEVICES` in deep.js; `device_units`). No device exposes gain reduction or meters:
+  read those with `look_at_bitwig` (a window picture; Windows UI Automation finds nothing because Bitwig draws its own window).
+- Evidence for all of this: `research/discoveries/FULL_LOG.md` and `CANDIDATES.md`.
 - Music is original only: no copyrighted melodies. Keys/tempo are generic; do not assume a genre or 140 bpm.
 
 ## Genre handling

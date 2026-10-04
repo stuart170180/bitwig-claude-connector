@@ -7,7 +7,7 @@ import time
 import numpy as np
 from mcp.server.mcpserver import Image
 
-from bwmcp.analysis import audit, masking, mastering, reflib
+from bwmcp.analysis import audit, capture, masking, mastering, reflib
 from bwmcp.core import paths
 from bwmcp.core.bridge import SETTLE, bw, deep, tool
 from bwmcp.core.util import _is_drum_track, _num, _parse_db, _read_clip, _set_volume_db, mastering_len
@@ -152,14 +152,14 @@ def analyze_master(seconds: float = 10.0, source: str = "live", target: str = "s
     MID/SIDE levels and width, phase correlation (overall and worst 400 ms), mono-compatibility loss,
     per-band mid/side (sub, bass, low-mid, high-mid, air), DC offset, and advice vs a target
     (streaming, spotify, youtube, apple, soundcloud, club, cd, broadcast).
-    source='live' records what's playing right now through Windows loopback (play your song first;
-    needs Bitwig on a WASAPI/'Windows Audio' driver, not exclusive ASIO). source=<wav path> analyzes an
+    source='live' records what's playing right now: through Bitwig's own master recorder (any audio driver,
+    exact timing; play your song first), falling back to Windows loopback if that is unavailable. source=<wav path> analyzes an
     exported bounce or recording (start/seconds pick a section; seconds=0 = whole file)."""
     if source == "live":
         if seconds <= 0:
             raise ValueError("seconds must be > 0 for live capture")
         try:
-            x, sr, src = mastering.capture_loopback(seconds)
+            x, sr, src = capture.capture_live(seconds)
         except RuntimeError as e:
             meters = master_meters(min(seconds, 3))
             return [json.dumps({"live_capture": "unavailable", "why": str(e),
@@ -277,7 +277,7 @@ def auto_master(target: str = "streaming", seconds: float = 8.0, passes: int = 5
     note = None
     gain = _num(next(c for c in mastering_chain("list")["master_chain"] if c["name"] == "Peak Limiter")["controls"]["Gain"]) or 0.0
     for _ in range(passes):
-        x, sr, src = mastering.capture_loopback(seconds)
+        x, sr, src = capture.capture_live(seconds)
         m = mastering.analyze(x, sr, target)
         history.append({"limiter_gain_db": gain, "lufs": m["loudness"]["integrated_lufs"],
                         "true_peak": m["peaks"]["true_peak_dbtp"]})
@@ -319,7 +319,7 @@ def compare_reference(reference: str, mix: str = "live", seconds: float = 20.0, 
     rpath = reference if os.path.exists(reference) else samples.resolve(reference)
     xb, srb, srcb = mastering.load_file(rpath, ref_start if mastering_len(rpath) > ref_start + 1 else 0, seconds)
     if mix == "live":
-        xa, sra, srca = mastering.capture_loopback(seconds)
+        xa, sra, srca = capture.capture_live(seconds)
     else:
         mpath = mix if os.path.exists(mix) else samples.resolve(mix)
         xa, sra, srca = mastering.load_file(mpath, mix_start, seconds)
@@ -390,7 +390,7 @@ def check_tuning(source: str = "live", seconds: float = 8.0, start: float = 0.0,
     if source == "live":
         if seconds <= 0:
             raise ValueError("seconds must be > 0 for live capture")
-        x, sr, src = mastering.capture_loopback(seconds)
+        x, sr, src = capture.capture_live(seconds)
     else:
         path = source if os.path.exists(source) else samples.resolve(source)
         x, sr, src = mastering.load_file(path, start, seconds or None)

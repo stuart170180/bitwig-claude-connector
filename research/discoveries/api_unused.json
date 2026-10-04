@@ -1,0 +1,1475 @@
+{
+"AbsoluteHardwarControlBindable": [
+"addBinding",
+"addBindingWithRange"
+],
+"AbsoluteHardwareControl": [
+"addBindingWithRange",
+"disableTakeOver",
+"setAdjustValueMatcher",
+"setBindingWithRange"
+],
+"Action": [
+"getMenuItemText"
+],
+"Application": [
+"activateEngine",
+"addDisplayProfileObserver",
+"addHasActiveEngineObserver",
+"addPanelLayoutObserver",
+"addProjectNameObserver",
+"addSelectedModeObserver",
+"arrowKeyDown",
+"arrowKeyLeft",
+"arrowKeyRight",
+"arrowKeyUp",
+"canRedo",
+"canUndo",
+"copy",
+"copyAction",
+"cut",
+"cutAction",
+"deactivateEngine",
+"displayProfile",
+"duplicateAction",
+"enter",
+"escape",
+"focusPanelAbove",
+"focusPanelBelow",
+"focusPanelToLeft",
+"focusPanelToRight",
+"getActionCategories",
+"getActionCategory",
+"hasActiveEngine",
+"navigateIntoTrackGroup",
+"navigateToParentTrackGroup",
+"nextPanelLayout",
+"nextPerspective",
+"nextProject",
+"nextSubPanel",
+"paste",
+"pasteAction",
+"previousPanelLayout",
+"previousPerspective",
+"previousProject",
+"previousSubPanel",
+"projectName",
+"recordQuantizationGrid",
+"recordQuantizeNoteLength",
+"redoAction",
+"remove",
+"removeAction",
+"rename",
+"selectAll",
+"selectAllAction",
+"selectFirstAction",
+"selectLastAction",
+"selectNextAction",
+"selectNone",
+"selectNoneAction",
+"selectPreviousAction",
+"setPerspective",
+"toggleFullScreen",
+"undoAction",
+"zoomIn",
+"zoomInAction",
+"zoomLevel",
+"zoomOut",
+"zoomOutAction",
+"zoomToFit",
+"zoomToFitAction",
+"zoomToSelection",
+"zoomToSelectionAction",
+"zoomToSelectionOrAll",
+"zoomToSelectionOrAllAction",
+"zoomToSelectionOrPrevious",
+"zoomToSelectionOrPreviousAction"
+],
+"Arpeggiator": [
+"enableOverlappingNotes",
+"gateLength",
+"humanize",
+"isFreeRunning",
+"mode",
+"octaves",
+"rate",
+"releaseNotes",
+"shuffle",
+"terminateNotesImmediately",
+"usePressureToVelocity"
+],
+"Arranger": [
+"addCueMarkerVisibilityObserver",
+"addPlaybackFollowObserver",
+"addTrackRowHeightObserver",
+"areCueMarkersVisible",
+"areEffectTracksVisible",
+"hasDoubleRowTrackHeight",
+"isClipLauncherVisible",
+"isIoSectionVisible",
+"isPlaybackFollowEnabled",
+"isTimelineVisible",
+"toggleCueMarkerVisibility",
+"togglePlaybackFollow",
+"toggleTrackRowHeight",
+"zoomInLaneHeightsAll",
+"zoomInLaneHeightsAllAction",
+"zoomInLaneHeightsSelected",
+"zoomInLaneHeightsSelectedAction",
+"zoomLaneHeightsAllStepper",
+"zoomLaneHeightsSelectedStepper",
+"zoomOutLaneHeightsAll",
+"zoomOutLaneHeightsAllAction",
+"zoomOutLaneHeightsSelected",
+"zoomOutLaneHeightsSelectedAction"
+],
+"AsyncTransferCompledCallback": [
+"asyncTransferCompleted"
+],
+"Bank": [
+"cursorIndex",
+"getCapacityOfBank",
+"getSizeOfBank",
+"itemCount",
+"setSizeOfBank",
+"setSkipDisabledItems"
+],
+"BeatTimeFormatter": [
+"formatBeatTime"
+],
+"BeatTimeValue": [
+"addRawValueObserver",
+"addTimeObserver",
+"getFormatted"
+],
+"BitwigBrowsingSession": [
+"getCreatorFilter",
+"getTagsFilter"
+],
+"BooleanHardwareProperty": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+],
+"BooleanValue": [
+"getAsBoolean"
+],
+"Browser": [
+"activateSession",
+"addIsBrowsingObserver",
+"cancelBrowsing",
+"commitSelectedResult",
+"createCursorSession",
+"createSessionBank",
+"getClipSession",
+"getDeviceSession",
+"getMultiSampleSession",
+"getMusicSession",
+"getPresetSession",
+"getSampleSession",
+"isWindowMinimized",
+"shouldAudition",
+"startBrowsing"
+],
+"BrowserColumn": [
+"addEntryCountObserver",
+"addExistsObserver",
+"createCursorItem",
+"createItemBank",
+"entryCount"
+],
+"BrowserFilterColumn": [
+"addNameObserver",
+"createCursorItem",
+"createItemBank",
+"getWildcardItem"
+],
+"BrowserFilterColumnBank": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addEntryCountObserver",
+"addScrollPositionObserver",
+"getItem",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+],
+"BrowserFilterItem": [
+"addHitCountObserver",
+"hitCount"
+],
+"BrowserItem": [
+"addExistsObserver",
+"isSelected"
+],
+"BrowserItemBank": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addScrollPositionObserver",
+"getItem",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+],
+"BrowserResultsColumn": [
+"createCursorItem",
+"createItemBank"
+],
+"BrowsingSession": [
+"activate",
+"addHitCountObserver",
+"addIsActiveObserver",
+"addIsAvailableObserver",
+"createFilterBank",
+"getCursorFilter",
+"getCursorResult",
+"getResults",
+"getSettledResult",
+"hitCount"
+],
+"BrowsingSessionBank": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addEntryCountObserver",
+"addScrollPositionObserver",
+"getSession",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+],
+"ChainSelector": [
+"activeChain",
+"activeChainIndex",
+"chainCount",
+"cycleNext",
+"cyclePrevious"
+],
+"Channel": [
+"addColorObserver",
+"addNoteObserver",
+"channelId",
+"channelIndex",
+"getMute",
+"getPan",
+"getSend",
+"getSolo",
+"getVolume",
+"isActivated",
+"isMutedBySolo",
+"makeVisibleInArranger",
+"makeVisibleInMixer",
+"playingNotes"
+],
+"ChannelBank": [
+"addCanScrollChannelsDownObserver",
+"addCanScrollChannelsUpObserver",
+"addCanScrollSendsDownObserver",
+"addCanScrollSendsUpObserver",
+"addChannelCountObserver",
+"addChannelScrollPositionObserver",
+"addSendCountObserver",
+"canScrollChannelsDown",
+"canScrollChannelsUp",
+"channelScrollPosition",
+"getChannel",
+"scrollChannelsDown",
+"scrollChannelsPageDown",
+"scrollChannelsPageUp",
+"scrollChannelsUp",
+"scrollSendsDown",
+"scrollSendsPageDown",
+"scrollSendsPageUp",
+"scrollSendsUp",
+"scrollToChannel",
+"scrollToSend",
+"setChannelScrollStepSize"
+],
+"Clip": [
+"addCanScrollKeysDownObserver",
+"addCanScrollKeysUpObserver",
+"addCanScrollStepsBackwardsObserver",
+"addCanScrollStepsForwardObserver",
+"addColorObserver",
+"addPlayingStepObserver",
+"addStepDataObserver",
+"canScrollKeysDown",
+"canScrollKeysUp",
+"canScrollStepsBackwards",
+"canScrollStepsForwards",
+"clearStepsAtX",
+"clearStepsAtY",
+"clipLauncherSlot",
+"launchLegato",
+"launchWithOptions",
+"playingStep",
+"scrollKeysPageDown",
+"scrollKeysPageUp",
+"scrollKeysStepDown",
+"scrollKeysStepUp",
+"scrollStepsPageBackwards",
+"scrollStepsPageForward",
+"scrollStepsStepBackwards",
+"scrollStepsStepForward",
+"selectStepContents",
+"toggleStep",
+"useLoopStartAsQuantizationReference"
+],
+"ClipBrowsingSession": [
+"getFileTypeFilter"
+],
+"ClipLauncherSlot": [
+"browseToInsertClip",
+"duplicateClip",
+"isPlaybackQueued",
+"isRecordingQueued",
+"isSelected",
+"isStopQueued",
+"recordAction",
+"selectAction"
+],
+"ClipLauncherSlotBank": [
+"addColorObserver",
+"addHasContentObserver",
+"addIsPlaybackQueuedObserver",
+"addIsPlayingObserver",
+"addIsQueuedObserver",
+"addIsRecordingObserver",
+"addIsRecordingQueuedObserver",
+"addIsSelectedObserver",
+"addIsStopQueuedObserver",
+"addPlaybackStateObserver",
+"deleteClip",
+"duplicateClip",
+"isMasterTrackContentShownOnTrackGroups",
+"setIndication"
+],
+"ClipLauncherSlotOrScene": [
+"copyFrom",
+"launchAction",
+"launchAlt",
+"launchAltAction",
+"launchLastClipWithOptions",
+"launchLastClipWithOptionsAction",
+"launchRelease",
+"launchReleaseAction",
+"launchReleaseAlt",
+"launchReleaseAltAction",
+"launchWithOptions",
+"launchWithOptionsAction",
+"moveTo",
+"nextSceneInsertionPoint",
+"previousSceneInsertionPoint",
+"sceneIndex",
+"setIndication"
+],
+"ClipLauncherSlotOrSceneBank": [
+"addNameObserver",
+"launchAlt",
+"stopAction",
+"stopAlt",
+"stopAltAction"
+],
+"ColorHardwareProperty": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+],
+"ColorValue": [
+"alpha"
+],
+"ContinuousHardwareControl": [
+"hardwareButton",
+"hasTargetValue",
+"isUpdatingTargetValue",
+"modulatedTargetDisplayedValue",
+"modulatedTargetValue",
+"setHardwareButton",
+"targetDisplayedValue",
+"targetName",
+"targetValue"
+],
+"ControllerHost": [
+"addDatagramPacketObserver",
+"addDeviceNameBasedDiscoveryPair",
+"connectToRemoteHost",
+"createAbsoluteHardwareControlAdjustmentTarget",
+"createAction",
+"createActiveDeviceMatcher",
+"createAndDeviceMatcher",
+"createApplicationSection",
+"createArrangerCursorTrack",
+"createArrangerSection",
+"createAudioEffectMatcher",
+"createAudioHardwareInputInfo",
+"createAudioHardwareOutputInfo",
+"createAudioIoDeviceHardwareAddressMatcher",
+"createBeatTimeFormatter",
+"createBitwigDeviceMatcher",
+"createCallbackAction",
+"createCursorClip",
+"createCursorClipSection",
+"createCursorDeviceSection",
+"createCursorTrackSection",
+"createDetailEditor",
+"createEditorCursorDevice",
+"createEffectTrackBank",
+"createEffectTrackBankSection",
+"createFirstDeviceInChainMatcher",
+"createGrooveSection",
+"createHardwareSurface",
+"createInstrumentMatcher",
+"createLastClickedParameter",
+"createLastDeviceInChainMatcher",
+"createMainTrackBankSection",
+"createMasterRecorder",
+"createMasterTrackSection",
+"createMixer",
+"createMixerSection",
+"createNotDeviceMatcher",
+"createNoteEffectMatcher",
+"createOrAbsoluteHardwareValueMatcher",
+"createOrDeviceMatcher",
+"createOrHardwareActionMatcher",
+"createOrRelativeHardwareValueMatcher",
+"createPopupBrowser",
+"createPressureCallbackAction",
+"createRelativeHardwareControlAdjustmentTarget",
+"createRelativeHardwareControlStepTarget",
+"createRemoteConnection",
+"createSceneBank",
+"createTrackBankSection",
+"createTransportSection",
+"createUsbAudioIoDeviceMatcher",
+"createUserControls",
+"createUserControlsSection",
+"createVST2DeviceMatcher",
+"createVST3DeviceMatcher",
+"defaultBeatTimeFormatter",
+"defineSysexDiscovery",
+"defineSysexIdentityReply",
+"deleteObjects",
+"duplicateObjects",
+"getDocumentState",
+"getMidiInPort",
+"getMidiOutPort",
+"getNotificationSettings",
+"getPreferences",
+"getProject",
+"hardwareDevice",
+"midiExpressions",
+"platformIsLinux",
+"platformIsMac",
+"platformIsWindows",
+"requestFlush",
+"restart",
+"sendDatagramPacket",
+"setDefaultBeatTimeFormatter",
+"setShouldFailOnDeprecatedUse",
+"shouldFailOnDeprecatedUse",
+"showPopupNotification",
+"useBetaApi"
+],
+"CueMarker": [
+"getColor"
+],
+"CueMarkerBank": [
+"scrollToMarker"
+],
+"Cursor": [
+"addCanSelectNextObserver",
+"addCanSelectPreviousObserver",
+"hasNext",
+"hasPrevious",
+"selectNextAction",
+"selectPreviousAction"
+],
+"CursorBrowserFilterItem": [
+"moveToFirst",
+"moveToFirstChild",
+"moveToLast",
+"moveToLastChild",
+"moveToNext",
+"moveToParent",
+"moveToPrevious",
+"selectFirstChild",
+"selectLastChild"
+],
+"CursorBrowserItem": [
+"createSiblingsBank"
+],
+"CursorClip": [
+"selectClip"
+],
+"CursorDevice": [
+"channel",
+"getChannel",
+"selectFirstInChannel",
+"selectFirstInKeyPad",
+"selectLastInChannel",
+"selectLastInKeyPad"
+],
+"CursorDeviceFollowMode": [
+"$values",
+"values"
+],
+"CursorNavigationMode": [
+"$values",
+"values"
+],
+"CursorRemoteControlsPage": [
+"createPresetPage",
+"createPresetPageAction",
+"pageCount",
+"selectNextPage",
+"selectNextPageMatching",
+"selectPreviousPage",
+"selectPreviousPageMatching"
+],
+"CursorTrack": [
+"selectFirstChild",
+"setCursorNavigationMode"
+],
+"DeleteableObject": [
+"deleteObjectAction"
+],
+"DetailEditor": [
+"zoomInLaneHeights",
+"zoomInLaneHeightsAction",
+"zoomLaneHeightsStepper",
+"zoomOutLaneHeights",
+"zoomOutLaneHeightsAction"
+],
+"Device": [
+"addActiveModulationSourceObserver",
+"addHasSelectedDeviceObserver",
+"addIsEnabledObserver",
+"addIsPluginObserver",
+"addNameObserver",
+"addNextParameterPageEnabledObserver",
+"addPageNamesObserver",
+"addPositionObserver",
+"addPresetCategoriesObserver",
+"addPresetCategoryObserver",
+"addPresetCreatorObserver",
+"addPresetCreatorsObserver",
+"addPresetNameObserver",
+"addPresetNamesObserver",
+"addPreviousParameterPageEnabledObserver",
+"addSampleNameObserver",
+"addSelectedPageObserver",
+"addSlotsObserver",
+"browseToInsertAfterDevice",
+"browseToInsertBeforeDevice",
+"browseToReplaceDevice",
+"createChainSelector",
+"createCursorLayer",
+"createDeviceBrowser",
+"createDrumPadBank",
+"createSiblingsDeviceBank",
+"createSpecificVst2Device",
+"createSpecificVst3Device",
+"deviceChain",
+"deviceType",
+"getCommonParameter",
+"getDeviceChain",
+"getEnvelopeParameter",
+"getMacro",
+"getModulationSource",
+"hasDrumPads",
+"incDirectParameterValueNormalized",
+"isExpanded",
+"isMacroSectionVisible",
+"isParameterPageSectionVisible",
+"isRemoteControlsSectionVisible",
+"isWindowOpen",
+"loadPreset",
+"nextParameterPage",
+"presetCategory",
+"presetCreator",
+"previousParameterPage",
+"sampleName",
+"setParameterPage",
+"setPresetCategory",
+"setPresetCreator",
+"switchToNextPreset",
+"switchToNextPresetCategory",
+"switchToNextPresetCreator",
+"switchToPreviousPreset",
+"switchToPreviousPresetCategory",
+"switchToPreviousPresetCreator",
+"toggleEnabledState"
+],
+"DeviceBank": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addDeviceCountObserver",
+"addScrollPositionObserver",
+"browseToInsertDevice",
+"getDevice",
+"getDeviceChain",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollTo",
+"scrollUp",
+"setDeviceMatcher"
+],
+"DeviceBrowsingSession": [
+"getCategoryFilter",
+"getDeviceTypeFilter",
+"getFileTypeFilter"
+],
+"DeviceChain": [
+"addIsSelectedObserver",
+"addNameObserver",
+"browseToInsertAtEndOfChain",
+"browseToInsertAtStartOfChain",
+"createDeviceBrowser"
+],
+"DeviceLayerBank": [
+"getChannel"
+],
+"DirectParameterValueDisplayObserver": [
+"setObservedParameterIds"
+],
+"DoubleValue": [
+"getAsDouble"
+],
+"DrumPad": [
+"insertionPoint"
+],
+"DrumPadBank": [
+"clearMutedPads",
+"clearSoloedPads",
+"hasMutedPads",
+"hasSoloedPads",
+"setIndication"
+],
+"DuplicableObject": [
+"duplicateObject",
+"duplicateObjectAction"
+],
+"EnumDefinition": [
+"getValueCount",
+"valueDefinitionAt",
+"valueDefinitionFor"
+],
+"EnumValue": [
+"enumDefinition"
+],
+"EnumValueDefinition": [
+"enumDefinition",
+"getDisplayName",
+"getLimitedDisplayName",
+"getValueIndex"
+],
+"GenericBrowsingSession": [
+"addNameObserver"
+],
+"HardwareAction": [
+"isSupported",
+"setActionMatcher",
+"setPressureActionMatcher",
+"setShouldFireEvenWhenUsedAsNoteInput"
+],
+"HardwareActionBindable": [
+"addBinding"
+],
+"HardwareBinding": [
+"removeBinding"
+],
+"HardwareBindingSource": [
+"addBinding",
+"canBindTo",
+"clearBindings",
+"setBinding"
+],
+"HardwareBindingWithRange": [
+"setMaxNormalizedValue",
+"setMinNormalizedValue",
+"setNormalizedRange"
+],
+"HardwareBindingWithSensitivity": [
+"setSensitivity"
+],
+"HardwareButton": [
+"isPressed",
+"pressedAction",
+"releasedAction",
+"setAftertouchControl",
+"setRoundedCornerRadius"
+],
+"HardwareControl": [
+"backgroundLight",
+"beginTouchAction",
+"endTouchAction",
+"isBeingTouched",
+"setBackgroundLight",
+"setIndexInGroup"
+],
+"HardwareControlType": [
+"$values",
+"values"
+],
+"HardwareDevice": [
+"deviceMatcher"
+],
+"HardwareElement": [
+"getHeight",
+"getLabel",
+"getLabelColor",
+"getLabelPosition",
+"getWidth",
+"getX",
+"getY",
+"setBounds",
+"setLabel",
+"setLabelColor",
+"setLabelPosition"
+],
+"HardwareLightVisualState": [
+"createBlinking",
+"createForColor",
+"defaultLabelColorForLightColor",
+"equals",
+"getBlinkOffColor",
+"getColor",
+"getLabelBlinkOffColor",
+"getLabelColor",
+"getOffBlinkTime",
+"getOnBlinkTime",
+"hashCode",
+"isBlinking"
+],
+"HardwareOutputElement": [
+"onUpdateHardware"
+],
+"HardwarePixelDisplay": [
+"bitmap"
+],
+"HardwareSlider": [
+"setIsHorizontal"
+],
+"HardwareSurface": [
+"createAbsoluteHardwareKnob",
+"createHardwareButton",
+"createHardwarePixelDisplay",
+"createHardwareSlider",
+"createHardwareTextDisplay",
+"createMultiStateHardwareLight",
+"createOnOffHardwareLight",
+"createPianoKeyboard",
+"createRelativeHardwareKnob",
+"hardwareControls",
+"hardwareElementWithId",
+"hardwareOutputElements",
+"invalidateHardwareOutputState",
+"setPhysicalSize",
+"updateHardware"
+],
+"HardwareTextDisplay": [
+"line"
+],
+"HardwareTextDisplayLine": [
+"backgroundColor",
+"text",
+"textColor"
+],
+"InputPipe": [
+"read",
+"readAsync"
+],
+"InsertionPoint": [
+"browseAction",
+"copyDevices",
+"copySlotsOrScenes",
+"copyTracks",
+"insertCLAPDevice",
+"insertVST2Device",
+"insertVST3Device",
+"moveDevices",
+"moveSlotsOrScenes",
+"moveTracks",
+"paste"
+],
+"IntegerHardwareProperty": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+],
+"IntegerValue": [
+"getAsInt"
+],
+"InternalHardwareLightState": [
+"equals",
+"getVisualState"
+],
+"LastClickedParameter": [
+"isLocked",
+"parameter",
+"parameterColor",
+"smartToggleLock",
+"smartToggleLockAction"
+],
+"Macro": [
+"addLabelObserver",
+"getAmount",
+"getModulationSource"
+],
+"MasterRecorder": [
+"isActive",
+"start"
+],
+"MidiExpressions": [
+"createIsCCExpression",
+"createIsCCValueExpression",
+"createIsNoteOffExpression",
+"createIsNoteOnExpression",
+"createIsPitchBendExpression",
+"createIsPolyAftertouch"
+],
+"MidiIn": [
+"createAbsoluteCCValueMatcher",
+"createAbsolutePitchBendValueMatcher",
+"createAbsoluteValueMatcher",
+"createActionMatcher",
+"createCCActionMatcher",
+"createNoteInput",
+"createNoteOffActionMatcher",
+"createNoteOffVelocityValueMatcher",
+"createNoteOnActionMatcher",
+"createNoteOnVelocityValueMatcher",
+"createPolyAftertouchValueMatcher",
+"createRelative2sComplementCCValueMatcher",
+"createRelative2sComplementValueMatcher",
+"createRelativeBinOffsetCCValueMatcher",
+"createRelativeBinOffsetValueMatcher",
+"createRelativeSignedBit2CCValueMatcher",
+"createRelativeSignedBit2ValueMatcher",
+"createRelativeSignedBitCCValueMatcher",
+"createRelativeSignedBitValueMatcher",
+"createRelativeValueMatcher",
+"createSequencedValueMatcher",
+"hardwareAddress",
+"setMidiCallback",
+"setSysexCallback"
+],
+"MidiOut": [
+"sendMidi",
+"sendSysex",
+"sendSysexBytes",
+"setShouldSendMidiBeatClock"
+],
+"Mixer": [
+"addClipLauncherSectionVisibilityObserver",
+"addCrossFadeSectionVisibilityObserver",
+"addDeviceSectionVisibilityObserver",
+"addIoSectionVisibilityObserver",
+"addMeterSectionVisibilityObserver",
+"addSendsSectionVisibilityObserver",
+"isClipLauncherSectionVisible",
+"isCrossFadeSectionVisible",
+"isDeviceSectionVisible",
+"isIoSectionVisible",
+"isMeterSectionVisible",
+"isSendSectionVisible",
+"toggleClipLauncherSectionVisibility",
+"toggleCrossFadeSectionVisibility",
+"toggleDeviceSectionVisibility",
+"toggleIoSectionVisibility",
+"toggleMeterSectionVisibility",
+"toggleSendsSectionVisibility",
+"zoomInTrackWidthsAll",
+"zoomInTrackWidthsAllAction",
+"zoomInTrackWidthsSelected",
+"zoomInTrackWidthsSelectedAction",
+"zoomOutTrackWidthsAll",
+"zoomOutTrackWidthsAllAction",
+"zoomOutTrackWidthsSelected",
+"zoomOutTrackWidthsSelectedAction",
+"zoomTrackWidthsAllStepper",
+"zoomTrackWidthsSelectedStepper"
+],
+"ModulationSource": [
+"addIsMappedObserver",
+"addIsMappingObserver",
+"addNameObserver",
+"isMapped",
+"isMapping",
+"toggleIsMapping"
+],
+"MultiSampleBrowsingSession": [
+"getFileTypeFilter"
+],
+"MultiStateHardwareLight": [
+"getBestLightStateForColor",
+"setColor",
+"setColorSupplier",
+"setColorToStateFunction"
+],
+"MusicBrowsingSession": [
+"getFileTypeFilter"
+],
+"NoteInput$NoteExpression": [
+"$values",
+"values"
+],
+"NoteInput": [
+"arpeggiator",
+"assignPolyphonicAftertouchToExpression",
+"includeInAllInputs",
+"noteLatch",
+"sendRawMidiEvent",
+"setKeyTranslationTable",
+"setShouldConsumeEvents",
+"setUseExpressiveMidi",
+"setUseMultidimensionalPolyphonicExpression",
+"setVelocityTranslationTable"
+],
+"NoteLatch": [
+"activeNotes",
+"mode",
+"mono",
+"releaseNotes",
+"velocityThreshold"
+],
+"NoteOccurrence": [
+"$values",
+"values"
+],
+"NoteStep$State": [
+"$values",
+"values"
+],
+"NoteStep": [
+"channel",
+"isIsSelected"
+],
+"NotificationSettings": [
+"getUserNotificationsEnabled",
+"setShouldShowChannelSelectionNotifications",
+"setShouldShowDeviceLayerSelectionNotifications",
+"setShouldShowDeviceSelectionNotifications",
+"setShouldShowMappingNotifications",
+"setShouldShowPresetNotifications",
+"setShouldShowSelectionNotifications",
+"setShouldShowTrackSelectionNotifications",
+"setShouldShowValueNotifications"
+],
+"ObjectArrayValue": [
+"isEmpty"
+],
+"ObjectHardwareProperty": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+],
+"ObjectProxy": [
+"createEqualsValue"
+],
+"OnOffHardwareLight": [
+"isOn",
+"setOffColor",
+"setOffVisualState",
+"setOnColor",
+"setOnVisualState",
+"setStateToVisualStateFuncation",
+"setStateToVisualStateFunction"
+],
+"OutputPipe": [
+"write",
+"writeAsync"
+],
+"Parameter": [
+"addNameObserver",
+"addValueDisplayObserver",
+"modulatedValue",
+"reset",
+"setIndication",
+"setLabel"
+],
+"ParameterBank": [
+"getParameterCount",
+"setHardwareLayout"
+],
+"PianoKeyboard": [
+"setChannel",
+"setIsVelocitySensitive",
+"setMidiIn",
+"setNoteInput",
+"setSupportsPolyAftertouch"
+],
+"PinnableCursor": [
+"isPinned"
+],
+"PlayingNote": [
+"pitch"
+],
+"PlayingNoteArrayValue": [
+"isNotePlaying"
+],
+"PopupBrowser": [
+"canAudition",
+"cancel",
+"cancelAction",
+"categoryColumn",
+"commit",
+"commitAction",
+"contentTypeNames",
+"creatorColumn",
+"deviceColumn",
+"deviceTypeColumn",
+"fileTypeColumn",
+"locationColumn",
+"resultsColumn",
+"selectFirstFile",
+"selectLastFile",
+"selectNextFile",
+"selectNextFileAction",
+"selectPreviousFile",
+"selectPreviousFileAction",
+"selectedContentTypeIndex",
+"selectedContentTypeName",
+"shouldAudition",
+"smartCollectionColumn",
+"tagColumn",
+"title"
+],
+"PresetBrowsingSession": [
+"getCategoryFilter",
+"getFileTypeFilter",
+"getPresetTypeFilter"
+],
+"PrimaryDevice$ChainLocation": [
+"$values",
+"values"
+],
+"PrimaryDevice$DeviceType": [
+"$values",
+"values"
+],
+"PrimaryDevice": [
+"addCanSwitchToDeviceObserver",
+"switchToDevice"
+],
+"Project": [
+"createScene",
+"createSceneFromPlayingLauncherClips",
+"cueMix",
+"cueVolume",
+"getRootTrackGroup",
+"getShownTopLevelTrackGroup",
+"hasArmedTracks",
+"hasMutedTracks",
+"hasSoloedTracks",
+"isModified",
+"unarmAll",
+"unmuteAll",
+"unsoloAll"
+],
+"RangedValue": [
+"addRawValueObserver",
+"discreteValueCount",
+"discreteValueNames",
+"getAsDouble",
+"getOrigin"
+],
+"RelativeHardwarControlBindable": [
+"addBinding",
+"addBindingWithSensitivity"
+],
+"RelativeHardwareControl": [
+"addBindingWithRange",
+"addBindingWithRangeAndSensitivity",
+"addBindingWithSensitivity",
+"getStepSize",
+"setAdjustValueMatcher",
+"setBindingWithRange",
+"setBindingWithRangeAndSensitivity",
+"setBindingWithSensitivity",
+"setSensitivity"
+],
+"RelativePosition": [
+"$values",
+"values"
+],
+"RemoteConnection": [
+"disconnect",
+"send",
+"setDisconnectCallback",
+"setReceiveCallback"
+],
+"RemoteControl": [
+"isBeingMapped"
+],
+"RemoteSocket": [
+"getPort",
+"setClientConnectCallback"
+],
+"SampleBrowsingSession": [
+"getFileTypeFilter"
+],
+"Scene": [
+"addClipCountObserver",
+"addPositionObserver",
+"clipCount"
+],
+"SceneBank": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addSceneCountObserver",
+"addScrollPositionObserver",
+"launchScene",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollTo",
+"scrollUp",
+"setIndication"
+],
+"Scrollable": [
+"canScrollBackwards",
+"canScrollForwards",
+"scrollBackwards",
+"scrollBackwardsAction",
+"scrollBy",
+"scrollByPages",
+"scrollForwards",
+"scrollForwardsAction",
+"scrollIntoView",
+"scrollPageBackwards",
+"scrollPageBackwardsAction",
+"scrollPageForwards",
+"scrollPageForwardsAction"
+],
+"ScrollbarModel": [
+"getContentPerPixel",
+"isZoomable",
+"zoomAtPosition",
+"zoomToContentRegion",
+"zoomToFit",
+"zoomToFitSelectionOrAll",
+"zoomToFitSelectionOrCurrent",
+"zoomToSelection"
+],
+"Send": [
+"isPreFader",
+"sendChannelColor",
+"sendMode"
+],
+"SettableBeatTimeValue": [
+"beatStepper",
+"incRaw"
+],
+"SettableBooleanValue": [
+"setToFalseAction",
+"setToTrueAction",
+"toggleAction"
+],
+"SettableDoubleValue": [
+"inc"
+],
+"SettableIntegerValue": [
+"inc"
+],
+"SettableRangedValue": [
+"addBinding",
+"addBindingWithRange",
+"addBindingWithRangeAndSensitivity",
+"addBindingWithSensitivity",
+"inc",
+"incRaw"
+],
+"Setting": [
+"disable",
+"getLabel",
+"hide",
+"show"
+],
+"Settings": [
+"getBooleanSetting",
+"getBooleanSettingForValue",
+"getColorSetting",
+"getColorSettingForValue",
+"getEnumSetting",
+"getEnumSettingForValue",
+"getNumberSetting",
+"getSignalSetting",
+"getStringSetting"
+],
+"Signal": [
+"addSignalObserver",
+"fire"
+],
+"SoloValue": [
+"toggleUsingPreferences"
+],
+"SourceSelector": [
+"getHasAudioInputSelected",
+"getHasNoteInputSelected",
+"hasAudioInputSelected",
+"hasNoteInputSelected"
+],
+"SpecificBitwigDevice": [
+"createIntegerOutputValue"
+],
+"StringHardwareProperty": [
+"currentValue",
+"getMaxChars",
+"lastSentValue",
+"onUpdateHardware",
+"setMaxChars",
+"setValue",
+"setValueSupplier"
+],
+"StringValue": [
+"getLimited"
+],
+"Subscribable": [
+"isSubscribed",
+"setIsSubscribed",
+"subscribe",
+"unsubscribe"
+],
+"TimeSignatureValue": [
+"denominator",
+"getDenominator",
+"getNumerator",
+"getTicks",
+"numerator",
+"ticks"
+],
+"TimelineEditor": [
+"getHorizontalScrollbarModel",
+"zoomIn",
+"zoomInAction",
+"zoomLevel",
+"zoomOut",
+"zoomOutAction",
+"zoomToFit",
+"zoomToFitAction",
+"zoomToFitSelectionOrAll",
+"zoomToFitSelectionOrAllAction",
+"zoomToFitSelectionOrPrevious",
+"zoomToFitSelectionOrPreviousAction",
+"zoomToSelection",
+"zoomToSelectionAction"
+],
+"Track": [
+"addIsGroupObserver",
+"addIsQueuedForStopObserver",
+"addNoteSource",
+"addPitchNamesObserver",
+"addPositionObserver",
+"addTrackTypeObserver",
+"autoMonitor",
+"beforeTrackInsertionPoint",
+"canHoldAudioData",
+"canHoldNoteData",
+"createEffectTrackBank",
+"createNewLauncherClip",
+"createParentTrack",
+"createSiblingsTrackBank",
+"crossFadeMode",
+"getArm",
+"getAutoMonitor",
+"getCanHoldAudioData",
+"getCanHoldNoteData",
+"getClipLauncher",
+"getClipLauncherSlots",
+"getCrossFadeMode",
+"getIsMatrixQueuedForStop",
+"getIsMatrixStopped",
+"getIsPreFader",
+"getMonitor",
+"getPrimaryDevice",
+"getPrimaryInstrument",
+"getSourceSelector",
+"isMonitoring",
+"isQueuedForStop",
+"isStopped",
+"launchLastClipWithOptions",
+"launchLastClipWithOptionsAction",
+"monitor",
+"monitorMode",
+"playNote",
+"recordNewLauncherClip",
+"removeNoteSource",
+"sendMidi",
+"sourceSelector",
+"startNote",
+"stopAction",
+"stopAlt",
+"stopAltAction",
+"stopNote"
+],
+"TrackBank": [
+"addCanScrollScenesDownObserver",
+"addCanScrollScenesUpObserver",
+"addCanScrollTracksDownObserver",
+"addCanScrollTracksUpObserver",
+"addSceneCountObserver",
+"addSceneScrollPositionObserver",
+"addTrackScrollPositionObserver",
+"followCursorTrack",
+"getChannel",
+"launchScene",
+"scrollScenesDown",
+"scrollScenesPageDown",
+"scrollScenesPageUp",
+"scrollScenesUp",
+"scrollToScene",
+"scrollToTrack",
+"scrollTracksDown",
+"scrollTracksPageDown",
+"scrollTracksPageUp",
+"scrollTracksUp",
+"setContentFilter",
+"setShouldShowClipLauncherFeedback",
+"setSupportsDeviceChainChannels",
+"setTrackScrollStepSize"
+],
+"TrackBankContentFilter": [
+"$values",
+"values"
+],
+"Transport": [
+"addAutomationOverrideObserver",
+"addAutomationWriteModeObserver",
+"addClickObserver",
+"addClipLauncherPostRecordingActionObserver",
+"addCueMarkerAtPlaybackPositionAction",
+"addIsLoopActiveObserver",
+"addIsPlayingObserver",
+"addIsRecordingObserver",
+"addIsWritingArrangerAutomationObserver",
+"addIsWritingClipLauncherAutomationObserver",
+"addLauncherOverdubObserver",
+"addMetronomeTicksObserver",
+"addMetronomeVolumeObserver",
+"addOverdubObserver",
+"addPreRollClickObserver",
+"addPreRollObserver",
+"addPunchInObserver",
+"addPunchOutObserver",
+"arrangerLoopDuration",
+"arrangerLoopStart",
+"automationWriteMode",
+"clipLauncherPostRecordingAction",
+"continuePlayback",
+"continuePlaybackAction",
+"crossfade",
+"defaultLaunchQuantization",
+"fastForward",
+"fastForwardAction",
+"getClipLauncherPostRecordingTimeOffset",
+"getCrossfade",
+"getInPosition",
+"getOutPosition",
+"getTempo",
+"getTimeSignature",
+"incPosition",
+"increaseTempo",
+"isArrangerLoopEnabled",
+"isArrangerOverdubEnabled",
+"isArrangerRecordEnabled",
+"isClipLauncherAutomationWriteEnabled",
+"isClipLauncherOverdubEnabled",
+"isFillModeActive",
+"isMetronomeAudibleDuringPreRoll",
+"isMetronomeTickPlaybackEnabled",
+"isPunchInEnabled",
+"isPunchOutEnabled",
+"jumpToNextCueMarker",
+"jumpToNextCueMarkerAction",
+"jumpToPlayStartPosition",
+"jumpToPlayStartPositionAction",
+"jumpToPreviousCueMarker",
+"jumpToPreviousCueMarkerAction",
+"launchFromPlayStartPosition",
+"launchFromPlayStartPositionAction",
+"metronomeVolume",
+"playAction",
+"playPosition",
+"playPositionInSeconds",
+"playStartPosition",
+"playStartPositionInSeconds",
+"preRoll",
+"recordAction",
+"restart",
+"restartAction",
+"rewind",
+"rewindAction",
+"setAutomationWriteMode",
+"setClick",
+"setClipLauncherPostRecordingAction",
+"setLauncherOverdub",
+"setLoop",
+"setMetronomeValue",
+"setOverdub",
+"setPreRoll",
+"stopAction",
+"tapTempoAction",
+"timeSignature",
+"toggleClick",
+"toggleLatchAutomationWriteMode",
+"toggleLauncherOverdub",
+"toggleLoop",
+"toggleMetronomeDuringPreRoll",
+"toggleMetronomeTicks",
+"toggleOverdub",
+"togglePlay",
+"togglePunchIn",
+"togglePunchOut",
+"toggleWriteArrangerAutomation",
+"toggleWriteClipLauncherAutomation"
+],
+"UsbDevice": [
+"deviceMatcher",
+"iface",
+"ifaces"
+],
+"UsbInterface": [
+"interfaceMatcher",
+"pipe",
+"pipeCount",
+"pipes"
+],
+"UsbPipe": [
+"device",
+"direction",
+"endpointAddress",
+"endpointMatcher",
+"transferType"
+],
+"UsbTransferDirection": [
+"$values",
+"getForEndpointAddress",
+"values"
+],
+"UsbTransferStatus": [
+"$values",
+"values"
+],
+"UsbTransferType": [
+"$values",
+"values"
+],
+"UserControlBank": [
+"getControl"
+]
+}

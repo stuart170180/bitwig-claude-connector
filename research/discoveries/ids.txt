@@ -1,0 +1,16 @@
+## Delay+ 23
+MIX=Mix FEEDBACK=Feedback HICUT=High Cut Frequency LOCUT=Low Cut Frequency OFFSET=Delay Unit Scaler MODEL=Time Update Model PATTERN=Pattern FOREVER=Forever STEPS=Beats of Delay TIME=Delay Time UNIT=Delay Unit LEVEL_CONTROL=Level Control Mode THRESHOLD=Level Control Threshold UPDATE_RATE=Time Update Rate WIDTH=Stereo Width BLUR=Blur Amount DUCKING=Ducking DETUNE=Detune STEREO_DETUNE=Stereo Detune PAN=Pan CROSSFEED=Crossfeed Stereo WIDTH_AFFECTS_FEEDBACK=Width Affects Feedback BLUR_TYPE=Blur Character
+## Reverb 13
+ROOM_SIZE=Room Size DIFFUSION=Early Diffusion REVERB_TIME=Reverb Time MIX=Mix BUILDUP=Late Buildup WIDTH=Stereo Width PRE-DELAY=Pre-delay SHAPE=Mode LOFREQ=Low Band Split HIFREQ=High Band Split LOX=Low Band Reverb Factor HIX=High Band Reverb Factor EARLY_LATE=Late Mix
+## Peak Limiter 4
+CEILING=Ceiling GAIN=Input Gain RELEASE=Release RELEASE_BIAS=Release Bias
+## Tool 7
+AMPLITUDE=Gain WIDTH=Stereo Width INVERT_LEFT=Invert Left INVERT_RIGHT=Invert Right PAN=Pan PAN_SWAP=Swap L/R VOLUME=Volume
+## De-Esser 4
+FREQ=Cutoff Frequency AMOUNT=Gain Reduction Amount MONITOR=Monitor FILTER_TYPE=Filter Type
+## Filter+ 11
+PITCH_TRANSPOSE=Pitch SHUFFLE=Device Ø Shuffle LENGTH=Device Ø Length OFFSET=Device Ø Offset TIMEBASE=Device Ø Timebase MIX=Mix FREERUN=Free-run when stopped NOTE_THRU=Note Thru CONTROL_THRU=Control Thru AUTO_GATE=Auto-gate from Notes AUTO_RELEASE=Auto-gate Release Time
+## Gate 4
+THRESHOLD_LEVEL=Threshold ATTACK=Attack RELEASE=Release DEPTH=Gain Reduction Amount
+## Saturator 14
+LOW_THRESHOLD=Quiet Threshold LOW_RATIO=Quiet Ratio LOW_KNEE=Quiet Knee HIGH_THRESHOLD=Loud Threshold HIGH_RATIO=Loud Ratio HIGH_KNEE=Loud Knee DRIVE=Drive SKEW_THRESHOLD=Loud Threshold Skew RATIO_SKEW=Loud Ratio Skew KNEE_SKEW=Loud Knee Skew NORMALIZE=Normalize CUTOFF=Low-pass Cutoff POLES=Low-pass Slope OUTPUT=Makeup Gain

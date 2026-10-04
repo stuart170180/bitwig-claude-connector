@@ -10,7 +10,7 @@ import time
 import numpy as np
 from scipy import signal
 
-from bwmcp.analysis import mastering  # noqa: E402
+from bwmcp.analysis import capture, mastering  # noqa: E402
 from bwmcp.core import paths
 
 LIB = paths.DATA / "references.json"
@@ -196,7 +196,7 @@ def compare_to_reference(label, source="live", seconds=20.0, start=0.0, threshol
         a = source
     else:
         if source == "live":
-            x, sr, _ = mastering.capture_loopback(seconds)
+            x, sr, _ = capture.capture_live(seconds)
         else:
             x, sr = load_audio(source, start, seconds)
         a = analyse(x, sr)

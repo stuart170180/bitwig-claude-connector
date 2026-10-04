@@ -172,6 +172,20 @@ async def main():
             await c("select_tracks", {"track_indices": [d, k]})
             # group_tracks/ungroup_track only work while Bitwig's Arranger timeline (track headers) is on screen, so
             # they are not part of the automatic run; try them by hand from the Arrange view.
+            # extras: project state, UI layout, notes, last-clicked, transport extras, window picture, project file report, recorder, units
+            await c("project_state")
+            await c("ui_layout", {"mixer": {"meters": True}})
+            await c("ui_layout", {"mixer": {"meters": False}})
+            await c("project_notes", {"action": "get"})
+            await c("last_clicked")
+            await c("transport_extras")
+            await c("look_at_bitwig", {"max_width": 800})
+            await c("project_file_report")
+            await c("record_master", {"action": "status"})
+            await c("sidechain_genres")
+            await c("edit_action", {"action": "zoom_to_fit"})
+            # not run here (they change or play things): undo_redo, device_units set, sidechain_setup, record_master capture
+
             # not run here (they play audio or change playback): masking_report/fix, perform_*, add_reference/compare_to_library
 
             # cleanup: delete created tracks (highest index first) and restore tempo

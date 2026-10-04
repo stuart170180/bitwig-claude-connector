@@ -10,15 +10,6 @@ var DISP_DEVICES = { "42b32cd2-6275-4ff1-970f-4fac71d15ad9": ["ATTACK", "RELEASE
    "ENVELOPE_MODE", "AUTO_TIMING", "GR_MODE", "RATIO_EXTENDED", "MAKEUP", "LATCH",
    "GR", "GAIN_REDUCTION", "REDUCTION", "GR_METER", "METER", "GAIN_REDUCTION_L", "GAIN_REDUCTION_R", "DETECTOR", "OUTPUT_LEVEL", "INPUT_LEVEL"] };
 
-// DISP_EXTRA: more stock devices for real-unit display text (ids from deep_params; generated from the exploration run)
-DISP_DEVICES["f2baa2a8-36c5-4a79-b1d9-a4e461c45ee9"] = ["MIX", "FEEDBACK", "HICUT", "LOCUT", "OFFSET", "MODEL", "PATTERN", "FOREVER", "STEPS", "TIME", "UNIT", "LEVEL_CONTROL", "THRESHOLD", "UPDATE_RATE", "WIDTH", "BLUR", "DUCKING", "DETUNE", "STEREO_DETUNE", "PAN", "CROSSFEED", "WIDTH_AFFECTS_FEEDBACK", "BLUR_TYPE"];  // Delay+
-DISP_DEVICES["5a1cb339-1c4a-4cc7-9cae-bd7a2058153d"] = ["ROOM_SIZE", "DIFFUSION", "REVERB_TIME", "MIX", "BUILDUP", "WIDTH", "PRE-DELAY", "SHAPE", "LOFREQ", "HIFREQ", "LOX", "HIX", "EARLY_LATE"];  // Reverb
-DISP_DEVICES["8da7251e-2578-4bcc-b3c4-8f4ec2e115d0"] = ["CEILING", "GAIN", "RELEASE", "RELEASE_BIAS"];  // Peak Limiter
-DISP_DEVICES["e67b9c56-838d-4fba-8e3e-ae4e02cccbcb"] = ["AMPLITUDE", "WIDTH", "INVERT_LEFT", "INVERT_RIGHT", "PAN", "PAN_SWAP", "VOLUME"];  // Tool
-DISP_DEVICES["8750db61-e9d3-4d0e-a610-e734006a64dc"] = ["FREQ", "AMOUNT", "MONITOR", "FILTER_TYPE"];  // De-Esser
-DISP_DEVICES["556300ac-3a6e-4423-966a-5d5dde459a1b"] = ["THRESHOLD_LEVEL", "ATTACK", "RELEASE", "DEPTH"];  // Gate
-DISP_DEVICES["93d11348-86ae-4ead-9fe7-84ac03b9369c"] = ["LOW_THRESHOLD", "LOW_RATIO", "LOW_KNEE", "HIGH_THRESHOLD", "HIGH_RATIO", "HIGH_KNEE", "DRIVE", "SKEW_THRESHOLD", "RATIO_SKEW", "KNEE_SKEW", "NORMALIZE", "CUTOFF", "POLES", "OUTPUT"];  // Saturator
-
 function initDeep() {
    interest(cursorDevice.hasLayers()); interest(cursorDevice.hasSlots()); interest(cursorDevice.isNested());
    interest(cursorDevice.slotNames());

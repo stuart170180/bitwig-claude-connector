@@ -2,14 +2,14 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-106 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
+117 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
 
 ## How it fits together
 
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          └── bwmcp/    tools/ (the 106 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                          └── bwmcp/    tools/ (the 117 MCP tools, by topic) · core/ (connection) · music/ · devices/
                                         analysis/ · control/ · library/ · monitor/ ──> http://127.0.0.1:8780 live dashboard
 ```
 
@@ -71,11 +71,12 @@ bwmcp/               the Python package
                        presets.py   preset search/loading, automatic track naming
                        mixing.py    levels, mastering chain, analysis, references, masking, mix audit, sidechain, live monitor
                        library.py   samples and bookmarks
+                       extras.py    master recorder, project state/notes, UI layout, window picture, project file report, device units, editing actions
   music/             theory and generators (music) · expert note edits · variations · pitch/tuning · MIDI files · track naming
   devices/           deep device access (deepdev) · Compressor+ units (compdev) · recipes · presets · preset patching · sidechain genres
-  analysis/          loudness/spectrum (mastering) · reference comparison · reference library · masking finder · mix audit rules
-  control/           Bitwig actions and grouping · automation by performance · arranger-clip reading
-  library/           samples · bookmarks · backup · script sync
+  analysis/          loudness/spectrum (mastering) · live capture (capture) · reference comparison · reference library · masking finder · mix audit rules
+  control/           Bitwig actions and grouping · automation by performance · arranger-clip reading · window screenshot
+  library/           samples · bookmarks · project file reader · backup · script sync
   monitor/           live dashboard server and page · autostart at login
 data/                your files: caches, saved recipes, bookmarks, snapshots, reports, device-ID list (mostly git-ignored)
 docs/                TOOLS.md (generated) · PRESET_FORMAT.md · MODULATORS_AND_GRID.md

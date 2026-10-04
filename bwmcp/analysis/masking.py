@@ -168,7 +168,6 @@ def measure_tracks(track_indices=None, seconds=3.0, settle=0.35):
     """Solo each track in turn, capture `seconds` of loopback, restore solo state. Returns
     {"captures": {name: (x, sr)}, "skipped": {name: reason}, "timing": {name: sec}}.
     Skips group tracks (their children are measured individually) and effect/master tracks."""
-    from bwmcp.analysis import mastering
     server = _bw()
     seconds = max(1.0, float(seconds))
     sess = server.bw.call("get_session")
@@ -198,7 +197,9 @@ def measure_tracks(track_indices=None, seconds=3.0, settle=0.35):
                     cur[o["index"]] = want
             time.sleep(settle)
             try:
-                x, sr, _ = mastering.capture_loopback(seconds)
+                from bwmcp.analysis import capture
+
+                x, sr, _ = capture.capture_live(seconds)
             except Exception as e:
                 skipped[name] = f"capture failed: {e}"
                 continue

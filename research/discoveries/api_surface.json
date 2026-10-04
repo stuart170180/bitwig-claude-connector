@@ -1,0 +1,2501 @@
+{
+"AbsoluteHardwarControlBindable": {
+"iface": true,
+"methods": [
+"addBinding",
+"addBindingWithRange"
+]
+},
+"AbsoluteHardwareControl": {
+"iface": true,
+"methods": [
+"addBindingWithRange",
+"disableTakeOver",
+"setAdjustValueMatcher",
+"setBindingWithRange",
+"value"
+]
+},
+"AbsoluteHardwareControlBinding": {
+"iface": true,
+"methods": []
+},
+"AbsoluteHardwareKnob": {
+"iface": true,
+"methods": []
+},
+"AbsoluteHardwareValueMatcher": {
+"iface": true,
+"methods": []
+},
+"Action": {
+"iface": true,
+"methods": [
+"getCategory",
+"getId",
+"getMenuItemText",
+"getName",
+"invoke"
+]
+},
+"ActionCategory": {
+"iface": true,
+"methods": [
+"getActions",
+"getId",
+"getName"
+]
+},
+"Application": {
+"iface": true,
+"methods": [
+"activateEngine",
+"addDisplayProfileObserver",
+"addHasActiveEngineObserver",
+"addPanelLayoutObserver",
+"addProjectNameObserver",
+"addSelectedModeObserver",
+"arrowKeyDown",
+"arrowKeyLeft",
+"arrowKeyRight",
+"arrowKeyUp",
+"canRedo",
+"canUndo",
+"copy",
+"copyAction",
+"createAudioTrack",
+"createEffectTrack",
+"createInstrumentTrack",
+"cut",
+"cutAction",
+"deactivateEngine",
+"displayProfile",
+"duplicate",
+"duplicateAction",
+"enter",
+"escape",
+"focusPanelAbove",
+"focusPanelBelow",
+"focusPanelToLeft",
+"focusPanelToRight",
+"getAction",
+"getActionCategories",
+"getActionCategory",
+"getActions",
+"hasActiveEngine",
+"navigateIntoTrackGroup",
+"navigateToParentTrackGroup",
+"nextPanelLayout",
+"nextPerspective",
+"nextProject",
+"nextSubPanel",
+"panelLayout",
+"paste",
+"pasteAction",
+"previousPanelLayout",
+"previousPerspective",
+"previousProject",
+"previousSubPanel",
+"projectName",
+"recordQuantizationGrid",
+"recordQuantizeNoteLength",
+"redo",
+"redoAction",
+"remove",
+"removeAction",
+"rename",
+"selectAll",
+"selectAllAction",
+"selectFirst",
+"selectFirstAction",
+"selectLast",
+"selectLastAction",
+"selectNext",
+"selectNextAction",
+"selectNone",
+"selectNoneAction",
+"selectPrevious",
+"selectPreviousAction",
+"setPanelLayout",
+"setPerspective",
+"toggleAutomationEditor",
+"toggleBrowserVisibility",
+"toggleDevices",
+"toggleFullScreen",
+"toggleInspector",
+"toggleMixer",
+"toggleNoteEditor",
+"undo",
+"undoAction",
+"zoomIn",
+"zoomInAction",
+"zoomLevel",
+"zoomOut",
+"zoomOutAction",
+"zoomToFit",
+"zoomToFitAction",
+"zoomToSelection",
+"zoomToSelectionAction",
+"zoomToSelectionOrAll",
+"zoomToSelectionOrAllAction",
+"zoomToSelectionOrPrevious",
+"zoomToSelectionOrPreviousAction"
+]
+},
+"Arpeggiator": {
+"iface": true,
+"methods": [
+"enableOverlappingNotes",
+"gateLength",
+"humanize",
+"isEnabled",
+"isFreeRunning",
+"mode",
+"octaves",
+"rate",
+"releaseNotes",
+"shuffle",
+"terminateNotesImmediately",
+"usePressureToVelocity"
+]
+},
+"Arranger": {
+"iface": true,
+"methods": [
+"addCueMarkerVisibilityObserver",
+"addPlaybackFollowObserver",
+"addTrackRowHeightObserver",
+"areCueMarkersVisible",
+"areEffectTracksVisible",
+"createCueMarkerBank",
+"hasDoubleRowTrackHeight",
+"isClipLauncherVisible",
+"isIoSectionVisible",
+"isPlaybackFollowEnabled",
+"isTimelineVisible",
+"toggleCueMarkerVisibility",
+"togglePlaybackFollow",
+"toggleTrackRowHeight",
+"zoomInLaneHeightsAll",
+"zoomInLaneHeightsAllAction",
+"zoomInLaneHeightsSelected",
+"zoomInLaneHeightsSelectedAction",
+"zoomLaneHeightsAllStepper",
+"zoomLaneHeightsSelectedStepper",
+"zoomOutLaneHeightsAll",
+"zoomOutLaneHeightsAllAction",
+"zoomOutLaneHeightsSelected",
+"zoomOutLaneHeightsSelectedAction"
+]
+},
+"AsyncTransferCompledCallback": {
+"iface": true,
+"methods": [
+"asyncTransferCompleted"
+]
+},
+"AudioHardwareIoInfo": {
+"iface": true,
+"methods": [
+"color"
+]
+},
+"AudioIoDeviceMatcher": {
+"iface": true,
+"methods": []
+},
+"Bank": {
+"iface": true,
+"methods": [
+"cursorIndex",
+"getCapacityOfBank",
+"getItemAt",
+"getSizeOfBank",
+"itemCount",
+"setSizeOfBank",
+"setSkipDisabledItems"
+]
+},
+"BeatTimeFormatter": {
+"iface": true,
+"methods": [
+"formatBeatTime"
+]
+},
+"BeatTimeValue": {
+"iface": true,
+"methods": [
+"addRawValueObserver",
+"addTimeObserver",
+"getFormatted"
+]
+},
+"BitwigBrowsingSession": {
+"iface": true,
+"methods": [
+"getCreatorFilter",
+"getTagsFilter"
+]
+},
+"BooleanHardwareProperty": {
+"iface": true,
+"methods": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+]
+},
+"BooleanValue": {
+"iface": true,
+"methods": [
+"get",
+"getAsBoolean"
+]
+},
+"Browser": {
+"iface": true,
+"methods": [
+"activateSession",
+"addIsBrowsingObserver",
+"cancelBrowsing",
+"commitSelectedResult",
+"createCursorSession",
+"createSessionBank",
+"getClipSession",
+"getDeviceSession",
+"getMultiSampleSession",
+"getMusicSession",
+"getPresetSession",
+"getSampleSession",
+"isWindowMinimized",
+"shouldAudition",
+"startBrowsing"
+]
+},
+"BrowserColumn": {
+"iface": true,
+"methods": [
+"addEntryCountObserver",
+"addExistsObserver",
+"createCursorItem",
+"createItemBank",
+"entryCount"
+]
+},
+"BrowserFilterColumn": {
+"iface": true,
+"methods": [
+"addNameObserver",
+"createCursorItem",
+"createItemBank",
+"getWildcardItem",
+"name"
+]
+},
+"BrowserFilterColumnBank": {
+"iface": true,
+"methods": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addEntryCountObserver",
+"addScrollPositionObserver",
+"getItem",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+]
+},
+"BrowserFilterItem": {
+"iface": true,
+"methods": [
+"addHitCountObserver",
+"hitCount"
+]
+},
+"BrowserFilterItemBank": {
+"iface": true,
+"methods": []
+},
+"BrowserItem": {
+"iface": true,
+"methods": [
+"addExistsObserver",
+"addValueObserver",
+"isSelected",
+"name"
+]
+},
+"BrowserItemBank": {
+"iface": true,
+"methods": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addScrollPositionObserver",
+"getItem",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+]
+},
+"BrowserResultsColumn": {
+"iface": true,
+"methods": [
+"createCursorItem",
+"createItemBank"
+]
+},
+"BrowserResultsItem": {
+"iface": true,
+"methods": []
+},
+"BrowserResultsItemBank": {
+"iface": true,
+"methods": []
+},
+"BrowsingSession": {
+"iface": true,
+"methods": [
+"activate",
+"addHitCountObserver",
+"addIsActiveObserver",
+"addIsAvailableObserver",
+"createFilterBank",
+"getCursorFilter",
+"getCursorResult",
+"getResults",
+"getSettledResult",
+"hitCount"
+]
+},
+"BrowsingSessionBank": {
+"iface": true,
+"methods": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addEntryCountObserver",
+"addScrollPositionObserver",
+"getSession",
+"getSize",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollUp"
+]
+},
+"ChainSelector": {
+"iface": true,
+"methods": [
+"activeChain",
+"activeChainIndex",
+"chainCount",
+"cycleNext",
+"cyclePrevious"
+]
+},
+"Channel": {
+"iface": true,
+"methods": [
+"addColorObserver",
+"addIsSelectedInMixerObserver",
+"addNoteObserver",
+"addVuMeterObserver",
+"channelId",
+"channelIndex",
+"color",
+"duplicate",
+"getMute",
+"getPan",
+"getSend",
+"getSolo",
+"getVolume",
+"isActivated",
+"isMutedBySolo",
+"makeVisibleInArranger",
+"makeVisibleInMixer",
+"mute",
+"pan",
+"playingNotes",
+"selectInMixer",
+"sendBank",
+"solo",
+"volume"
+]
+},
+"ChannelBank": {
+"iface": true,
+"methods": [
+"addCanScrollChannelsDownObserver",
+"addCanScrollChannelsUpObserver",
+"addCanScrollSendsDownObserver",
+"addCanScrollSendsUpObserver",
+"addChannelCountObserver",
+"addChannelScrollPositionObserver",
+"addSendCountObserver",
+"canScrollChannelsDown",
+"canScrollChannelsUp",
+"channelCount",
+"channelScrollPosition",
+"getChannel",
+"scrollChannelsDown",
+"scrollChannelsPageDown",
+"scrollChannelsPageUp",
+"scrollChannelsUp",
+"scrollSendsDown",
+"scrollSendsPageDown",
+"scrollSendsPageUp",
+"scrollSendsUp",
+"scrollToChannel",
+"scrollToSend",
+"setChannelScrollStepSize"
+]
+},
+"Clip": {
+"iface": true,
+"methods": [
+"addCanScrollKeysDownObserver",
+"addCanScrollKeysUpObserver",
+"addCanScrollStepsBackwardsObserver",
+"addCanScrollStepsForwardObserver",
+"addColorObserver",
+"addNoteStepObserver",
+"addPlayingStepObserver",
+"addStepDataObserver",
+"canScrollKeysDown",
+"canScrollKeysUp",
+"canScrollStepsBackwards",
+"canScrollStepsForwards",
+"clearStep",
+"clearSteps",
+"clearStepsAtX",
+"clearStepsAtY",
+"clipLauncherSlot",
+"color",
+"duplicate",
+"duplicateContent",
+"getAccent",
+"getLoopLength",
+"getLoopStart",
+"getPlayStart",
+"getPlayStop",
+"getShuffle",
+"getStep",
+"getTrack",
+"isLoopEnabled",
+"launch",
+"launchLegato",
+"launchMode",
+"launchQuantization",
+"launchWithOptions",
+"moveStep",
+"playingStep",
+"quantize",
+"scrollKeysPageDown",
+"scrollKeysPageUp",
+"scrollKeysStepDown",
+"scrollKeysStepUp",
+"scrollStepsPageBackwards",
+"scrollStepsPageForward",
+"scrollStepsStepBackwards",
+"scrollStepsStepForward",
+"scrollToKey",
+"scrollToStep",
+"selectStepContents",
+"setName",
+"setStep",
+"setStepSize",
+"showInEditor",
+"toggleStep",
+"transpose",
+"useLoopStartAsQuantizationReference"
+]
+},
+"ClipBrowsingSession": {
+"iface": true,
+"methods": [
+"getFileTypeFilter"
+]
+},
+"ClipLauncherSlot": {
+"iface": true,
+"methods": [
+"browseToInsertClip",
+"color",
+"createEmptyClip",
+"duplicateClip",
+"hasContent",
+"isPlaybackQueued",
+"isPlaying",
+"isRecording",
+"isRecordingQueued",
+"isSelected",
+"isStopQueued",
+"record",
+"recordAction",
+"select",
+"selectAction",
+"showInEditor"
+]
+},
+"ClipLauncherSlotBank": {
+"iface": true,
+"methods": [
+"addColorObserver",
+"addHasContentObserver",
+"addIsPlaybackQueuedObserver",
+"addIsPlayingObserver",
+"addIsQueuedObserver",
+"addIsRecordingObserver",
+"addIsRecordingQueuedObserver",
+"addIsSelectedObserver",
+"addIsStopQueuedObserver",
+"addPlaybackStateObserver",
+"createEmptyClip",
+"deleteClip",
+"duplicateClip",
+"isMasterTrackContentShownOnTrackGroups",
+"record",
+"select",
+"setIndication",
+"showInEditor"
+]
+},
+"ClipLauncherSlotOrScene": {
+"iface": true,
+"methods": [
+"color",
+"copyFrom",
+"launch",
+"launchAction",
+"launchAlt",
+"launchAltAction",
+"launchLastClipWithOptions",
+"launchLastClipWithOptionsAction",
+"launchRelease",
+"launchReleaseAction",
+"launchReleaseAlt",
+"launchReleaseAltAction",
+"launchWithOptions",
+"launchWithOptionsAction",
+"moveTo",
+"name",
+"nextSceneInsertionPoint",
+"previousSceneInsertionPoint",
+"replaceInsertionPoint",
+"sceneIndex",
+"setIndication"
+]
+},
+"ClipLauncherSlotOrSceneBank": {
+"iface": true,
+"methods": [
+"addNameObserver",
+"launch",
+"launchAlt",
+"returnToArrangement",
+"stop",
+"stopAction",
+"stopAlt",
+"stopAltAction"
+]
+},
+"ColorHardwareProperty": {
+"iface": true,
+"methods": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+]
+},
+"ColorValue": {
+"iface": true,
+"methods": [
+"alpha",
+"blue",
+"get",
+"green",
+"red"
+]
+},
+"ContinuousHardwareControl": {
+"iface": true,
+"methods": [
+"hardwareButton",
+"hasTargetValue",
+"isUpdatingTargetValue",
+"modulatedTargetDisplayedValue",
+"modulatedTargetValue",
+"setHardwareButton",
+"targetDisplayedValue",
+"targetName",
+"targetValue"
+]
+},
+"ContinuousHardwareValueMatcher": {
+"iface": true,
+"methods": []
+},
+"ControllerHost": {
+"iface": true,
+"methods": [
+"addDatagramPacketObserver",
+"addDeviceNameBasedDiscoveryPair",
+"connectToRemoteHost",
+"createAbsoluteHardwareControlAdjustmentTarget",
+"createAction",
+"createActiveDeviceMatcher",
+"createAndDeviceMatcher",
+"createApplication",
+"createApplicationSection",
+"createArranger",
+"createArrangerCursorClip",
+"createArrangerCursorTrack",
+"createArrangerSection",
+"createAudioEffectMatcher",
+"createAudioHardwareInputInfo",
+"createAudioHardwareOutputInfo",
+"createAudioIoDeviceHardwareAddressMatcher",
+"createBeatTimeFormatter",
+"createBitwigDeviceMatcher",
+"createCallbackAction",
+"createCursorClip",
+"createCursorClipSection",
+"createCursorDevice",
+"createCursorDeviceSection",
+"createCursorTrack",
+"createCursorTrackSection",
+"createDetailEditor",
+"createEditorCursorDevice",
+"createEffectTrackBank",
+"createEffectTrackBankSection",
+"createFirstDeviceInChainMatcher",
+"createGroove",
+"createGrooveSection",
+"createHardwareSurface",
+"createInstrumentMatcher",
+"createLastClickedParameter",
+"createLastDeviceInChainMatcher",
+"createLauncherCursorClip",
+"createMainTrackBank",
+"createMainTrackBankSection",
+"createMasterRecorder",
+"createMasterTrack",
+"createMasterTrackSection",
+"createMixer",
+"createMixerSection",
+"createNotDeviceMatcher",
+"createNoteEffectMatcher",
+"createOrAbsoluteHardwareValueMatcher",
+"createOrDeviceMatcher",
+"createOrHardwareActionMatcher",
+"createOrRelativeHardwareValueMatcher",
+"createPopupBrowser",
+"createPressureCallbackAction",
+"createRelativeHardwareControlAdjustmentTarget",
+"createRelativeHardwareControlStepTarget",
+"createRemoteConnection",
+"createSceneBank",
+"createTrackBank",
+"createTrackBankSection",
+"createTransport",
+"createTransportSection",
+"createUsbAudioIoDeviceMatcher",
+"createUserControls",
+"createUserControlsSection",
+"createVST2DeviceMatcher",
+"createVST3DeviceMatcher",
+"defaultBeatTimeFormatter",
+"defineController",
+"defineMidiPorts",
+"defineSysexDiscovery",
+"defineSysexIdentityReply",
+"deleteObjects",
+"duplicateObjects",
+"errorln",
+"getDocumentState",
+"getMidiInPort",
+"getMidiOutPort",
+"getNotificationSettings",
+"getPreferences",
+"getProject",
+"hardwareDevice",
+"load",
+"loadAPI",
+"midiExpressions",
+"platformIsLinux",
+"platformIsMac",
+"platformIsWindows",
+"println",
+"requestFlush",
+"restart",
+"scheduleTask",
+"sendDatagramPacket",
+"setDefaultBeatTimeFormatter",
+"setShouldFailOnDeprecatedUse",
+"shouldFailOnDeprecatedUse",
+"showPopupNotification",
+"useBetaApi"
+]
+},
+"CueMarker": {
+"iface": true,
+"methods": [
+"getColor",
+"getName",
+"launch",
+"name",
+"position"
+]
+},
+"CueMarkerBank": {
+"iface": true,
+"methods": [
+"scrollToMarker"
+]
+},
+"Cursor": {
+"iface": true,
+"methods": [
+"addCanSelectNextObserver",
+"addCanSelectPreviousObserver",
+"hasNext",
+"hasPrevious",
+"selectFirst",
+"selectLast",
+"selectNext",
+"selectNextAction",
+"selectPrevious",
+"selectPreviousAction"
+]
+},
+"CursorBrowserFilterColumn": {
+"iface": true,
+"methods": []
+},
+"CursorBrowserFilterItem": {
+"iface": true,
+"methods": [
+"moveToFirst",
+"moveToFirstChild",
+"moveToLast",
+"moveToLastChild",
+"moveToNext",
+"moveToParent",
+"moveToPrevious",
+"selectFirstChild",
+"selectLastChild",
+"selectParent"
+]
+},
+"CursorBrowserItem": {
+"iface": true,
+"methods": [
+"createSiblingsBank"
+]
+},
+"CursorBrowserResultItem": {
+"iface": true,
+"methods": []
+},
+"CursorBrowsingSession": {
+"iface": true,
+"methods": []
+},
+"CursorChannel": {
+"iface": true,
+"methods": [
+"selectChannel"
+]
+},
+"CursorClip": {
+"iface": true,
+"methods": [
+"selectClip"
+]
+},
+"CursorDevice": {
+"iface": true,
+"methods": [
+"channel",
+"getChannel",
+"selectDevice",
+"selectFirstInChannel",
+"selectFirstInKeyPad",
+"selectFirstInLayer",
+"selectFirstInSlot",
+"selectLastInChannel",
+"selectLastInKeyPad",
+"selectLastInLayer",
+"selectLastInSlot",
+"selectParent"
+]
+},
+"CursorDeviceFollowMode": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"CursorDeviceLayer": {
+"iface": true,
+"methods": []
+},
+"CursorDeviceSlot": {
+"iface": true,
+"methods": [
+"selectSlot"
+]
+},
+"CursorNavigationMode": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"CursorRemoteControlsPage": {
+"iface": true,
+"methods": [
+"createPresetPage",
+"createPresetPageAction",
+"pageCount",
+"pageNames",
+"selectNextPage",
+"selectNextPageMatching",
+"selectPreviousPage",
+"selectPreviousPageMatching",
+"selectedPageIndex"
+]
+},
+"CursorTrack": {
+"iface": true,
+"methods": [
+"createCursorDevice",
+"createLauncherCursorClip",
+"selectFirstChild",
+"selectParent",
+"setCursorNavigationMode"
+]
+},
+"DeleteableObject": {
+"iface": true,
+"methods": [
+"deleteObject",
+"deleteObjectAction"
+]
+},
+"DetailEditor": {
+"iface": true,
+"methods": [
+"zoomInLaneHeights",
+"zoomInLaneHeightsAction",
+"zoomLaneHeightsStepper",
+"zoomOutLaneHeights",
+"zoomOutLaneHeightsAction"
+]
+},
+"Device": {
+"iface": true,
+"methods": [
+"addActiveModulationSourceObserver",
+"addDirectParameterIdObserver",
+"addDirectParameterNameObserver",
+"addDirectParameterNormalizedValueObserver",
+"addDirectParameterValueDisplayObserver",
+"addHasSelectedDeviceObserver",
+"addIsEnabledObserver",
+"addIsPluginObserver",
+"addNameObserver",
+"addNextParameterPageEnabledObserver",
+"addPageNamesObserver",
+"addPositionObserver",
+"addPresetCategoriesObserver",
+"addPresetCategoryObserver",
+"addPresetCreatorObserver",
+"addPresetCreatorsObserver",
+"addPresetNameObserver",
+"addPresetNamesObserver",
+"addPreviousParameterPageEnabledObserver",
+"addSampleNameObserver",
+"addSelectedPageObserver",
+"addSlotsObserver",
+"afterDeviceInsertionPoint",
+"beforeDeviceInsertionPoint",
+"browseToInsertAfterDevice",
+"browseToInsertBeforeDevice",
+"browseToReplaceDevice",
+"createChainSelector",
+"createCursorLayer",
+"createCursorRemoteControlsPage",
+"createDeviceBrowser",
+"createDrumPadBank",
+"createLayerBank",
+"createSiblingsDeviceBank",
+"createSpecificBitwigDevice",
+"createSpecificVst2Device",
+"createSpecificVst3Device",
+"deviceChain",
+"deviceType",
+"getCommonParameter",
+"getCursorSlot",
+"getDeviceChain",
+"getEnvelopeParameter",
+"getMacro",
+"getModulationSource",
+"getParameter",
+"hasDrumPads",
+"hasLayers",
+"hasSlots",
+"incDirectParameterValueNormalized",
+"isEnabled",
+"isExpanded",
+"isMacroSectionVisible",
+"isNested",
+"isParameterPageSectionVisible",
+"isPlugin",
+"isRemoteControlsSectionVisible",
+"isWindowOpen",
+"loadPreset",
+"name",
+"nextParameterPage",
+"position",
+"presetCategory",
+"presetCreator",
+"presetName",
+"previousParameterPage",
+"replaceDeviceInsertionPoint",
+"sampleName",
+"selectInEditor",
+"setDirectParameterValueNormalized",
+"setParameterPage",
+"setPresetCategory",
+"setPresetCreator",
+"slotNames",
+"switchToNextPreset",
+"switchToNextPresetCategory",
+"switchToNextPresetCreator",
+"switchToPreviousPreset",
+"switchToPreviousPresetCategory",
+"switchToPreviousPresetCreator",
+"toggleEnabledState"
+]
+},
+"DeviceBank": {
+"iface": true,
+"methods": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addDeviceCountObserver",
+"addScrollPositionObserver",
+"browseToInsertDevice",
+"getDevice",
+"getDeviceChain",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollTo",
+"scrollUp",
+"setDeviceMatcher"
+]
+},
+"DeviceBrowsingSession": {
+"iface": true,
+"methods": [
+"getCategoryFilter",
+"getDeviceTypeFilter",
+"getFileTypeFilter"
+]
+},
+"DeviceChain": {
+"iface": true,
+"methods": [
+"addIsSelectedInEditorObserver",
+"addIsSelectedObserver",
+"addNameObserver",
+"browseToInsertAtEndOfChain",
+"browseToInsertAtStartOfChain",
+"createDeviceBank",
+"createDeviceBrowser",
+"endOfDeviceChainInsertionPoint",
+"name",
+"select",
+"selectInEditor",
+"startOfDeviceChainInsertionPoint"
+]
+},
+"DeviceLayer": {
+"iface": true,
+"methods": []
+},
+"DeviceLayerBank": {
+"iface": true,
+"methods": [
+"getChannel"
+]
+},
+"DeviceMatcher": {
+"iface": true,
+"methods": []
+},
+"DeviceSlot": {
+"iface": true,
+"methods": []
+},
+"DirectParameterValueDisplayObserver": {
+"iface": true,
+"methods": [
+"setObservedParameterIds"
+]
+},
+"DocumentState": {
+"iface": true,
+"methods": []
+},
+"DoubleValue": {
+"iface": true,
+"methods": [
+"get",
+"getAsDouble"
+]
+},
+"DrumPad": {
+"iface": true,
+"methods": [
+"insertionPoint"
+]
+},
+"DrumPadBank": {
+"iface": true,
+"methods": [
+"clearMutedPads",
+"clearSoloedPads",
+"hasMutedPads",
+"hasSoloedPads",
+"setIndication"
+]
+},
+"DuplicableObject": {
+"iface": true,
+"methods": [
+"duplicateObject",
+"duplicateObjectAction"
+]
+},
+"EnumDefinition": {
+"iface": true,
+"methods": [
+"getValueCount",
+"valueDefinitionAt",
+"valueDefinitionFor"
+]
+},
+"EnumValue": {
+"iface": true,
+"methods": [
+"enumDefinition",
+"get"
+]
+},
+"EnumValueDefinition": {
+"iface": true,
+"methods": [
+"enumDefinition",
+"getDisplayName",
+"getId",
+"getLimitedDisplayName",
+"getValueIndex"
+]
+},
+"GenericBrowsingSession": {
+"iface": true,
+"methods": [
+"addNameObserver",
+"name"
+]
+},
+"Groove": {
+"iface": true,
+"methods": [
+"getAccentAmount",
+"getAccentPhase",
+"getAccentRate",
+"getEnabled",
+"getShuffleAmount",
+"getShuffleRate"
+]
+},
+"HardwareAction": {
+"iface": true,
+"methods": [
+"isSupported",
+"setActionMatcher",
+"setPressureActionMatcher",
+"setShouldFireEvenWhenUsedAsNoteInput"
+]
+},
+"HardwareActionBindable": {
+"iface": true,
+"methods": [
+"addBinding",
+"invoke"
+]
+},
+"HardwareActionBinding": {
+"iface": true,
+"methods": []
+},
+"HardwareActionMatcher": {
+"iface": true,
+"methods": []
+},
+"HardwareBindable": {
+"iface": true,
+"methods": []
+},
+"HardwareBinding": {
+"iface": true,
+"methods": [
+"removeBinding"
+]
+},
+"HardwareBindingSource": {
+"iface": true,
+"methods": [
+"addBinding",
+"canBindTo",
+"clearBindings",
+"setBinding"
+]
+},
+"HardwareBindingWithRange": {
+"iface": true,
+"methods": [
+"setMaxNormalizedValue",
+"setMinNormalizedValue",
+"setNormalizedRange"
+]
+},
+"HardwareBindingWithSensitivity": {
+"iface": true,
+"methods": [
+"setSensitivity"
+]
+},
+"HardwareButton": {
+"iface": true,
+"methods": [
+"isPressed",
+"pressedAction",
+"releasedAction",
+"setAftertouchControl",
+"setRoundedCornerRadius"
+]
+},
+"HardwareControl": {
+"iface": true,
+"methods": [
+"backgroundLight",
+"beginTouchAction",
+"endTouchAction",
+"getName",
+"isBeingTouched",
+"setBackgroundLight",
+"setIndexInGroup",
+"setName"
+]
+},
+"HardwareControlType": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"HardwareDevice": {
+"iface": true,
+"methods": [
+"deviceMatcher"
+]
+},
+"HardwareElement": {
+"iface": true,
+"methods": [
+"getHeight",
+"getId",
+"getLabel",
+"getLabelColor",
+"getLabelPosition",
+"getWidth",
+"getX",
+"getY",
+"setBounds",
+"setLabel",
+"setLabelColor",
+"setLabelPosition"
+]
+},
+"HardwareInputMatcher": {
+"iface": true,
+"methods": []
+},
+"HardwareLight": {
+"iface": true,
+"methods": []
+},
+"HardwareLightVisualState": {
+"iface": false,
+"methods": [
+"createBlinking",
+"createForColor",
+"defaultLabelColorForLightColor",
+"equals",
+"getBlinkOffColor",
+"getColor",
+"getLabelBlinkOffColor",
+"getLabelColor",
+"getOffBlinkTime",
+"getOnBlinkTime",
+"hashCode",
+"isBlinking"
+]
+},
+"HardwareOutputElement": {
+"iface": true,
+"methods": [
+"onUpdateHardware"
+]
+},
+"HardwarePixelDisplay": {
+"iface": true,
+"methods": [
+"bitmap"
+]
+},
+"HardwareProperty": {
+"iface": true,
+"methods": []
+},
+"HardwareSlider": {
+"iface": true,
+"methods": [
+"setIsHorizontal"
+]
+},
+"HardwareSurface": {
+"iface": true,
+"methods": [
+"createAbsoluteHardwareKnob",
+"createHardwareButton",
+"createHardwarePixelDisplay",
+"createHardwareSlider",
+"createHardwareTextDisplay",
+"createMultiStateHardwareLight",
+"createOnOffHardwareLight",
+"createPianoKeyboard",
+"createRelativeHardwareKnob",
+"hardwareControls",
+"hardwareElementWithId",
+"hardwareOutputElements",
+"invalidateHardwareOutputState",
+"setPhysicalSize",
+"updateHardware"
+]
+},
+"HardwareTextDisplay": {
+"iface": true,
+"methods": [
+"line"
+]
+},
+"HardwareTextDisplayLine": {
+"iface": true,
+"methods": [
+"backgroundColor",
+"text",
+"textColor"
+]
+},
+"InputPipe": {
+"iface": true,
+"methods": [
+"read",
+"readAsync"
+]
+},
+"InsertionPoint": {
+"iface": true,
+"methods": [
+"browse",
+"browseAction",
+"copyDevices",
+"copySlotsOrScenes",
+"copyTracks",
+"insertBitwigDevice",
+"insertCLAPDevice",
+"insertFile",
+"insertVST2Device",
+"insertVST3Device",
+"moveDevices",
+"moveSlotsOrScenes",
+"moveTracks",
+"paste"
+]
+},
+"IntegerHardwareProperty": {
+"iface": true,
+"methods": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+]
+},
+"IntegerValue": {
+"iface": true,
+"methods": [
+"addValueObserver",
+"get",
+"getAsInt"
+]
+},
+"InternalHardwareLightState": {
+"iface": false,
+"methods": [
+"equals",
+"getVisualState"
+]
+},
+"LastClickedParameter": {
+"iface": true,
+"methods": [
+"isLocked",
+"parameter",
+"parameterColor",
+"smartToggleLock",
+"smartToggleLockAction"
+]
+},
+"Macro": {
+"iface": true,
+"methods": [
+"addLabelObserver",
+"getAmount",
+"getModulationSource"
+]
+},
+"MasterRecorder": {
+"iface": true,
+"methods": [
+"duration",
+"isActive",
+"start",
+"stop",
+"toggle"
+]
+},
+"MasterTrack": {
+"iface": true,
+"methods": []
+},
+"MidiExpressions": {
+"iface": true,
+"methods": [
+"createIsCCExpression",
+"createIsCCValueExpression",
+"createIsNoteOffExpression",
+"createIsNoteOnExpression",
+"createIsPitchBendExpression",
+"createIsPolyAftertouch"
+]
+},
+"MidiIn": {
+"iface": true,
+"methods": [
+"createAbsoluteCCValueMatcher",
+"createAbsolutePitchBendValueMatcher",
+"createAbsoluteValueMatcher",
+"createActionMatcher",
+"createCCActionMatcher",
+"createNoteInput",
+"createNoteOffActionMatcher",
+"createNoteOffVelocityValueMatcher",
+"createNoteOnActionMatcher",
+"createNoteOnVelocityValueMatcher",
+"createPolyAftertouchValueMatcher",
+"createRelative2sComplementCCValueMatcher",
+"createRelative2sComplementValueMatcher",
+"createRelativeBinOffsetCCValueMatcher",
+"createRelativeBinOffsetValueMatcher",
+"createRelativeSignedBit2CCValueMatcher",
+"createRelativeSignedBit2ValueMatcher",
+"createRelativeSignedBitCCValueMatcher",
+"createRelativeSignedBitValueMatcher",
+"createRelativeValueMatcher",
+"createSequencedValueMatcher",
+"hardwareAddress",
+"setMidiCallback",
+"setSysexCallback"
+]
+},
+"MidiOut": {
+"iface": true,
+"methods": [
+"sendMidi",
+"sendSysex",
+"sendSysexBytes",
+"setShouldSendMidiBeatClock"
+]
+},
+"Mixer": {
+"iface": true,
+"methods": [
+"addClipLauncherSectionVisibilityObserver",
+"addCrossFadeSectionVisibilityObserver",
+"addDeviceSectionVisibilityObserver",
+"addIoSectionVisibilityObserver",
+"addMeterSectionVisibilityObserver",
+"addSendsSectionVisibilityObserver",
+"isClipLauncherSectionVisible",
+"isCrossFadeSectionVisible",
+"isDeviceSectionVisible",
+"isIoSectionVisible",
+"isMeterSectionVisible",
+"isSendSectionVisible",
+"toggleClipLauncherSectionVisibility",
+"toggleCrossFadeSectionVisibility",
+"toggleDeviceSectionVisibility",
+"toggleIoSectionVisibility",
+"toggleMeterSectionVisibility",
+"toggleSendsSectionVisibility",
+"zoomInTrackWidthsAll",
+"zoomInTrackWidthsAllAction",
+"zoomInTrackWidthsSelected",
+"zoomInTrackWidthsSelectedAction",
+"zoomOutTrackWidthsAll",
+"zoomOutTrackWidthsAllAction",
+"zoomOutTrackWidthsSelected",
+"zoomOutTrackWidthsSelectedAction",
+"zoomTrackWidthsAllStepper",
+"zoomTrackWidthsSelectedStepper"
+]
+},
+"ModulationSource": {
+"iface": true,
+"methods": [
+"addIsMappedObserver",
+"addIsMappingObserver",
+"addNameObserver",
+"isMapped",
+"isMapping",
+"name",
+"toggleIsMapping"
+]
+},
+"MultiSampleBrowsingSession": {
+"iface": true,
+"methods": [
+"getFileTypeFilter"
+]
+},
+"MultiStateHardwareLight": {
+"iface": true,
+"methods": [
+"getBestLightStateForColor",
+"setColor",
+"setColorSupplier",
+"setColorToStateFunction",
+"state"
+]
+},
+"MusicBrowsingSession": {
+"iface": true,
+"methods": [
+"getFileTypeFilter"
+]
+},
+"NoteInput$NoteExpression": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"NoteInput": {
+"iface": true,
+"methods": [
+"arpeggiator",
+"assignPolyphonicAftertouchToExpression",
+"includeInAllInputs",
+"noteLatch",
+"sendRawMidiEvent",
+"setKeyTranslationTable",
+"setShouldConsumeEvents",
+"setUseExpressiveMidi",
+"setUseMultidimensionalPolyphonicExpression",
+"setVelocityTranslationTable"
+]
+},
+"NoteLatch": {
+"iface": true,
+"methods": [
+"activeNotes",
+"isEnabled",
+"mode",
+"mono",
+"releaseNotes",
+"velocityThreshold"
+]
+},
+"NoteOccurrence": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"NoteStep$State": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"NoteStep": {
+"iface": true,
+"methods": [
+"chance",
+"channel",
+"duration",
+"gain",
+"isChanceEnabled",
+"isIsSelected",
+"isMuted",
+"isOccurrenceEnabled",
+"isRecurrenceEnabled",
+"isRepeatEnabled",
+"occurrence",
+"pan",
+"pressure",
+"recurrenceLength",
+"recurrenceMask",
+"releaseVelocity",
+"repeatCount",
+"repeatCurve",
+"repeatVelocityCurve",
+"repeatVelocityEnd",
+"setChance",
+"setDuration",
+"setGain",
+"setIsChanceEnabled",
+"setIsMuted",
+"setIsOccurrenceEnabled",
+"setIsRecurrenceEnabled",
+"setIsRepeatEnabled",
+"setOccurrence",
+"setPan",
+"setPressure",
+"setRecurrence",
+"setReleaseVelocity",
+"setRepeatCount",
+"setRepeatCurve",
+"setRepeatVelocityCurve",
+"setRepeatVelocityEnd",
+"setTimbre",
+"setTranspose",
+"setVelocity",
+"setVelocitySpread",
+"state",
+"timbre",
+"transpose",
+"velocity",
+"velocitySpread",
+"x",
+"y"
+]
+},
+"NotificationSettings": {
+"iface": true,
+"methods": [
+"getUserNotificationsEnabled",
+"setShouldShowChannelSelectionNotifications",
+"setShouldShowDeviceLayerSelectionNotifications",
+"setShouldShowDeviceSelectionNotifications",
+"setShouldShowMappingNotifications",
+"setShouldShowPresetNotifications",
+"setShouldShowSelectionNotifications",
+"setShouldShowTrackSelectionNotifications",
+"setShouldShowValueNotifications"
+]
+},
+"ObjectArrayValue": {
+"iface": true,
+"methods": [
+"get",
+"isEmpty"
+]
+},
+"ObjectHardwareProperty": {
+"iface": true,
+"methods": [
+"currentValue",
+"lastSentValue",
+"onUpdateHardware",
+"setValue",
+"setValueSupplier"
+]
+},
+"ObjectProxy": {
+"iface": true,
+"methods": [
+"createEqualsValue",
+"exists"
+]
+},
+"OnOffHardwareLight": {
+"iface": true,
+"methods": [
+"isOn",
+"setOffColor",
+"setOffVisualState",
+"setOnColor",
+"setOnVisualState",
+"setStateToVisualStateFuncation",
+"setStateToVisualStateFunction"
+]
+},
+"OutputPipe": {
+"iface": true,
+"methods": [
+"write",
+"writeAsync"
+]
+},
+"Parameter": {
+"iface": true,
+"methods": [
+"addNameObserver",
+"addValueDisplayObserver",
+"deleteAllAutomation",
+"hasAutomation",
+"modulatedValue",
+"name",
+"reset",
+"restoreAutomationControl",
+"setIndication",
+"setLabel",
+"touch",
+"value"
+]
+},
+"ParameterBank": {
+"iface": true,
+"methods": [
+"getParameter",
+"getParameterCount",
+"setHardwareLayout"
+]
+},
+"PianoKeyboard": {
+"iface": true,
+"methods": [
+"setChannel",
+"setIsVelocitySensitive",
+"setMidiIn",
+"setNoteInput",
+"setSupportsPolyAftertouch"
+]
+},
+"PinnableCursor": {
+"iface": true,
+"methods": [
+"isPinned"
+]
+},
+"PinnableCursorClip": {
+"iface": true,
+"methods": []
+},
+"PinnableCursorDevice": {
+"iface": true,
+"methods": []
+},
+"Pipe": {
+"iface": true,
+"methods": []
+},
+"PlayingNote": {
+"iface": true,
+"methods": [
+"pitch",
+"velocity"
+]
+},
+"PlayingNoteArrayValue$1": {
+"iface": false,
+"methods": []
+},
+"PlayingNoteArrayValue": {
+"iface": true,
+"methods": [
+"isNotePlaying"
+]
+},
+"PopupBrowser": {
+"iface": true,
+"methods": [
+"canAudition",
+"cancel",
+"cancelAction",
+"categoryColumn",
+"commit",
+"commitAction",
+"contentTypeNames",
+"creatorColumn",
+"deviceColumn",
+"deviceTypeColumn",
+"fileTypeColumn",
+"locationColumn",
+"resultsColumn",
+"selectFirstFile",
+"selectLastFile",
+"selectNextFile",
+"selectNextFileAction",
+"selectPreviousFile",
+"selectPreviousFileAction",
+"selectedContentTypeIndex",
+"selectedContentTypeName",
+"shouldAudition",
+"smartCollectionColumn",
+"tagColumn",
+"title"
+]
+},
+"Preferences": {
+"iface": true,
+"methods": []
+},
+"PresetBrowsingSession": {
+"iface": true,
+"methods": [
+"getCategoryFilter",
+"getFileTypeFilter",
+"getPresetTypeFilter"
+]
+},
+"PrimaryDevice$ChainLocation": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"PrimaryDevice$DeviceType": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"PrimaryDevice": {
+"iface": true,
+"methods": [
+"addCanSwitchToDeviceObserver",
+"switchToDevice"
+]
+},
+"Project": {
+"iface": true,
+"methods": [
+"createScene",
+"createSceneFromPlayingLauncherClips",
+"cueMix",
+"cueVolume",
+"getRootTrackGroup",
+"getShownTopLevelTrackGroup",
+"hasArmedTracks",
+"hasMutedTracks",
+"hasSoloedTracks",
+"isModified",
+"unarmAll",
+"unmuteAll",
+"unsoloAll"
+]
+},
+"RangedValue": {
+"iface": true,
+"methods": [
+"addRawValueObserver",
+"addValueObserver",
+"discreteValueCount",
+"discreteValueNames",
+"displayedValue",
+"get",
+"getAsDouble",
+"getOrigin",
+"getRaw"
+]
+},
+"RelativeHardwarControlBindable": {
+"iface": true,
+"methods": [
+"addBinding",
+"addBindingWithSensitivity"
+]
+},
+"RelativeHardwareControl": {
+"iface": true,
+"methods": [
+"addBindingWithRange",
+"addBindingWithRangeAndSensitivity",
+"addBindingWithSensitivity",
+"getStepSize",
+"setAdjustValueMatcher",
+"setBindingWithRange",
+"setBindingWithRangeAndSensitivity",
+"setBindingWithSensitivity",
+"setSensitivity",
+"setStepSize"
+]
+},
+"RelativeHardwareControlBinding": {
+"iface": true,
+"methods": []
+},
+"RelativeHardwareControlToRangedValueBinding": {
+"iface": true,
+"methods": []
+},
+"RelativeHardwareKnob": {
+"iface": true,
+"methods": []
+},
+"RelativeHardwareValueMatcher": {
+"iface": true,
+"methods": []
+},
+"RelativePosition": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"RemoteConnection": {
+"iface": true,
+"methods": [
+"disconnect",
+"send",
+"setDisconnectCallback",
+"setReceiveCallback"
+]
+},
+"RemoteControl": {
+"iface": true,
+"methods": [
+"isBeingMapped",
+"name"
+]
+},
+"RemoteControlsPage": {
+"iface": true,
+"methods": [
+"getName",
+"getParameter"
+]
+},
+"RemoteSocket": {
+"iface": true,
+"methods": [
+"getPort",
+"setClientConnectCallback"
+]
+},
+"SampleBrowsingSession": {
+"iface": true,
+"methods": [
+"getFileTypeFilter"
+]
+},
+"Scene": {
+"iface": true,
+"methods": [
+"addClipCountObserver",
+"addIsSelectedInEditorObserver",
+"addPositionObserver",
+"clipCount",
+"getName",
+"name",
+"selectInEditor",
+"showInEditor"
+]
+},
+"SceneBank": {
+"iface": true,
+"methods": [
+"addCanScrollDownObserver",
+"addCanScrollUpObserver",
+"addSceneCountObserver",
+"addScrollPositionObserver",
+"getScene",
+"launchScene",
+"scrollDown",
+"scrollPageDown",
+"scrollPageUp",
+"scrollTo",
+"scrollUp",
+"setIndication"
+]
+},
+"Scrollable": {
+"iface": true,
+"methods": [
+"canScrollBackwards",
+"canScrollForwards",
+"scrollBackwards",
+"scrollBackwardsAction",
+"scrollBy",
+"scrollByPages",
+"scrollForwards",
+"scrollForwardsAction",
+"scrollIntoView",
+"scrollPageBackwards",
+"scrollPageBackwardsAction",
+"scrollPageForwards",
+"scrollPageForwardsAction",
+"scrollPosition"
+]
+},
+"ScrollbarModel": {
+"iface": true,
+"methods": [
+"getContentPerPixel",
+"isZoomable",
+"zoomAtPosition",
+"zoomToContentRegion",
+"zoomToFit",
+"zoomToFitSelectionOrAll",
+"zoomToFitSelectionOrCurrent",
+"zoomToSelection"
+]
+},
+"Send": {
+"iface": true,
+"methods": [
+"isEnabled",
+"isPreFader",
+"sendChannelColor",
+"sendMode"
+]
+},
+"SendBank": {
+"iface": true,
+"methods": []
+},
+"SettableBeatTimeValue": {
+"iface": true,
+"methods": [
+"beatStepper",
+"incRaw",
+"setRaw"
+]
+},
+"SettableBooleanValue": {
+"iface": true,
+"methods": [
+"set",
+"setToFalseAction",
+"setToTrueAction",
+"toggle",
+"toggleAction"
+]
+},
+"SettableColorValue": {
+"iface": true,
+"methods": [
+"set"
+]
+},
+"SettableDoubleValue": {
+"iface": true,
+"methods": [
+"inc",
+"set"
+]
+},
+"SettableEnumValue": {
+"iface": true,
+"methods": [
+"set"
+]
+},
+"SettableIntegerValue": {
+"iface": true,
+"methods": [
+"inc",
+"set"
+]
+},
+"SettableRangedValue": {
+"iface": true,
+"methods": [
+"addBinding",
+"addBindingWithRange",
+"addBindingWithRangeAndSensitivity",
+"addBindingWithSensitivity",
+"inc",
+"incRaw",
+"set",
+"setImmediately",
+"setRaw"
+]
+},
+"SettableStringArrayValue": {
+"iface": true,
+"methods": [
+"set"
+]
+},
+"SettableStringValue": {
+"iface": true,
+"methods": [
+"set"
+]
+},
+"Setting": {
+"iface": true,
+"methods": [
+"disable",
+"enable",
+"getCategory",
+"getLabel",
+"hide",
+"show"
+]
+},
+"Settings": {
+"iface": true,
+"methods": [
+"getBooleanSetting",
+"getBooleanSettingForValue",
+"getColorSetting",
+"getColorSettingForValue",
+"getEnumSetting",
+"getEnumSettingForValue",
+"getNumberSetting",
+"getSignalSetting",
+"getStringSetting"
+]
+},
+"Signal": {
+"iface": true,
+"methods": [
+"addSignalObserver",
+"fire"
+]
+},
+"SoloValue": {
+"iface": true,
+"methods": [
+"toggle",
+"toggleUsingPreferences"
+]
+},
+"SourceSelector": {
+"iface": true,
+"methods": [
+"getHasAudioInputSelected",
+"getHasNoteInputSelected",
+"hasAudioInputSelected",
+"hasNoteInputSelected"
+]
+},
+"SpecificBitwigDevice": {
+"iface": true,
+"methods": [
+"createIntegerOutputValue",
+"createParameter"
+]
+},
+"SpecificDevice": {
+"iface": true,
+"methods": []
+},
+"SpecificPluginDevice": {
+"iface": true,
+"methods": [
+"createParameter"
+]
+},
+"StringArrayValue": {
+"iface": true,
+"methods": [
+"get"
+]
+},
+"StringHardwareProperty": {
+"iface": true,
+"methods": [
+"currentValue",
+"getMaxChars",
+"lastSentValue",
+"onUpdateHardware",
+"setMaxChars",
+"setValue",
+"setValueSupplier"
+]
+},
+"StringValue": {
+"iface": true,
+"methods": [
+"get",
+"getLimited"
+]
+},
+"Subscribable": {
+"iface": true,
+"methods": [
+"isSubscribed",
+"setIsSubscribed",
+"subscribe",
+"unsubscribe"
+]
+},
+"TimeSignatureValue": {
+"iface": true,
+"methods": [
+"denominator",
+"get",
+"getDenominator",
+"getNumerator",
+"getTicks",
+"numerator",
+"set",
+"ticks"
+]
+},
+"TimelineEditor": {
+"iface": true,
+"methods": [
+"getHorizontalScrollbarModel",
+"zoomIn",
+"zoomInAction",
+"zoomLevel",
+"zoomOut",
+"zoomOutAction",
+"zoomToFit",
+"zoomToFitAction",
+"zoomToFitSelectionOrAll",
+"zoomToFitSelectionOrAllAction",
+"zoomToFitSelectionOrPrevious",
+"zoomToFitSelectionOrPreviousAction",
+"zoomToSelection",
+"zoomToSelectionAction"
+]
+},
+"Track": {
+"iface": true,
+"methods": [
+"addIsGroupObserver",
+"addIsQueuedForStopObserver",
+"addNoteSource",
+"addPitchNamesObserver",
+"addPositionObserver",
+"addTrackTypeObserver",
+"afterTrackInsertionPoint",
+"arm",
+"autoMonitor",
+"beforeTrackInsertionPoint",
+"canHoldAudioData",
+"canHoldNoteData",
+"clipLauncherSlotBank",
+"createCursorDevice",
+"createCursorRemoteControlsPage",
+"createEffectTrackBank",
+"createMainTrackBank",
+"createMasterTrack",
+"createNewLauncherClip",
+"createParentTrack",
+"createSiblingsTrackBank",
+"createTrackBank",
+"crossFadeMode",
+"getArm",
+"getAutoMonitor",
+"getCanHoldAudioData",
+"getCanHoldNoteData",
+"getClipLauncher",
+"getClipLauncherSlots",
+"getCrossFadeMode",
+"getIsMatrixQueuedForStop",
+"getIsMatrixStopped",
+"getIsPreFader",
+"getMonitor",
+"getPrimaryDevice",
+"getPrimaryInstrument",
+"getSourceSelector",
+"isGroup",
+"isGroupExpanded",
+"isMonitoring",
+"isQueuedForStop",
+"isStopped",
+"launchLastClipWithOptions",
+"launchLastClipWithOptionsAction",
+"monitor",
+"monitorMode",
+"playNote",
+"position",
+"recordNewLauncherClip",
+"removeNoteSource",
+"returnToArrangement",
+"selectSlot",
+"sendMidi",
+"setName",
+"sourceSelector",
+"startNote",
+"stop",
+"stopAction",
+"stopAlt",
+"stopAltAction",
+"stopNote",
+"trackType"
+]
+},
+"TrackBank": {
+"iface": true,
+"methods": [
+"addCanScrollScenesDownObserver",
+"addCanScrollScenesUpObserver",
+"addCanScrollTracksDownObserver",
+"addCanScrollTracksUpObserver",
+"addSceneCountObserver",
+"addSceneScrollPositionObserver",
+"addTrackScrollPositionObserver",
+"followCursorTrack",
+"getChannel",
+"getClipLauncherScenes",
+"getTrack",
+"launchScene",
+"sceneBank",
+"scrollScenesDown",
+"scrollScenesPageDown",
+"scrollScenesPageUp",
+"scrollScenesUp",
+"scrollToScene",
+"scrollToTrack",
+"scrollTracksDown",
+"scrollTracksPageDown",
+"scrollTracksPageUp",
+"scrollTracksUp",
+"setContentFilter",
+"setShouldShowClipLauncherFeedback",
+"setSupportsDeviceChainChannels",
+"setTrackScrollStepSize"
+]
+},
+"TrackBankContentFilter": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"Transport": {
+"iface": true,
+"methods": [
+"addAutomationOverrideObserver",
+"addAutomationWriteModeObserver",
+"addClickObserver",
+"addClipLauncherPostRecordingActionObserver",
+"addCueMarkerAtPlaybackPosition",
+"addCueMarkerAtPlaybackPositionAction",
+"addIsLoopActiveObserver",
+"addIsPlayingObserver",
+"addIsRecordingObserver",
+"addIsWritingArrangerAutomationObserver",
+"addIsWritingClipLauncherAutomationObserver",
+"addLauncherOverdubObserver",
+"addMetronomeTicksObserver",
+"addMetronomeVolumeObserver",
+"addOverdubObserver",
+"addPreRollClickObserver",
+"addPreRollObserver",
+"addPunchInObserver",
+"addPunchOutObserver",
+"arrangerLoopDuration",
+"arrangerLoopStart",
+"automationWriteMode",
+"clipLauncherPostRecordingAction",
+"continuePlayback",
+"continuePlaybackAction",
+"crossfade",
+"defaultLaunchQuantization",
+"fastForward",
+"fastForwardAction",
+"getClipLauncherPostRecordingTimeOffset",
+"getCrossfade",
+"getInPosition",
+"getOutPosition",
+"getPosition",
+"getTempo",
+"getTimeSignature",
+"incPosition",
+"increaseTempo",
+"isArrangerAutomationWriteEnabled",
+"isArrangerLoopEnabled",
+"isArrangerOverdubEnabled",
+"isArrangerRecordEnabled",
+"isAutomationOverrideActive",
+"isClipLauncherAutomationWriteEnabled",
+"isClipLauncherOverdubEnabled",
+"isFillModeActive",
+"isMetronomeAudibleDuringPreRoll",
+"isMetronomeEnabled",
+"isMetronomeTickPlaybackEnabled",
+"isPlaying",
+"isPunchInEnabled",
+"isPunchOutEnabled",
+"jumpToNextCueMarker",
+"jumpToNextCueMarkerAction",
+"jumpToPlayStartPosition",
+"jumpToPlayStartPositionAction",
+"jumpToPreviousCueMarker",
+"jumpToPreviousCueMarkerAction",
+"launchFromPlayStartPosition",
+"launchFromPlayStartPositionAction",
+"metronomeVolume",
+"play",
+"playAction",
+"playPosition",
+"playPositionInSeconds",
+"playStartPosition",
+"playStartPositionInSeconds",
+"preRoll",
+"record",
+"recordAction",
+"resetAutomationOverrides",
+"restart",
+"restartAction",
+"returnToArrangement",
+"rewind",
+"rewindAction",
+"setAutomationWriteMode",
+"setClick",
+"setClipLauncherPostRecordingAction",
+"setLauncherOverdub",
+"setLoop",
+"setMetronomeValue",
+"setOverdub",
+"setPosition",
+"setPreRoll",
+"stop",
+"stopAction",
+"tapTempo",
+"tapTempoAction",
+"tempo",
+"timeSignature",
+"toggleClick",
+"toggleLatchAutomationWriteMode",
+"toggleLauncherOverdub",
+"toggleLoop",
+"toggleMetronomeDuringPreRoll",
+"toggleMetronomeTicks",
+"toggleOverdub",
+"togglePlay",
+"togglePunchIn",
+"togglePunchOut",
+"toggleWriteArrangerAutomation",
+"toggleWriteClipLauncherAutomation"
+]
+},
+"UsbDevice": {
+"iface": true,
+"methods": [
+"deviceMatcher",
+"iface",
+"ifaces"
+]
+},
+"UsbInputPipe": {
+"iface": true,
+"methods": []
+},
+"UsbInterface": {
+"iface": true,
+"methods": [
+"interfaceMatcher",
+"pipe",
+"pipeCount",
+"pipes"
+]
+},
+"UsbOutputPipe": {
+"iface": true,
+"methods": []
+},
+"UsbPipe": {
+"iface": true,
+"methods": [
+"device",
+"direction",
+"endpointAddress",
+"endpointMatcher",
+"transferType"
+]
+},
+"UsbTransferDirection": {
+"iface": false,
+"methods": [
+"$values",
+"getForEndpointAddress",
+"valueOf",
+"values"
+]
+},
+"UsbTransferStatus": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"UsbTransferType": {
+"iface": false,
+"methods": [
+"$values",
+"valueOf",
+"values"
+]
+},
+"UserControlBank": {
+"iface": true,
+"methods": [
+"getControl"
+]
+},
+"Value": {
+"iface": true,
+"methods": [
+"addValueObserver",
+"markInterested"
+]
+}
+}
