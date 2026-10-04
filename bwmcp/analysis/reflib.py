@@ -1,7 +1,7 @@
 """Reference library: analyse reference tracks once, store in library.json, compare a mix against them.
 Built on mastering.analyze (LUFS/TP/crest/LRA/width/mid-side per band) plus a 1/3-octave tonal balance.
-Supported input: WAV (8/16/24/32-bit int, 32-bit float via scipy) and AIFF (own PCM parser). MP3/FLAC/AAC/OGG are NOT
-supported (no decoder installed, no new dependencies allowed): convert to WAV first."""
+Supported input: WAV (8/16/24/32-bit int, 32-bit float via scipy), AIFF (own PCM parser) and, through the `soundfile` package (libsndfile),
+MP3, FLAC and OGG. AAC/M4A/WMA/Opus are not supported: convert to WAV first."""
 import json
 import os
 import struct
@@ -19,7 +19,8 @@ CENTERS = [25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630
            2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000]
 GROUPS = [("sub", 20, 60), ("bass", 60, 250), ("low-mid", 250, 500), ("mid", 500, 2000),
           ("presence", 2000, 6000), ("air", 6000, 20000)]
-UNSUPPORTED = (".mp3", ".flac", ".m4a", ".aac", ".ogg", ".opus", ".wma")
+UNSUPPORTED = (".m4a", ".aac", ".opus", ".wma")
+SOUNDFILE = (".mp3", ".flac", ".ogg")
 
 
 # ---------------------------------------------------------------- loading
@@ -60,11 +61,28 @@ def _load_aiff(path):
     return int(round(sr)), (v / float(1 << (bits - 1))).reshape(-1, ch)
 
 
+def _load_soundfile(path, start=0.0, seconds=None):
+    """MP3 / FLAC / OGG through libsndfile; reads only the requested section."""
+    try:
+        import soundfile as sf
+    except ImportError:
+        raise ValueError("MP3/FLAC/OGG need the 'soundfile' package: pip install soundfile") from None
+    with sf.SoundFile(path) as f:
+        sr = f.samplerate
+        f.seek(int(start * sr))
+        frames = -1 if seconds is None else int(seconds * sr)
+        x = f.read(frames, dtype="float64", always_2d=True)
+    x = np.repeat(x, 2, axis=1) if x.shape[1] == 1 else x[:, :2]
+    return x, sr
+
+
 def load_audio(path, start=0.0, seconds=None):
     """-> (stereo float64 array, sr). Raises a clear error for unsupported formats."""
     ext = os.path.splitext(path)[1].lower()
     if ext in UNSUPPORTED:
-        raise ValueError(f"{ext} is not supported (no decoder installed); convert to WAV or AIFF first")
+        raise ValueError(f"{ext} is not supported (no decoder installed); convert to WAV, AIFF, FLAC, MP3 or OGG first")
+    if ext in SOUNDFILE:
+        return _load_soundfile(path, start, seconds)
     if ext in (".aif", ".aiff", ".aifc"):
         sr, x = _load_aiff(path)
         x = x.astype(np.float64)

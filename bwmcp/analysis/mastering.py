@@ -56,6 +56,15 @@ def capture_loopback(seconds: float):
 
 
 def load_file(path: str, start: float = 0.0, seconds: float | None = None):
+    if os.path.splitext(path)[1].lower() in (".mp3", ".flac", ".ogg"):      # libsndfile decodes these; WAV/AIFF keep the scipy path
+        import soundfile as sf
+
+        with sf.SoundFile(path) as f:
+            f.seek(int(start * f.samplerate))
+            x = f.read(-1 if seconds is None else int(seconds * f.samplerate), dtype="float64", always_2d=True)
+            sr = f.samplerate
+        x = np.repeat(x, 2, axis=1) if x.shape[1] == 1 else x[:, :2]
+        return x, sr, f"file: {os.path.basename(path)}"
     sr, x = wavfile.read(path)
     if x.dtype.kind == "i":
         x = x / float(np.iinfo(x.dtype).max)

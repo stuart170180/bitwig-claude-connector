@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (125 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (133 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -496,11 +496,47 @@ Read a device's parameters in real units ('125 ms', '-12.0 dB', '3.08 kHz', ...)
 
 ### `edit_action(action, track_indices)`
 
-Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit. These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
+Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit, transpose_semitone_up/down, transpose_octave_up/down (clips or notes selected in the Arrange view or editor). These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
 
 ### `engine_recover(wait_seconds, normal_tracks)`
 
 Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this presses Cancel on Bitwig's crash dialog (never Send Report), deletes the crashed track (only when the window clearly shows its 'Device missing' panel), clicks 'Activate Audio Engine' and waits for the script to return. normal_tracks = how many tracks the project had before the crash. Safe to call when everything is fine: it then does nothing.
+
+## Device presets
+
+### `device_presets(device)`
+
+The device preset library: for each device (Reverb, Delay+, Compressor+, Saturator, De-Esser, Gate, Peak Limiter, Pitch Shifter, Tool) the preset names with a one-line description and their values (time values written as notes or beats follow the project tempo). Your own saved presets are included.
+
+### `apply_device_preset(track_index, device, preset, as_send, device_index)`
+
+Put a library preset on a track: inserts the device if the track has none (or use device_index to target one) and sets every value in real units, reading what Bitwig shows back. Tempo-based values (reverb sizes, pre-delay) are computed from the project tempo. as_send=True sets the reverb MIX to 100 % wet (for a device used on a send); otherwise the preset's insert mix is used. track_index -1 = master.
+
+### `save_device_preset(track_index, device_index, name, about)`
+
+Save a device's current numeric settings (as Bitwig displays them) as your own preset in the library, under the device's name.
+
+## Audio pitch & colour
+
+### `pitch_shift(track_index, semitones, cents, mix_pct, grain_rate_hz)`
+
+Shift the pitch of a whole track with Bitwig's Pitch Shifter (added if the track has none): semitones plus fine cents (+-24 st range). mix_pct 100 = fully shifted, lower blends with the original (a quick harmony/thickener). grain_rate_hz sets the shifter's grain rate. IMPORTANT: the shifter only produces frequencies on a grid equal to its grain rate (measured: at 10 Hz a +1 st shift of a 220 Hz tone landed on 220 or 250 Hz, at 1 Hz it was within 1 Hz). Use 1 to 2 Hz for fine (cents) or exact shifts, 10 Hz or more for big shifts on drums and transients. Works on audio and instrument tracks. Returns what Bitwig shows.
+
+### `fix_tuning(track_index, seconds, threshold_cents, apply)`
+
+Measure how far a track's tuning is from A=440 and correct it. The track is soloed, Bitwig plays for `seconds` (it starts the transport if it is stopped) while the master recorder captures it, the tuning offset in cents is measured on the audio, and when it is off by more than threshold_cents a Pitch Shifter (grain rate 1 Hz, the only setting that keeps cents-level accuracy) is set to the opposite fine-tune. Accuracy is about 1 Hz, so a low note can remain several cents off. apply=False only measures. Needs pitched material (a sample, vocal, chords or a synth), and playback from a clip or the arrangement.
+
+### `colour_schemes()`
+
+The colouring schemes color_tracks understands and the named palettes (genres and moods).
+
+### `color_tracks(scheme, track_indices, base, end, palette)`
+
+Colour tracks in one go. scheme: roles (by what each track is), rainbow, gradient (base -> end), mono (shades of base), warm_cool (warm = drums/bass/FX, cool = pads/keys/leads), palette (cycle a named palette, see colour_schemes). track_indices default = every track (effect tracks and master are not reachable from the API). Returns the colour given to each.
+
+### `color_clips(track_index, color, slots)`
+
+Give a track's launcher clips a colour (hex, e.g. '#ff8800'). slots default = every clip on the track.
 
 ## Chords & voicings
 

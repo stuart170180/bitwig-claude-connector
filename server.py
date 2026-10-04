@@ -11,18 +11,20 @@ from bwmcp.core.bridge import bw, deep, mcp  # noqa: E402,F401  (re-exported)
 from bwmcp.tools import (  # noqa: E402  (importing registers the tools)
     chords,
     clips,
+    devicepresets,
     devices,
     extras,
     grid,
     library,
     mixing,
+    pitchcolour,
     presets,
     session,
     tracks,
 )
 
 # Keep `server.<name>` working for scripts that import this module (the live monitor, tests, quick experiments).
-for _module in (chords, tracks, session, clips, devices, presets, mixing, library, extras, grid):
+for _module in (chords, tracks, session, clips, devices, presets, mixing, library, extras, grid, pitchcolour, devicepresets):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith("__")})
 
 if __name__ == "__main__":

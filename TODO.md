@@ -1,14 +1,14 @@
 # To do
 
-Connector v7.1.0 (125 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v7.2.0 (133 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-04.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
 - [ ] Update the portfolio with version numbers at every milestone (v7.0.0 done on 2026-10-04).
 - [x] Chords and voicings engine and tools (v7.1.0). [ ] still to do: show them in the live remote.
-- [ ] Audio pitch controls and colour controls (clips, tracks, scenes).
-- [ ] Preset library: reverb and other devices built as real-unit presets (`device_units`) saved as recipes.
-- [ ] Live remote as a desktop app (and/or plugin) with chords, controls and meters.
+- [x] Audio pitch controls and colour controls (v7.2.0).
+- [x] Preset library: reverb, Delay+, compressor, saturator, de-esser, gate, limiter, pitch shifter, tool (v7.2.0).
+- [x] Live remote as a desktop window: `python manage.py app` (v7.2.0). [ ] A real VST/CLAP plugin would need a C++ toolchain (JUCE); not started.
 - [ ] Work through the build list below.
 
 ## Needs the user's song (needs a real project open)
@@ -27,7 +27,7 @@ Updated 2026-10-04.
 - [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded.
 - [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
 - [ ] Parallel compression and layer chains.
-- [ ] Reference library: decode MP3 and FLAC.
+- [x] Reference library decodes MP3, FLAC and OGG (soundfile).
 - [ ] `masking_fix` verifies its own improvement; confirm bounce / consolidate / normalize worked.
 - [ ] PopupBrowser (browser-based preset loading) and the project file's track tree.
 

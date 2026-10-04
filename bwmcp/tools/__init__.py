@@ -2,11 +2,13 @@
 from bwmcp.tools import (  # noqa: F401  (registration happens on import)
     chords,
     clips,
+    devicepresets,
     devices,
     extras,
     grid,
     library,
     mixing,
+    pitchcolour,
     presets,
     session,
     tracks,

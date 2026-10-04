@@ -77,12 +77,23 @@ x, s2 = reflib.load_audio(aif)
 print("aiff ok", os.path.basename(aif), x.shape, s2, round(float(np.abs(x).max()), 3))
 assert np.abs(x).max() > 0.01
 # unsupported
-for ext in (".mp3", ".flac"):
+for ext in (".m4a", ".wma"):
     try:
         reflib.load_audio("x" + ext)
         raise SystemExit("should fail")
     except ValueError as e:
         print("unsupported ->", e)
+# FLAC and OGG now decode through soundfile: write one and read it back
+import tempfile
+import soundfile as sf
+_tone = (0.3 * np.sin(2 * np.pi * 440 * np.arange(44100 * 2) / 44100))
+for _ext in (".flac", ".ogg"):
+    _p = os.path.join(tempfile.gettempdir(), "reflib_test_tone" + _ext)
+    sf.write(_p, np.stack([_tone, _tone], axis=1), 44100)
+    _x, _sr = reflib.load_audio(_p, 0.5, 1.0)
+    assert _sr == 44100 and abs(len(_x) - 44100) < 5 and 0.25 < np.abs(_x).max() < 0.35, (_ext, _x.shape, np.abs(_x).max())
+    print("decoded", _ext, _x.shape)
+    os.remove(_p)
 # real-ish audio: loops from the sample library (NOT commercial references)
 loops = [i for i in samples.index() if i["kind"] == "loop" and i["path"].lower().endswith(".wav")
          and ("Irrupt" in i["name"] or "Hammond" in i["name"] or "Bass" in i["name"])][:4]

@@ -186,6 +186,8 @@ async def main():
             await c("edit_action", {"action": "zoom_to_fit"})
             await c("grid_templates")
             await c("chord_library")
+            await c("device_presets", {"device": "Reverb"})
+            await c("colour_schemes")
             await c("suggest_voicing", {"genre": "trance"})
             await c("chord_voicings", {"chord": "Dm9", "styles": ["drop2", "neo_soul"]})
             await c("grid_inspect", {"base": "fx"})

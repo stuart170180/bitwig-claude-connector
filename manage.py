@@ -7,6 +7,7 @@
     python manage.py autostart [--remove|--status]   start the monitor at Windows login
     python manage.py backup [--list|--restore ZIP]   zip backups
     python manage.py recover [--tracks N]        after an audio-engine crash: cancel the dialog, delete the crashed track, reactivate
+    python manage.py app [--shortcut|--top]      the live remote as a desktop window (Start-menu shortcut with --shortcut)
     python manage.py test                        run the offline tests (live tests: python tests/live_test.py)"""
 import runpy
 import subprocess
@@ -24,6 +25,7 @@ COMMANDS = {
     "autostart": ("module", "bwmcp.monitor.autostart"),
     "backup": ("module", "bwmcp.library.backup"),
     "recover": ("module", "bwmcp.control.uiclick"),
+    "app": ("module", "bwmcp.monitor.desktop"),
 }
 
 

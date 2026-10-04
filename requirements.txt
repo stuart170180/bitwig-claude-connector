@@ -5,3 +5,5 @@ pyloudnorm>=0.1.1
 PyAudioWPatch>=0.2.12
 matplotlib>=3.8
 pyflakes>=3.0   # optional, for linting
+pywebview>=5.0   # optional, the desktop window for the live remote
+soundfile>=0.12   # MP3 / FLAC / OGG decoding for the reference library

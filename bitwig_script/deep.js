@@ -19,6 +19,11 @@ DISP_DEVICES["8750db61-e9d3-4d0e-a610-e734006a64dc"] = ["FREQ", "AMOUNT", "MONIT
 DISP_DEVICES["556300ac-3a6e-4423-966a-5d5dde459a1b"] = ["THRESHOLD_LEVEL", "ATTACK", "RELEASE", "DEPTH"];  // Gate
 DISP_DEVICES["93d11348-86ae-4ead-9fe7-84ac03b9369c"] = ["LOW_THRESHOLD", "LOW_RATIO", "LOW_KNEE", "HIGH_THRESHOLD", "HIGH_RATIO", "HIGH_KNEE", "DRIVE", "SKEW_THRESHOLD", "RATIO_SKEW", "KNEE_SKEW", "NORMALIZE", "CUTOFF", "POLES", "OUTPUT"];  // Saturator
 
+DISP_DEVICES["384fe469-6023-4f69-9560-e0c2eec2da49"] = ["PITCH", "MIX", "GRAIN_RATE"];  // Pitch Shifter
+DISP_DEVICES["4ac40334-99cc-43a3-b693-f3dc63211f0c"] = ["NOTE1", "NOTE2", "NOTE3", "NOTE4", "NOTE8", "NOTE7", "NOTE6", "NOTE5", "NOTE11", "NOTE10", "NOTE8VA", "NOTE9", "ROOT_KEY", "TUNE", "AMOUNT", "EDO_DIVISIONS", "MODE"];  // Micro-pitch
+DISP_DEVICES["7ec87fdf-0bf8-42e7-b54b-5d8b68e330b1"] = ["MIX", "RANGE", "SHIFT", "LR_SPLIT"];  // Freq Shifter
+DISP_DEVICES["e0ec7fdd-8b04-468b-8ebe-d320495957dc"] = ["REFERENCE_FREQUENCY", "SMOOTHING_FREQUENCY", "SILENCE_THRESHOLD", "HIGH_CUT_FREQUENCY"];  // Tuner
+
 function initDeep() {
    interest(cursorDevice.hasLayers()); interest(cursorDevice.hasSlots()); interest(cursorDevice.isNested());
    interest(cursorDevice.slotNames());

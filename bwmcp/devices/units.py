@@ -59,36 +59,81 @@ def read(bw, deep, track_index, device_index) -> dict:
     return {"device": name, "values": {k.split("/")[-1]: v["display"] for k, v in r.items() if v["display"] != ""}}
 
 
+def _guess(lo, hi, vlo, vhi, target, step):
+    """Next normalized value to try: interpolate between the bracket ends (log scale when the values span a wide positive range),
+    pulled inside the bracket, with plain bisection every third step as a safety net."""
+    import math
+
+    if step % 3 == 2 or vlo == vhi:
+        return (lo + hi) / 2
+    if min(vlo, vhi, target) > 0 and max(vlo, vhi) / min(vlo, vhi) > 8:
+        f = (math.log(target) - math.log(vlo)) / (math.log(vhi) - math.log(vlo))
+    else:
+        f = (target - vlo) / (vhi - vlo)
+    f = min(0.95, max(0.05, f))
+    return lo + (hi - lo) * f
+
+
 def set_values(bw, deep, track_index, device_index, targets: dict) -> dict:
+    """Set parameters in displayed units by searching for the normalized value whose display matches (interpolation search, 4-7 reads each)."""
     name, u = _device(deep, track_index, device_index)
     deep.goto(track_index, device_index)
-    time.sleep(0.6)
+    time.sleep(0.5)
     out = {}
 
     def at(pid, x):
         deep.set_values({"CONTENTS/" + pid: x})
-        time.sleep(0.25)
-        return bw.call("deep_display", uuid=u, ids=[pid])["CONTENTS/" + pid]["display"]
+        time.sleep(0.22)
+        shown = bw.call("deep_display", uuid=u, ids=[pid])["CONTENTS/" + pid]["display"]
+        return shown, number(shown)
 
     for pid, target in targets.items():
         pid = pid.upper()
-        a, b = number(at(pid, 0.0)), number(at(pid, 1.0))
+        _, a = at(pid, 0.0)
+        _, b = at(pid, 1.0)
         if a is None or b is None:
             out[pid] = {"error": "not a numeric parameter"}
             continue
-        up, lo, hi, best = b > a, 0.0, 1.0, (0.5, None)
-        for _ in range(12):
-            mid = (lo + hi) / 2
-            at(pid, mid)
-            shown = at(pid, mid)
-            v = number(shown)
-            best = (mid, shown)
-            if v is not None and abs(v - target) <= 1e-9 + abs(target) * 0.004:
+        if (target < min(a, b) - 1e-9) or (target > max(a, b) + 1e-9):
+            out[pid] = {"error": f"{target} is outside this parameter's range ({a} .. {b})"}
+            continue
+        lo, hi, vlo, vhi = 0.0, 1.0, a, b
+        up = b > a
+        best = (0.5, None)
+        for step in range(14):
+            x = _guess(lo, hi, vlo, vhi, target, step)
+            at(pid, x)                                         # the first read after a change can still show the old value
+            shown, v = at(pid, x)
+            best = (x, shown)
+            if v is None:
+                break
+            if abs(v - target) <= 1e-9 + abs(target) * 0.003:
                 break
             if (v < target) == up:
-                lo = mid
+                lo, vlo = x, v
             else:
-                hi = mid
-        shown = at(pid, best[0])
+                hi, vhi = x, v
+        shown = at(pid, best[0])[0]
         out[pid] = {"wanted": target, "shown": shown}
     return {"device": name, "set": out}
+
+
+def ranges(bw, deep, track_index, device_index) -> dict:
+    """{PARAMETER: (display at 0, display at 1, number at 0, number at 1)} for every parameter that has display text."""
+    name, u = _device(deep, track_index, device_index)
+    deep.goto(track_index, device_index)
+    time.sleep(0.5)
+    real = {x["id"].split("/")[-1] for x in deep.params(None, 400, 0)["params"]}          # ignore guessed ids that are not real parameters
+    pids = [k.split("/")[-1] for k in bw.call("deep_display", uuid=u) if k.split("/")[-1] in real]
+    cur = {}
+    for pid in pids:
+        row = []
+        for x in (0.0, 1.0):
+            deep.set_values({"CONTENTS/" + pid: x})
+            time.sleep(0.2)
+            bw.call("deep_display", uuid=u, ids=[pid])
+            shown = bw.call("deep_display", uuid=u, ids=[pid])["CONTENTS/" + pid]["display"]
+            row.append(shown)
+        if row[0] != "" or row[1] != "":
+            cur[pid] = (row[0], row[1], number(row[0]), number(row[1]))
+    return {"device": name, "ranges": cur}

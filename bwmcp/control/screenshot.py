@@ -48,9 +48,9 @@ def find_window(prefix: str = "Bitwig Studio"):
     return hwnd, title
 
 
-def capture(max_width: int = 1600):
+def capture(max_width: int = 1600, prefix: str = "Bitwig Studio"):
     """(PNG bytes, window title, (width, height)). Raises if the window is minimized."""
-    hwnd, title = find_window()
+    hwnd, title = find_window(prefix)
     if user32.IsIconic(hwnd):
         raise RuntimeError("Bitwig's window is minimized; restore it first")
     rect = wintypes.RECT()
