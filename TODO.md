@@ -1,6 +1,6 @@
 # To do
 
-Connector v7.4.0 (140 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v7.4.1 (141 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-04.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
@@ -24,7 +24,7 @@ Updated 2026-10-04.
 - [x] Sidechain source and FX track names/deletion by driving the UI (v7.3.0). [ ] FX track fader (pull the bus down) not done: the tap is pre-fader so ducking is unaffected.
 - [ ] Why Polymer cannot take a 20th module (Poly Grid takes 32). Decisive test: a module added in Bitwig's own UI, saved, diffed against the factory file.
 - [ ] Modulators: three measurement rounds found NO audible effect from an added LFO (docs/PRESET_FORMAT.md 11.4); needs a Bitwig-made reference preset to diff.
-- [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded.
+- [x] Arranger clips recorded by `record_arrangement` can be selected and read: `select_arranger_clip` (v7.4.1).
 - [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
 - [x] Parallel compression and layer chains (v7.4.0: `layer_chain`, `parallel_compression`, `add_layer`).
 - [x] Reference library decodes MP3, FLAC and OGG (soundfile).

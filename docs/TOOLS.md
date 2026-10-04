@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (140 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (141 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -523,6 +523,10 @@ Delete an FX (send) track by name, which the API cannot do: right-clicks it, che
 ### `add_layer(track_index, device_index)`
 
 Add a layer (a parallel chain) to a layer device such as FX Layer or Instrument Layer, which the API cannot do: shows the device on screen and double-clicks its empty layer area (Bitwig's 'Add layer' gesture). Checks the layer count afterwards. Then fill the layers with device_insert(..., layer=N).
+
+### `select_arranger_clip(track_index, clip, limit)`
+
+Select an arranger clip on a track by clicking it in the Arrange view, then read its notes. This is the missing link for clips that record_arrangement recorded (the API can only follow Bitwig's own selection). clip = which clip on that track, counted from the left (0 = the first). Bitwig must show the Arrange view with the track's clips on screen (scroll or zoom first, e.g. edit_action 'zoom_to_fit'). Returns the clip info and notes, or exists=false when no clip is found.
 
 ## Device presets
 

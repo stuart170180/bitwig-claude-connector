@@ -2,14 +2,14 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-140 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
+141 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
 
 ## How it fits together
 
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          └── bwmcp/    tools/ (the 140 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                          └── bwmcp/    tools/ (the 141 MCP tools, by topic) · core/ (connection) · music/ · devices/
                                         analysis/ · control/ · library/ · monitor/ ──> http://127.0.0.1:8780 live dashboard
 ```
 
@@ -133,7 +133,7 @@ N = how many tracks the project had before the test. To run it without an approv
   mono analysis. Use captures at least one loop long.
 - **Reference library** reads WAV and AIFF only (no MP3/FLAC decoder installed); use full songs, not loops, as references.
 - **Arranger clips:** `get_arranger_clip_notes` / `edit_arranger_clip` work on the arranger clip you have selected in Bitwig's Arrange view;
-  they could not be pointed at a clip recorded from the script. After recording, `return_to_arrangement` (called automatically) makes tracks
+  use `select_arranger_clip` to click a recorded clip and read it. After recording, `return_to_arrangement` (called automatically) makes tracks
   follow the arranger instead of their launcher clips.
 - **Bitwig actions:** `group_tracks` / `ungroup_track` switch Bitwig to the ARRANGE layout and focus the track header themselves (verified live: works even when Bitwig was on the Mix layout); bounce, consolidate and normalize run but their
   effect cannot be confirmed from the script. Export Audio opens a dialog.

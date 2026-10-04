@@ -22,6 +22,9 @@ def _find_name(items, name, region=None, reject_suffix=True):
         if reject_suffix and it["text"].rstrip().endswith((")", "(PRE)", "(POST)")):
             continue
         s = _similar(it["text"], name)
+        n, o = _norm(name), _norm(it["text"])
+        if len(n) >= 3 and n in o and len(o) <= len(n) + 3:        # OCR often glues a stray icon character onto the name
+            s = max(s, 0.92)
         if s > score:
             best, score = it, s
     return best if best is not None and score >= 0.8 else None
@@ -211,3 +214,50 @@ def add_layer(track_index: int, device_index: int) -> dict:
     time.sleep(1.2)
     after = layer_count()
     return {"track_index": track_index, "device_index": device_index, "layers_before": before, "layers_after": after, "added": after > before}
+
+
+def _clip_segments(image, row_y):
+    """x ranges of the clips on the arranger row at row_y: runs of columns that are clearly lighter than the empty background."""
+    import numpy as np
+
+    band = np.asarray(image.crop((692, row_y - 14, 1284, row_y + 14)).convert("L"), dtype=float)
+    bg = float(np.median(band))
+    lit = (np.abs(band - bg) > 18).mean(axis=0) > 0.5
+    segs, start = [], None
+    for k, v in enumerate(list(lit) + [False]):
+        if v and start is None:
+            start = k
+        elif not v and start is not None:
+            if k - start >= 8:
+                segs.append((692 + start, 692 + k))
+            start = None
+    return segs
+
+
+@tool()
+def select_arranger_clip(track_index: int, clip: int = 0, limit: int = 200) -> dict:
+    """Select an arranger clip on a track by clicking it in the Arrange view, then read its notes. This is the missing link for clips that
+    record_arrangement recorded (the API can only follow Bitwig's own selection). clip = which clip on that track, counted from the left (0 = the
+    first). Bitwig must show the Arrange view with the track's clips on screen (scroll or zoom first, e.g. edit_action 'zoom_to_fit'). Returns the
+    clip info and notes, or exists=false when no clip is found."""
+    bw.call("app_panel", layout="ARRANGE")
+    time.sleep(0.7)
+    names = {t["index"]: t["name"] for t in bw.call("get_session")["tracks"]}
+    if track_index not in names:
+        raise ValueError(f"no track {track_index}")
+    # Track rows are evenly spaced (44 px at default height, first row at y=122); OCR is unreliable on the selected (light) row.
+    row_y = 122 + 44 * track_index
+    if row_y > 480:
+        raise RuntimeError(f"track {track_index} is below the visible track list; scroll Bitwig's arranger or collapse tracks first")
+    segs = _clip_segments(ui.grab(), row_y)
+    if clip >= len(segs):
+        return {"exists": False, "clips_found_on_screen": len(segs), "hint": "no such clip on that track in the visible part of the arranger"}
+    x0, x1 = segs[clip]
+    ui.click((x0 + x1) // 2, row_y + 4)
+    time.sleep(1.0)
+    from bwmcp.control import arrclipsdev
+
+    info = arrclipsdev.arrclip_info(bw)
+    if not info.get("exists"):
+        return {"exists": False, "clicked": {"x": (x0 + x1) // 2, "y": row_y + 4}, "hint": "the click did not select a clip"}
+    return {"clip": clip, "clips_on_track": len(segs), "info": info, **arrclipsdev.arrclip_notes(bw, limit=limit)}
