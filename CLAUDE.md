@@ -61,6 +61,11 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - Evidence for all of this: `research/discoveries/FULL_LOG.md` and `CANDIDATES.md`.
 - Music is original only: no copyrighted melodies. Keys/tempo are generic; do not assume a genre or 140 bpm.
 
+## Driving Bitwig's screen (`bwmcp/control/uidriver.py`, tools in `tools/uitools.py`)
+Real screen grab (popups included) + offline OCR (rapidocr) + mouse/keyboard. NEVER type text unless the screen shows the field in edit mode (a darker
+box): stray letters trigger Bitwig shortcuts (solo all, arm, metronome, space = play). Alt+click renames, right-click menus have DELETE, double-click shows devices.
+After any UI experiment check `get_session` for stray solo/arm/metronome/playing and restore. Never press Send Report. FX tracks cannot be deleted by the API: use `delete_fx_track`.
+
 ## Genre handling
 Presets are per genre and tempo-independent (`bwmcp/devices/genres.py`: release is a fraction of a beat). `sidechain_setup(genre=..., depth=...)`
 reads the project tempo. Add a genre by adding one row to `GENRES` in `bwmcp/devices/genres.py`.

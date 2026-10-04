@@ -7,3 +7,4 @@ matplotlib>=3.8
 pyflakes>=3.0   # optional, for linting
 pywebview>=5.0   # optional, the desktop window for the live remote
 soundfile>=0.12   # MP3 / FLAC / OGG decoding for the reference library
+- rapidocr_onnxruntime>=1.3   # offline OCR for driving Bitwig's screen (sidechain_source, rename_fx_track)

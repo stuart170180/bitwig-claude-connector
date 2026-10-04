@@ -12,4 +12,5 @@ from bwmcp.tools import (  # noqa: F401  (registration happens on import)
     presets,
     session,
     tracks,
+    uitools,
 )

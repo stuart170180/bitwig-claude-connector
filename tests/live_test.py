@@ -186,6 +186,7 @@ async def main():
             await c("edit_action", {"action": "zoom_to_fit"})
             await c("grid_templates")
             await c("chord_library")
+            await c("read_window_text", {"region": [166, 96, 366, 560]})
             await c("device_presets", {"device": "Reverb"})
             await c("colour_schemes")
             await c("suggest_voicing", {"genre": "trance"})

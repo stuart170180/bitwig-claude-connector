@@ -14,6 +14,7 @@ from bwmcp.core.util import _is_drum_track, _num, _parse_db, _read_clip, _set_vo
 from bwmcp.devices import compdev, genres, presets
 from bwmcp.library import samples
 from bwmcp.music import music, naming
+from bwmcp.tools import uitools
 from bwmcp.tools.tracks import create_track
 
 
@@ -556,17 +557,14 @@ def masking_fix(track_indices: list[int] | None = None, seconds: float = 5.0, ma
 @tool()
 def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name: str = "SC Kick",
                     genre: str = "house", depth: str = "medium", send_level: float = 0.79,
-                    use_send_index: int | None = None) -> dict:
-    """Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from
-    source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings for the genre on every
-    target_track. genre: house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, pop,
-    edm_pop, disco_funk, reggaeton, rock, lofi, ambient (see sidechain_genres). The release follows the project tempo
-    (a fraction of a beat), so it works at any bpm. depth: light, medium or heavy (threshold +-6 dB). Targets (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so
-    the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus.
-    Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not
-    double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus
-    is the new send slot (bus_name is only a label; it is called 'FX n' in Bitwig, rename it by hand). use_send_index
-    reuses an existing FX track instead of creating one."""
+                    use_send_index: int | None = None, ui: bool = True) -> dict:
+    """Complete sidechain: one FX bus track that carries only the trigger signal, fed from source_tracks (e.g. the kick) through
+    their sends, and a Compressor+ with ducking settings for the genre on every target track (bass, pads, strings ...).
+    genre: house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, pop, edm_pop, disco_funk, reggaeton, rock,
+    lofi, ambient (see sidechain_genres). The release follows the project tempo, so it works at any bpm. depth: light, medium or heavy.
+    ui=True also does what the API cannot, by driving Bitwig's screen (see sidechain_source and rename_fx_track): the FX track is renamed
+    to bus_name and each compressor's sidechain source is set to it (pre-fader tap). Bitwig must be on screen for that; any step that fails is
+    reported under `ui` and left in `todo`. use_send_index reuses an existing FX track instead of creating one."""
     tempo = bw.call("get_session")["tempo"]
     cfg = genres.settings(genre, depth, tempo)
     overlap = set(source_tracks) & set(target_tracks)
@@ -584,14 +582,48 @@ def sidechain_setup(source_tracks: list[int], target_tracks: list[int], bus_name
     sess_tracks = bw.call("get_session")["tracks"]
     for s in source_tracks:
         bw.call("set_send", track_index=s, send_index=idx, value=send_level)
-    out = {"bus": f"FX {idx + 1} ({bus_name})", "send_index": idx, "genre": genre, "depth": depth, "tempo": tempo, "settings": cfg, "sources": [sess_tracks[i]["name"] for i in source_tracks], "targets": []}
+    out = {"bus": f"FX {idx + 1}", "send_index": idx, "genre": genre, "depth": depth, "tempo": tempo, "settings": cfg,
+           "sources": [sess_tracks[i]["name"] for i in source_tracks], "targets": []}
     for t in target_tracks:
         deep.insert(t, "Compressor+", None, "end", None, True)
         time.sleep(SETTLE)
         di = len(deep.tree(t)) - 1
         got = compdev.set_units(bw, deep, t, di, **cfg)
         out["targets"].append({"track": sess_tracks[t]["name"], "device_index": di, "set": {k: v["got"] for k, v in got.items()}})
-    out["todo"] = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
+    todo = []
+    if ui:
+        out["ui"] = {}
+        bus = out["bus"]
+        try:
+            r = uitools.rename_fx_track(f"FX {idx + 1}", bus_name)
+            out["ui"]["rename"] = r
+            if r["verified"]:
+                bus = bus_name
+                out["bus"] = bus_name
+        except Exception as e:
+            out["ui"]["rename"] = f"failed: {e}"
+        for x, t in zip(out["targets"], target_tracks):
+            r = None
+            for name in dict.fromkeys([bus, bus_name, f"FX {idx + 1}"]):           # try the new name first, then the default one
+                try:
+                    r = uitools.sidechain_source(t, name, device_index=x["device_index"], tap="pre")
+                    break
+                except ValueError as e:                                                # not in the menu under that name
+                    err = str(e)
+                except Exception as e:
+                    err = str(e)
+                    break
+            if r is None:
+                out["ui"][x["track"]] = f"failed: {err}"
+                todo.append(f"{x['track']}: Compressor+ > sidechain source > '{bus}'")
+                continue
+            out["ui"][x["track"]] = {"verified": r["verified"], "source": r["source"], "tap": r["tap"]}
+            if not r["verified"]:
+                todo.append(f"{x['track']}: check the Compressor+ sidechain source shows '{r['source']}'")
+    else:
+        todo = [f"{x['track']}: Compressor+ > sidechain source > 'FX {idx + 1}'" for x in out["targets"]]
+    todo.append("pull the bus fader down so the trigger does not double in the mix (the tap is pre-fader, so ducking is unaffected)")
+    out["todo"] = todo
     return out
 
 

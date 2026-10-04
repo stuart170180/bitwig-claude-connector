@@ -21,10 +21,11 @@ from bwmcp.tools import (  # noqa: E402  (importing registers the tools)
     presets,
     session,
     tracks,
+    uitools,
 )
 
 # Keep `server.<name>` working for scripts that import this module (the live monitor, tests, quick experiments).
-for _module in (chords, tracks, session, clips, devices, presets, mixing, library, extras, grid, pitchcolour, devicepresets):
+for _module in (chords, tracks, session, clips, devices, presets, mixing, library, extras, grid, pitchcolour, devicepresets, uitools):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith("__")})
 
 if __name__ == "__main__":

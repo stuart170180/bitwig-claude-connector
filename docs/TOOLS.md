@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (133 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (137 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -70,9 +70,9 @@ Change track properties; only given fields change. Returns the track state read 
 
 Set a track's send level to an FX track, normalized 0..1.
 
-### `sidechain_setup(source_tracks, target_tracks, bus_name, genre, depth, send_level, use_send_index)`
+### `sidechain_setup(source_tracks, target_tracks, bus_name, genre, depth, send_level, use_send_index, ui)`
 
-Advanced sidechain bus: creates one FX bus track (bus_name) that carries only the trigger signal, feeds it from source_tracks (e.g. kick) through their sends, and puts a Compressor+ with ducking settings for the genre on every target_track. genre: house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, pop, edm_pop, disco_funk, reggaeton, rock, lofi, ambient (see sidechain_genres). The release follows the project tempo (a fraction of a beat), so it works at any bpm. depth: light, medium or heavy (threshold +-6 dB). Targets (bass, pads, strings...). The API cannot choose a compressor's sidechain source, so the one manual step is returned as `todo`: in each Compressor+ open the sidechain source and pick the bus. Not done for you (the API cannot reach FX track faders): pull the bus fader down by hand so the trigger does not double in the mix, and check the compressor shows gain reduction. FX tracks cannot be renamed from the API, so the bus is the new send slot (bus_name is only a label; it is called 'FX n' in Bitwig, rename it by hand). use_send_index reuses an existing FX track instead of creating one.
+Complete sidechain: one FX bus track that carries only the trigger signal, fed from source_tracks (e.g. the kick) through their sends, and a Compressor+ with ducking settings for the genre on every target track (bass, pads, strings ...). genre: house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, pop, edm_pop, disco_funk, reggaeton, rock, lofi, ambient (see sidechain_genres). The release follows the project tempo, so it works at any bpm. depth: light, medium or heavy. ui=True also does what the API cannot, by driving Bitwig's screen (see sidechain_source and rename_fx_track): the FX track is renamed to bus_name and each compressor's sidechain source is set to it (pre-fader tap). Bitwig must be on screen for that; any step that fails is reported under `ui` and left in `todo`. use_send_index reuses an existing FX track instead of creating one.
 
 ### `sidechain_genres()`
 
@@ -501,6 +501,24 @@ Run a common editing command in Bitwig on the current selection (or on track_ind
 ### `engine_recover(wait_seconds, normal_tracks)`
 
 Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this presses Cancel on Bitwig's crash dialog (never Send Report), deletes the crashed track (only when the window clearly shows its 'Device missing' panel), clicks 'Activate Audio Engine' and waits for the script to return. normal_tracks = how many tracks the project had before the crash. Safe to call when everything is fine: it then does nothing.
+
+## Driving the Bitwig window
+
+### `read_window_text(region, contains)`
+
+Read the text currently on Bitwig's screen with OCR (cheaper than a picture): every label with its pixel position. region = [x0, y0, x1, y1] in window pixels to read only part of the screen (the device panel is about [166, 585, 1310, 830]); contains filters the lines. Use it to check values the API cannot report, such as which sidechain source is chosen or an FX track's name.
+
+### `sidechain_source(track_index, source_track, device, device_index, tap)`
+
+Choose which track a device listens to for its sidechain (the one thing the API cannot set), by clicking Bitwig's own selector. track_index = the track the compressor (or gate etc.) is on, device = its name or give device_index, source_track = the trigger track's exact name (e.g. 'Kick'), tap = pre (before its fader, so fader moves do not change the ducking) or post. Works for devices with a 'Device Input' selector in the device panel (Compressor+, Gate, ...). Bitwig must be on screen; takes about 20 seconds (OCR). Verified by reading the screen.
+
+### `rename_fx_track(current_name, new_name)`
+
+Rename an FX (send) track, which the API cannot do: double-clicks its name in the track list, types the new name and checks the screen. current_name = what it is called now (e.g. 'FX 1'). Bitwig must show the Arrange view with the FX track visible.
+
+### `delete_fx_track(name)`
+
+Delete an FX (send) track by name, which the API cannot do: right-clicks it, checks that Bitwig's inspector says 'FX TRACK' with exactly that name (so nothing else can be deleted by mistake), then presses DELETE in the context menu and checks the track is gone. Undo restores it.
 
 ## Device presets
 

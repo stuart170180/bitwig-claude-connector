@@ -1,6 +1,6 @@
 # To do
 
-Connector v7.2.0 (133 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v7.3.0 (137 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-04.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
@@ -21,7 +21,7 @@ Updated 2026-10-04.
 - [ ] Share the portfolio page from its Share menu if other people should see it (it is private).
 
 ## Build
-- [ ] Sidechain source, FX track names and faders: only possible by clicking Bitwig's UI (read by `look_at_bitwig`); build a click driver now that mouse control is allowed.
+- [x] Sidechain source and FX track names/deletion by driving the UI (v7.3.0). [ ] FX track fader (pull the bus down) not done: the tap is pre-fader so ducking is unaffected.
 - [ ] Why Polymer cannot take a 20th module (Poly Grid takes 32). Decisive test: a module added in Bitwig's own UI, saved, diffed against the factory file.
 - [ ] Modulators: prove an added modulator changes the sound (LFO on a filter in an effects Grid, measured over time).
 - [ ] Arranger clips: point `get_arranger_clip_notes` at the clip `record_arrangement` recorded.
