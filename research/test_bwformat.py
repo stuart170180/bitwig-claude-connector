@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 """Offline tests for research/bwformat.py (no Bitwig needed).  Run: python research/test_bwformat.py"""
 import os, sys, glob
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

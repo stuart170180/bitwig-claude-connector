@@ -24,7 +24,7 @@ Full docs: `README.md` (overview, install, known limits), `docs/TOOLS.md` (gener
 - `bitwig_script/` is the git copy of the controller script. The live copy Bitwig loads is in
   `Documents\Bitwig Studio\Controller Scripts\BitwigMCP\`. Edit the live copy, then `python manage.py sync` before committing
   (`sync --install` goes the other way). Bitwig reloads the script about 5 s after a file changes.
-- `tests/`: `live_test.py` (needs Bitwig running), plus offline `test_*.py` (`python manage.py test`). `research/`: experiments only.
+- `tests/`: `live_test.py` (needs Bitwig running), plus offline `test_*.py` (`python manage.py test`). `research/`: experiments only (see its README; scripts find the repo root themselves, live ones need Bitwig).
 
 ## Commands
 `python manage.py` lists them: `install` (`--check` is the doctor), `sync`, `docs`, `monitor`, `autostart`, `backup`, `test`.

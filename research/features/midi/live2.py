@@ -1,7 +1,15 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 import sys, os, time
 sys.path.insert(0, "research"); sys.path.insert(0, "research/features/midi"); sys.path.insert(0, ".")
 from bwlock import hold
-import server, midifile
+import server
+from bwmcp.music import midifile
 OUT = os.path.abspath("research/features/midi/scratch")
 notes = [{"pitch": 60 + i % 5, "start": i * 0.5 + 0.013 * (i % 3), "duration": 0.37, "velocity": 50 + i, "channel": 1} for i in range(12)]
 notes.append({"pitch": 72, "start": 3.3333, "duration": 0.3333, "velocity": 90})

@@ -1,8 +1,15 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 import sys, time
 sys.path.insert(0, "research"); sys.path.insert(0, "research/features/perform")
 from bwlock import hold
 import server
-from performdev import Perform, value_at, volume_ramp, pan_ramp, send_ramp, move
+from bwmcp.control.performdev import Perform, value_at, volume_ramp, pan_ramp, send_ramp, move
 c = server.bw.call
 with hold("perform: exp9 multi target"):
     ss = c("get_session")["tracks"]; nm = [t["name"] for t in ss]

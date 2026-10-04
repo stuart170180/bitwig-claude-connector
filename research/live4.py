@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 import server,time,struct,os
 bw=server.bw
 src=r"C:\Program Files\Bitwig Studio\Library\device-settings\a33bba66-8cd4-4f89-aee5-68bf67f70a54\Default.bwpreset"

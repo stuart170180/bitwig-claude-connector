@@ -1,7 +1,14 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 """bwformat: parse / serialize / inspect / edit Bitwig Studio plain presets (container "BtWg00030002").
 
 Applies to .bwpreset and .bwremotecontrols files of container version 0002 (version 0004 files are scrambled and
-NOT supported).  See research/PRESET_FORMAT.md for the grammar and the evidence.
+NOT supported).  See docs/PRESET_FORMAT.md for the grammar and the evidence.
 
 Quick use:
     import bwformat as bw
@@ -363,7 +370,7 @@ def meta_set(f, key, value):
 
 
 # ----------------------------------------------------------------------------- semantic layer (field / class ids)
-# Field ids (decoded by comparing ~160 presets; see PRESET_FORMAT.md section 4)
+# Field ids (decoded by comparing ~160 presets; see docs/PRESET_FORMAT.md section 4)
 F_NAME, F_PRESET_NAME, F_DEVNAME, F_CREATOR, F_CATEGORY = 0x2B9, 0x12DE, 0x9A, 0x9B, 0x9C
 F_DEVICE, F_MODULATORS, F_UUID, F_CONTENTS, F_MEMBERS = 0x1421, 0x18F5, 0x99, 0xA4, 0x20C
 F_CONTENT_OBJ, F_TYPE_UUID, F_LIST = 0x18C7, 0x18C6, 0x1A46
@@ -956,7 +963,7 @@ def insert_module_between(f, template, src_module, dst_module, dst_port="IN", sr
     """Composite: add a module, cable src_module.src_port -> new.in_port and new.out_port -> dst_module.dst_port
     (replaces the cable that was on dst_module.dst_port).  The new module is placed right of src_module.
     Composite of add_module + connect; the pieces were load-tested, the combination on a large patch was NOT
-    (see PRESET_FORMAT.md, engine crash)."""
+    (see docs/PRESET_FORMAT.md, engine crash)."""
     m = add_module(f, template, near=kw.pop("near", src_module), **kw)
     nid = m.get(F_NAME)
     connect(f, src_module, src_port, nid, in_port)

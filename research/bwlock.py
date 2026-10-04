@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 """Cross-process lock so several workers never drive the one live Bitwig at the same time.
 Usage:   from bwlock import hold
          with hold("masking test"):     # waits until nobody else holds it, releases on exit (even on error)

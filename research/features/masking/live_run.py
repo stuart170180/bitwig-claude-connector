@@ -1,7 +1,15 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 import sys, json, time
 sys.path.insert(0, "../.."); sys.path.insert(0, "../../.."); sys.path.insert(0, ".")
 from bwlock import hold
-import server, masking
+import server
+from bwmcp.analysis import masking
 
 _orig = server.bw.call
 def _retry(cmd, **kw):

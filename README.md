@@ -81,7 +81,7 @@ data/                your files: caches, saved recipes, bookmarks, snapshots, re
 docs/                TOOLS.md (generated) · PRESET_FORMAT.md · MODULATORS_AND_GRID.md
 scripts/             install.py · make_docs.py · start_monitor.bat
 tests/               live_test.py (needs Bitwig) and offline test_*.py
-research/            experiments and prototypes; not used by the connector
+research/            experiments and evidence (see research/README.md); not used by the connector
 ```
 
 To find something: tool names are in `docs/TOOLS.md`; each tool sits in the `bwmcp/tools/` file for its topic and calls the

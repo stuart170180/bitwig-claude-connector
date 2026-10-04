@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+_R = Path(__file__).resolve()
+while not (_R / "server.py").exists():
+    _R = _R.parent
+sys.path[:0] = [str(_R), str(_R / "research")]   # repo root (server, bwmcp) and research/ (bwlock, bwformat)
 import sys, time
 sys.path.insert(0, "research"); sys.path.insert(0, ".")
 from bwlock import hold
