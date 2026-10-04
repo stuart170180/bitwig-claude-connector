@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from bwmcp.core.bridge import bw, deep, mcp  # noqa: E402,F401  (re-exported)
 from bwmcp.tools import (  # noqa: E402  (importing registers the tools)
+    chords,
     clips,
     devices,
     extras,
@@ -21,7 +22,7 @@ from bwmcp.tools import (  # noqa: E402  (importing registers the tools)
 )
 
 # Keep `server.<name>` working for scripts that import this module (the live monitor, tests, quick experiments).
-for _module in (tracks, session, clips, devices, presets, mixing, library, extras, grid):
+for _module in (chords, tracks, session, clips, devices, presets, mixing, library, extras, grid):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith("__")})
 
 if __name__ == "__main__":

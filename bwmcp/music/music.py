@@ -185,12 +185,13 @@ def bassline(chords: list[str], key: str = "A", scale: str = "minor", style: str
 
 
 def chord_progression(chords: list[str], key: str = "C", scale: str = "major", rhythm: str = "sustained",
-                      bars_per_chord: float = 1, octave: int = 4) -> list[dict]:
-    """rhythms: sustained, stabs (offbeat 8ths), pulse (quarters), arp_up, arp_updown, strum."""
+                      bars_per_chord: float = 1, octave: int = 4, voicings: list[list[int]] | None = None) -> list[dict]:
+    """rhythms: sustained, stabs (offbeat 8ths), pulse (quarters), arp_up, arp_updown, strum.
+    voicings: optional ready-made pitch lists, one per chord (see music/voicings.py); otherwise inversions are voice-led."""
     notes, prev = [], None
     span = 4 * bars_per_chord
     for ci, sym in enumerate(chords):
-        voiced = voice_lead(prev, parse_chord(sym, key, scale, octave))
+        voiced = voicings[ci] if voicings else voice_lead(prev, parse_chord(sym, key, scale, octave))
         prev = voiced
         t0 = ci * span
         if rhythm == "sustained":

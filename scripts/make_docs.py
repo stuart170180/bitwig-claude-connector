@@ -37,6 +37,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
                                    "get_groups", "select_tracks", "run_action_on_tracks"]),
     ("Project, window & recording", ["project_state", "undo_redo", "ui_layout", "project_notes", "last_clicked", "transport_extras",
                                      "look_at_bitwig", "project_file_report", "record_master", "device_units", "edit_action", "engine_recover"]),
+    ("Chords & voicings", ["chord_library", "suggest_voicing", "chord_voicings", "write_voiced_chords"]),
     ("Grid patch editing", ["grid_templates", "grid_inspect", "grid_add_module"]),
 ]
 

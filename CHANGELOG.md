@@ -2,6 +2,11 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.1.0 - 2026-10-04 (script 6.1)
+- Chords and voicings: 44 chord qualities, 20 voicing styles (drop 2/3, shell, rootless A/B, quartal, So What, upper-structure, neo-soul, supersaw, ...), genre suggestions,
+  voice-led progressions. Tools `chord_library`, `suggest_voicing`, `chord_voicings`, `write_voiced_chords`; offline tests; docs/CHORDS_AND_VOICINGS.md.
+- 125 tools.
+
 ## 7.0.0 - 2026-10-04 (script 6.1)
 - Package reorganised into `bwmcp/` (tools by topic, helpers by area), `manage.py` front door, `data/`, `docs/`, `scripts/`.
 - Master recorder as the live capture source, API level 25, project state / notes / UI layout / undo / window picture / project file report, device units, edit actions.

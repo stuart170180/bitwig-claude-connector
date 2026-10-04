@@ -1,11 +1,11 @@
 # To do
 
-Connector v7.0.0 (121 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v7.1.0 (125 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-04.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
 - [ ] Update the portfolio with version numbers at every milestone (v7.0.0 done on 2026-10-04).
-- [ ] Chords and voicings: research, add voicing styles to the generators, show them in the live remote.
+- [x] Chords and voicings engine and tools (v7.1.0). [ ] still to do: show them in the live remote.
 - [ ] Audio pitch controls and colour controls (clips, tracks, scenes).
 - [ ] Preset library: reverb and other devices built as real-unit presets (`device_units`) saved as recipes.
 - [ ] Live remote as a desktop app (and/or plugin) with chords, controls and meters.

@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (121 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (125 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -501,6 +501,24 @@ Run a common editing command in Bitwig on the current selection (or on track_ind
 ### `engine_recover(wait_seconds, normal_tracks)`
 
 Bring Bitwig's audio engine back after it crashed. While the engine is down the controller script cannot answer, so this presses Cancel on Bitwig's crash dialog (never Send Report), deletes the crashed track (only when the window clearly shows its 'Device missing' panel), clicks 'Activate Audio Engine' and waits for the script to return. normal_tracks = how many tracks the project had before the crash. Safe to call when everything is fine: it then does nothing.
+
+## Chords & voicings
+
+### `chord_library()`
+
+Every chord quality chord_voicings / write_voiced_chords understands (with its intervals in semitones from the root), the voicing styles with a one-line description, and the genre -> suggested voicing styles table.
+
+### `suggest_voicing(genre)`
+
+Voicing styles that suit a genre (jazz, neo_soul, lofi, pop, rock, house, deep_house, techno, trance, progressive, big_room, dubstep, dnb, hiphop, trap, ambient, cinematic, funk, reggaeton ...), each with what it sounds like.
+
+### `chord_voicings(chord, styles, center)`
+
+Show one chord (e.g. 'Dm9', 'G13', 'Bb7#9', 'Cmaj7/E') in several voicing styles: note names and MIDI pitches for each. styles default = all. center = the MIDI note the voicing is placed around (60 = middle C).
+
+### `write_voiced_chords(track_index, slot, chords, progression, key, scale, style, rhythm, bars_per_chord, center, low, high, voice_lead, add_bass)`
+
+Write a chord progression into a clip using a voicing style, voice-led for the smallest movement between chords. chords: symbols ('Dm7','G7','Cmaj7') or roman numerals (ii7, V7, I) resolved in key/scale; or progression = a preset name. style: see chord_library (close, open, drop2, drop3, drop2and4, shell, rootless_a, rootless_b, quartal, so_what, ust, cluster, power, pad, spread, neo_soul, edm_stab, supersaw, gospel, triad_stack). rhythm: sustained, stabs, pulse, arp_up, arp_updown, strum. low/high keep every voicing inside a register; add_bass puts the root two octaves down as a bass note.
 
 ## Grid patch editing
 
