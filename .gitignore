@@ -1,13 +1,13 @@
 # rebuildable caches
 __pycache__/
 *.pyc
-preset_index.json
-sample_index.json
+data/preset_index.json
+data/sample_index.json
 
 # personal data and generated output (not code)
-bookmarks.json
-snapshots/
-reports/
+data/bookmarks.json
+data/snapshots/
+data/reports/
 *.png
 
 # editor / OS
@@ -16,9 +16,10 @@ Thumbs.db
 research/scratch/
 research/*.out
 *.bwpreset
-patched_presets/
+data/patched_presets/
 research/bitwig.lock
-references.json
+data/references.json
+data/sample_folders.json
 research/features/*/scratch/
 research/features/**/library.json
 research/shots/*.wav

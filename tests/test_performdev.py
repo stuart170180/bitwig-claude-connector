@@ -1,7 +1,10 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import unittest
-import performdev as P
+
+from bwmcp.control import performdev as P
 
 
 class CurveTests(unittest.TestCase):

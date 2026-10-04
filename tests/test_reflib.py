@@ -1,18 +1,21 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 """Offline tests with synthetic signals + a few sample-library loops (NOT real commercial references)."""
 import os
 import sys
 import tempfile
+from pathlib import Path
 
 import numpy as np
 from scipy.io import wavfile
 
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
-import reflib  # noqa: E402
+from bwmcp.analysis import reflib  # noqa: E402
 
-reflib.LIB = reflib.Path(tempfile.gettempdir()) / "reflib_test.json"
+reflib.LIB = Path(tempfile.gettempdir()) / "reflib_test.json"
 if reflib.LIB.exists():
     reflib.LIB.unlink()
 sr = 44100
@@ -67,7 +70,8 @@ mid = np.array(tc["third_octave_db"][5:25], float)
 assert abs(mid.mean() - np.mean([[lib["dark"]["third_octave_db"][i], lib["bright"]["third_octave_db"][i]] for i in range(5, 25)])) < 0.01
 assert abs(sum(abs(x) for x in reflib.compare_to_reference(["dark", "bright"], files["pink"])["group_diff_db"].values())) < 6
 # AIFF loader vs WAV loader on a real library AIFF
-import samples  # noqa: E402
+from bwmcp.library import samples  # noqa: E402
+
 aif = [i["path"] for i in samples.index() if i["path"].lower().endswith(".aiff")][0]
 x, s2 = reflib.load_audio(aif)
 print("aiff ok", os.path.basename(aif), x.shape, s2, round(float(np.abs(x).max()), 3))

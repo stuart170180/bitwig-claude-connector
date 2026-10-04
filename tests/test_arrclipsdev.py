@@ -1,8 +1,13 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(__file__))
-import arrclipsdev as m
+from bwmcp.control import arrclipsdev as m
+
 
 class Fake:
     def __init__(self): self.calls = []

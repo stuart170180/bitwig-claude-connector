@@ -1,8 +1,15 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-import os, random, sys, tempfile
+import os
+import random
+import sys
+import tempfile
+
 sys.path.insert(0, os.path.dirname(__file__))
-from midifile import read_midi, write_midi
+from bwmcp.music.midifile import read_midi, write_midi
+
 random.seed(1)
 notes = [{"pitch": random.randint(30, 100), "start": round(random.randint(0, 255) / 4, 4),
           "duration": random.choice([0.25, 0.5, 1, 1.5]), "velocity": random.randint(1, 127)} for _ in range(200)]
@@ -22,6 +29,7 @@ assert m["tracks"][2]["notes"][0]["drum"] and len(m["tracks"][2]["notes"]) == 32
 print("roundtrip OK, synthetic")
 # running status + vel-0 note-off: hand-built
 import struct
+
 trk = bytes([0,0x90,60,100, 96,60,0, 0,62,100, 96,0x80,62,0, 0,0xFF,0x2F,0])  # 2nd/3rd use running status
 open(p,"wb").write(b"MThd"+struct.pack(">IHHH",6,0,1,96)+b"MTrk"+struct.pack(">I",len(trk))+trk)
 m = read_midi(p); n = m["tracks"][0]["notes"]

@@ -1,10 +1,15 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 """Offline unit tests: python test_masking.py"""
-import os, sys
+import os
+import sys
+
 import numpy as np
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import masking as M
+from bwmcp.analysis import masking as M
 
 SR = 44100
 t = np.arange(SR * 3) / SR

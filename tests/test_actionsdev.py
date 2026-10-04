@@ -1,7 +1,10 @@
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 """Offline test of actionsdev with a fake bridge (no Bitwig needed): python test_actionsdev.py"""
-import actionsdev as A
+from bwmcp.control import actionsdev as A
+
 A.time.sleep = lambda s: None
 
 

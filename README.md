@@ -2,18 +2,15 @@
 
 Lets Claude drive Bitwig Studio: write and edit MIDI, build whole song sketches, load sounds and samples, mix, master with
 live measurements, and record scenes into the arrangement. Everything reads back from Bitwig to confirm it took effect.
-106 tools — the full list is in [TOOLS.md](TOOLS.md).
+106 tools — the full list is in [docs/TOOLS.md](docs/TOOLS.md).
 
 ## How it fits together
 
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          ├── music.py / expert.py / variations.py   note generation and editing
-                          ├── presets.py / samples.py / bookmarks.py sound libraries
-                          ├── deepdev.py                             nested devices, every parameter, mid/side EQ
-                          ├── mastering.py / reference.py / pitch.py audio analysis (WAV files or live capture)
-                          └── live_monitor.py ──> http://127.0.0.1:8780   live dashboard (loudness, M/S, tuner, master controls)
+                          └── bwmcp/    tools/ (the 106 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                                        analysis/ · control/ · library/ · monitor/ ──> http://127.0.0.1:8780 live dashboard
 ```
 
 Bitwig's script API cannot see audio, so analysis works on files or on Windows "loopback" capture of Bitwig's output.
@@ -21,10 +18,10 @@ Bitwig's script API cannot see audio, so analysis works on files or on Windows "
 ## Quick install (Windows)
 
 1. Install Python 3.10+, Bitwig Studio and Claude Code.
-2. Double-click `install.bat` (or run `python install.py`). It installs the packages, copies the controller script into
+2. Double-click `install.bat` (or run `python manage.py install`). It installs the packages, copies the controller script into
    Bitwig's Controller Scripts folder, and registers the MCP server with Claude. Add `--autostart` to start the live monitor at login.
 3. In Bitwig: Settings > Controllers > Add controller > Claude > Bitwig MCP. For live measurements set the audio driver to Windows Audio (WASAPI).
-4. Start a new Claude session. `python install.py --check` tells you what works; `--dry-run` shows changes first; `--uninstall` removes it.
+4. Start a new Claude session. `python manage.py install --check` tells you what works; `--dry-run` shows changes first; `--uninstall` removes it.
 
 ## Setup (already done on this machine)
 
@@ -52,45 +49,56 @@ Ask Claude in plain language, for example:
 - "Audit my mix and fix what does nothing" → `mix_audit` · "Save this vocal chain" → `recipe` · "Did that EQ help?" → `ab_test`
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
-**Live monitor without Claude:** double-click `start_monitor.bat` (opens http://127.0.0.1:8780).
-**Start automatically at login:** `python autostart.py` (hidden, no admin needed); `--status` to check, `--remove` to undo.
+**Live monitor without Claude:** double-click `scripts/start_monitor.bat` (opens http://127.0.0.1:8780).
+**Start automatically at login:** `python manage.py autostart` (hidden, no admin needed); `--status` to check, `--remove` to undo.
 Every panel has a × to close it; the **Panels** menu in the header brings them back (or *Compact* for loudness only).
 Your layout is remembered in the browser, and a closed Master-controls panel never touches Bitwig.
 
-## Files
+## Project layout
 
-| File | Purpose |
-|---|---|
-| `server.py` | MCP server: all 106 tools, the Bitwig bridge |
-| `music.py`, `expert.py`, `variations.py` | Theory, generators, expert note edits, variations |
-| `presets.py`, `samples.py`, `bookmarks.py`, `naming.py` | Libraries, bookmarks (`bookmarks.json`), track auto-naming |
-| `midifile.py`, `reflib.py` | MIDI file read/write and clip import/export; reference-track library (`references.json`) |
-| `masking.py` | Masking finder: solo each track, capture, score clashes, propose and apply EQ cuts |
-| `actionsdev.py`, `performdev.py` | Bitwig actions (group/ungroup, run by id) and automation by performance; script sides are `actions.js` and `perform.js` |
-| `presetpatch.py`, `bitwig_device_ids.json` | Read/patch plain preset files; UUIDs of Bitwig's 152 built-in devices for `device_insert(by_uuid=True)` |
-| `audit.py`, `recipes.py` | Mix audit rules and fixes; saved device-chain recipes (`recipes/*.json`) |
-| `research/` | Notes and prototypes on modulators, Grid and preset files (see `MODULATORS_AND_GRID.md`); not used by the connector |
-| `deepdev.py` | Deep device access: walks into nested chains (Mid-Side Split slots), reads/sets every parameter, EQ+ in real units, mid/side EQ |
-| `mastering.py`, `reference.py`, `pitch.py` | Loudness / M-S / spectrum, reference comparison, pitch and tuning |
-| `live_monitor.py` / `.html` | Live dashboard web server and page |
-| `autostart.py` | Starts the dashboard hidden at Windows login (`--status`, `--remove`) |
-| `start_monitor.bat` | Starts the dashboard in a window on demand |
-| `tests/live_test.py` | Regression test that calls every tool through a real MCP client |
-| `make_docs.py` | Regenerates `TOOLS.md` |
-| `backup.py` | Timestamped zip backups and restore |
-| `bitwig_script/` | Git-tracked copy of the Bitwig controller script (Bitwig loads the original from its own folder) |
-| `sync_script.py` | Mirrors the script between Bitwig's folder and `bitwig_script/` (`--install`, `--check`) |
-| `snapshots/`, `reports/` | Saved mixer snapshots / monitor reports (created on first use) |
+```
+server.py            entry point Claude starts (registered with `claude mcp add`); the tools live in bwmcp/
+manage.py            one front door: install · sync · docs · monitor · autostart · backup · test
+install.bat          double-click installer
+bitwig_script/       the Bitwig controller script (git copy; Bitwig loads its own copy, kept in sync by `manage.py sync`)
+bwmcp/               the Python package
+  core/              bridge.py (OSC link, MCP server, @tool) · util.py (shared helpers) · paths.py (folders, OneDrive-safe)
+  tools/             the MCP tools, one file per topic:
+                       session.py   transport, tempo, groove, cue markers, recording to the arrangement
+                       tracks.py    tracks, sends, scenes, launching, grouping, mixer snapshots
+                       clips.py     notes, drums/bass/chords/melody, song sketches, MIDI files, arranger clips
+                       devices.py   device parameters, nested chains, EQ, mid/side, recipes, A/B, actions, performance automation
+                       presets.py   preset search/loading, automatic track naming
+                       mixing.py    levels, mastering chain, analysis, references, masking, mix audit, sidechain, live monitor
+                       library.py   samples and bookmarks
+  music/             theory and generators (music) · expert note edits · variations · pitch/tuning · MIDI files · track naming
+  devices/           deep device access (deepdev) · Compressor+ units (compdev) · recipes · presets · preset patching · sidechain genres
+  analysis/          loudness/spectrum (mastering) · reference comparison · reference library · masking finder · mix audit rules
+  control/           Bitwig actions and grouping · automation by performance · arranger-clip reading
+  library/           samples · bookmarks · backup · script sync
+  monitor/           live dashboard server and page · autostart at login
+data/                your files: caches, saved recipes, bookmarks, snapshots, reports, device-ID list (mostly git-ignored)
+docs/                TOOLS.md (generated) · PRESET_FORMAT.md · MODULATORS_AND_GRID.md
+scripts/             install.py · make_docs.py · start_monitor.bat
+tests/               live_test.py (needs Bitwig) and offline test_*.py
+research/            experiments and prototypes; not used by the connector
+```
+
+To find something: tool names are in `docs/TOOLS.md`; each tool sits in the `bwmcp/tools/` file for its topic and calls the
+helper package of the same area. Add a tool by writing a `@tool()` function in the right file, adding its name to a group in
+`scripts/make_docs.py`, then `python manage.py docs`.
 
 ## Maintenance
 
-- **Back up:** `python backup.py` (zips this folder and the Bitwig script into `..\backups\`, keeps the newest 10);
-  `python backup.py --list`; `python backup.py --restore <zip>` (makes a safety copy first).
-- **Version control:** this folder is a git repo. Before committing run `python sync_script.py` so `bitwig_script/` matches what
-  Bitwig is running; on a fresh machine run `python sync_script.py --install` to put the script back into Bitwig.
-- **Test:** open Bitwig with the controller enabled, then `python tests/live_test.py`. It creates its own tracks and removes
-  them again. Lint with `python -m pyflakes *.py`.
-- **After adding a tool:** `python make_docs.py` to refresh `TOOLS.md`.
+All commands go through `python manage.py <command>` (run it with no arguments for the list).
+
+- **Back up:** `manage.py backup` (zips this folder and the Bitwig script into `..ackups\`, keeps the newest 10);
+  `--list`; `--restore <zip>` (makes a safety copy first).
+- **Version control:** before committing run `manage.py sync` so `bitwig_script/` matches what Bitwig is running; on a fresh
+  machine `manage.py sync --install` puts the script back into Bitwig.
+- **Test:** `manage.py test` runs the offline tests. With Bitwig open and the controller enabled, `python tests/live_test.py`
+  calls every tool through a real MCP client; it creates its own tracks and removes them. Lint: `python -m pyflakes bwmcp`.
+- **After adding a tool:** `manage.py docs` to refresh `docs/TOOLS.md`.
 
 ## Ports
 
@@ -101,7 +109,7 @@ Your layout is remembered in the browser, and a closed Master-controls panel nev
 
 - **"No reply from Bitwig"** — Bitwig isn't open, or the controller isn't enabled (see Setup 1).
 - **"all Bitwig reply ports … are in use"** — close other Claude sessions or stray `python server.py` processes.
-- **Monitor page won't load** — it isn't running: `python autostart.py --status`, or double-click `start_monitor.bat`.
+- **Monitor page won't load** — it isn't running: `python manage.py autostart --status`, or double-click `scripts/start_monitor.bat`.
 - **Live capture says it can't capture** — Bitwig is on an exclusive driver; switch to Windows Audio (Setup 4).
 - **Script errors** — search `%LOCALAPPDATA%\Bitwig Studio\BitwigStudio.log` for "Bitwig MCP".
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.

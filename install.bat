@@ -7,6 +7,6 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-python install.py %*
+python scripts\install.py %*
 echo.
 pause
