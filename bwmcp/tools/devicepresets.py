@@ -98,3 +98,33 @@ def parallel_compression(track_index: int, preset: str = "parallel_smash", level
     res = devunits.set_values(bw, deep, track_index, r["device_index"], values, nest={"layer": comp_layer, "slot_index": 0})
     r["parallel_level"] = {k: v.get("shown") for k, v in res["set"].items()}
     return r
+
+
+@tool()
+def spire_presets(query: str = "", bank: str | None = None, limit: int = 30) -> list:
+    """Search the Spire preset banks (%APPDATA%\\RevealSound\\Banks, .spf2 files: thousands, many trance soundsets). All words of the query must appear in the bank / folder /
+    preset name, e.g. 'trance supersaw', 'acid', 'pluck', 'lead', 'sub bass', bank='Trance Euphoria'. Returns name, bank, folder and path for spire_load."""
+    from bwmcp.devices import spire
+    return [{k: r[k] for k in ("name", "bank", "sub", "path")} for r in spire.search(query, bank, limit)]
+
+
+@tool()
+def spire_load(track_index: int, preset: str, device_index: int | None = None, bank: str | None = None) -> dict:
+    """Load a Spire preset (.spf2) into the Spire-1.5 plug-in on a track WITHOUT opening Spire's window: the file is JSON whose parameter names and 0..1 values match
+    the ones Bitwig exposes, so every one of the ~500 values is written through deep_set. preset = a file path or part of a name (first match; narrow with bank).
+    device_index defaults to the first Spire on the track. Returns what was set and a read-back check. Insert the plug-in first (insert_plugin 'Spire-1.5')."""
+    from bwmcp.devices import spire
+    path = preset if preset.lower().endswith(".spf2") else None
+    if path is None:
+        hits = spire.search(preset, bank, 5)
+        if not hits:
+            raise ValueError(f"no Spire preset matching '{preset}'")
+        path = hits[0]["path"]
+    if device_index is None:
+        bw.call("select_track", track_index=track_index)
+        time.sleep(1.0)
+        devs = deep.tree(track_index)
+        device_index = next((d["index"] for d in devs if "spire" in d["name"].lower()), None)
+        if device_index is None:
+            raise ValueError("no Spire on that track")
+    return spire.apply(bw, deep, track_index, device_index, path)

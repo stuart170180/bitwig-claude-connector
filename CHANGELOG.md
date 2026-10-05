@@ -2,6 +2,15 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.2.0 - 2026-10-05 (script 6.1) - Spire presets and the trance test template
+- **Spire-1.5 presets without Spire's window**: a Spire `.spf2` preset is JSON whose names and 0..1 values equal the 500 parameters Bitwig exposes for the plug-in, so
+  `spire_load(track, 'Lead_SuperSaw')` writes them all through deep_set (read back: exact). `spire_presets(query, bank)` searches the 71,684 presets in `%APPDATA%\RevealSound\Banks`.
+  Audition by measurement: `research/spire_audition.py` (loads each preset, plays a note, measures the master through BW Remote).
+- `insert_on_fx_track(fx_track, device)` puts a device on an FX/send track (clicks the row, browser search with a typing guard); `insert_plugin` matches the browser entry by its text end.
+- **Trance test template** (`research/build_trance_template.py`): 140 bpm F# minor, 6 scenes - Intro 16, Strings Build 16, Subtle Mid 16, Big Build 16, Massive Drop 32, Outro 8 bars -
+  Sampler drums from the Splice trance packs, Spire-1.5 bass/sub/supersaw chords/pluck/lead/pad, Orchestral Strings sustained + spiccato, synth strings, audio loops/risers/impacts,
+  Delay+ and Reverb sends, trance sidechain (bus + direct Kick), groups, master chain with BW Remote. Saved as project and Bitwig template 'Trance Test Template'. Measured per section: Intro -17.8, Build -17.1, Mid -18.2 (wide, no low end), Big Build -16.8, Drop -13 LUFS. Data: `data/trance_samples.json` (172 trance samples across the packs). `sidechain_source` also works when the source menu opens at the top of the screen or a wide Sampler hides the 'Sidechain FX' label.
+
 ## 8.1.0 - 2026-10-05 (script 6.1)
 - **Bitwig Remote is now a real desktop app**: `BitwigRemote.pyw` (double-click) or `python manage.py app`; icon (`bwmcp/monitor/assets/bitwig_remote.ico`), own taskbar identity,
   one window at a time (a second launch brings the first forward), remembers size/position (`%APPDATA%\BitwigClaude\app.json`), starts the monitor service itself and stops it again on exit

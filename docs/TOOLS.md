@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (148 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (151 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -536,6 +536,10 @@ Select an arranger clip on a track by clicking it in the Arrange view, then read
 
 Insert a plug-in or device that the controller API cannot reach by name (a VST3/CLAP/VST2 plug-in such as 'BW Remote') through Bitwig's own browser: selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open ('Everything' tab). Returns the track's devices afterwards.
 
+### `insert_on_fx_track(fx_track, device)`
+
+Insert a device on an FX (send) track, which the API cannot reach: clicks the track's name in the track list, then uses the device browser like insert_plugin (typing only after a blinking caret proves the search box is in edit mode) and checks the device panel on screen. fx_track = its current name ('FX 1', 'Reverb'); device = the browser entry ('Reverb', 'Delay+', 'EQ+'). Bitwig must show the Arrange view with the FX track visible and the device browser open.
+
 ## Bitwig user guide (local copy)
 
 ### `manual_search(query, limit)`
@@ -557,6 +561,14 @@ What the user guide says about a Bitwig device, modulator or Grid module (e.g. '
 State of the BW Remote VST3 link (audio from inside Bitwig to the live monitor and desktop app): is it sending, the newest meters (peak, RMS, momentary LUFS, correlation, width, 24 spectrum bands, host tempo and playing state), the audio capture ring, and how many signed packets were accepted or rejected. Each plug-in instance has its own dedicated API key (a file in %APPDATA%\BitwigClaude\keys, never shown or sent); forget_keys=True deletes them all (reload the plug-in in Bitwig afterwards to get a new one). Once the plug-in feeds, analyze_master / masking / mastering use its audio first instead of loopback.
 
 ## Device presets
+
+### `spire_presets(query, bank, limit)`
+
+Search the Spire preset banks (%APPDATA%\RevealSound\Banks, .spf2 files: thousands, many trance soundsets). All words of the query must appear in the bank / folder / preset name, e.g. 'trance supersaw', 'acid', 'pluck', 'lead', 'sub bass', bank='Trance Euphoria'. Returns name, bank, folder and path for spire_load.
+
+### `spire_load(track_index, preset, device_index, bank)`
+
+Load a Spire preset (.spf2) into the Spire-1.5 plug-in on a track WITHOUT opening Spire's window: the file is JSON whose parameter names and 0..1 values match the ones Bitwig exposes, so every one of the ~500 values is written through deep_set. preset = a file path or part of a name (first match; narrow with bank). device_index defaults to the first Spire on the track. Returns what was set and a read-back check. Insert the plug-in first (insert_plugin 'Spire-1.5').
 
 ### `device_presets(device)`
 

@@ -93,28 +93,32 @@ def sidechain_source(track_index: int, source_track: str, device: str = "Compres
         time.sleep(1.0)
         items = ui.read_text(region=DEVICE_PANEL)
     sc = ui.find("Sidechain FX", items=items)
-    if not sc:
+    di = ui.find("Device Input", items=items)
+    if sc:
+        dropdown = (sc["cx"] - 68, sc["cy"])
+    elif di:                                                        # a wide device (Sampler) can push the 'Sidechain FX' label off screen: use the chooser itself
+        dropdown = (di["cx"], di["cy"])
+    else:
         raise RuntimeError("no sidechain selector on screen: select the track and make the device panel visible (device must have a sidechain input). "
                            f"Saw: {[i['text'] for i in items][:25]}")
-    dropdown = (sc["cx"] - 68, sc["cy"])
     popup = None
     for _attempt in range(2):                                       # the first click can only select the device
         ui.click(*dropdown)
         time.sleep(0.9)
-        popup = ui.read_text(region=(DEVICE_PANEL[0], 590, 900, 830))
+        popup = ui.read_text(region=(DEVICE_PANEL[0], 0, 1536, 830))     # the menu opens upwards when the device panel is low on the screen
         if ui.find("TRACKS", items=popup, exact=True):
             break
     else:
         _close_popups()
         raise RuntimeError(f"the source menu did not open. Saw: {[i['text'] for i in popup][:20]}")
-    entry = _find_name(popup, source_track, region=(dropdown[0] - 60, 640, dropdown[0] + 150, 830))
+    entry = _find_name(popup, source_track, region=(dropdown[0] - 90, 0, dropdown[0] + 150, 830))
     if not entry:
         names = [i["text"] for i in popup if i["cx"] < dropdown[0] + 150]
         _close_popups()
         raise ValueError(f"'{source_track}' is not in the source list (the track itself is excluded). Menu showed: {names}")
     ui.click(entry["cx"], entry["cy"])
     time.sleep(0.9)
-    sub = ui.read_text(region=(DEVICE_PANEL[0], 590, 1000, 830))
+    sub = ui.read_text(region=(DEVICE_PANEL[0], 0, 1536, 830))
     want = f"({tap.upper()})"
     pick = next((i for i in sub if i["text"].upper().rstrip().endswith(want)), None)
     if not pick:
@@ -288,7 +292,8 @@ def insert_plugin(name: str, track_index: int = -1) -> dict:
     time.sleep(0.4)
     ui.type_text_safe(name, BROWSER_SEARCH)
     time.sleep(2.5)
-    hit = ui.find(name, region=(1320, 250, 1536, 300), exact=True)
+    items = [it for it in ui.read_text(region=(1320, 250, 1536, 420)) if it["text"].lower().replace("四", "").strip().endswith(name.lower())]
+    hit = items[0] if items else None                          # the OCR adds icon glyphs and changes case: match on the end of the text
     if not hit:
         ui.click(1513, 160)
         raise RuntimeError(f"'{name}' did not show up in the browser (is the plug-in scanned? Settings > Locations)")
@@ -297,3 +302,39 @@ def insert_plugin(name: str, track_index: int = -1) -> dict:
     ui.click(1513, 160)                                        # leave the search box empty for the next search
     after = [d["name"] for d in deep.tree(track_index)]
     return {"track_index": track_index, "devices_before": before, "devices_after": after, "inserted": len(after) > len(before)}
+
+
+def _browser_pick(name):
+    """Search the device browser for `name` (typing only with a blinking caret) and double-click the result whose text ends with it. Returns True when clicked."""
+    ui.click(1513, 160)
+    time.sleep(0.6)
+    ui.click(1420, 160)
+    time.sleep(0.4)
+    ui.type_text_safe(name, BROWSER_SEARCH)
+    time.sleep(2.5)
+    items = [it for it in ui.read_text(region=(1320, 250, 1536, 420)) if it["text"].lower().replace("四", "").strip().endswith(name.lower())]
+    ok = bool(items)
+    if ok:
+        ui.click(items[0]["cx"], items[0]["cy"], double=True)
+        time.sleep(5)
+    ui.click(1513, 160)
+    return ok
+
+
+@tool()
+def insert_on_fx_track(fx_track: str, device: str) -> dict:
+    """Insert a device on an FX (send) track, which the API cannot reach: clicks the track's name in the track list, then uses the device browser like insert_plugin
+    (typing only after a blinking caret proves the search box is in edit mode) and checks the device panel on screen. fx_track = its current name ('FX 1', 'Reverb');
+    device = the browser entry ('Reverb', 'Delay+', 'EQ+'). Bitwig must show the Arrange view with the FX track visible and the device browser open."""
+    bw.call("app_panel", layout="ARRANGE")
+    time.sleep(0.8)
+    ui.focus()
+    it = _track_row(ui.read_text(region=TRACK_LIST), fx_track)
+    if not it:
+        raise ValueError(f"no track called '{fx_track}' in the track list")
+    ui.click(it["cx"], it["cy"])                              # one click on the name selects the track (a double click or Alt+click would rename it)
+    time.sleep(1.0)
+    if not _browser_pick(device):
+        raise RuntimeError(f"'{device}' did not show up in the browser")
+    seen = [t["text"] for t in ui.read_text(region=DEVICE_PANEL)]
+    return {"fx_track": fx_track, "device": device, "panel_text": seen[:12], "inserted": any(device.lower().rstrip("+") in t.lower() for t in seen)}

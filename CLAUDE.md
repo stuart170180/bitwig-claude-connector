@@ -69,6 +69,13 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - `masking_report` solos each track in turn for ~5.4 s while the song plays: valid for looping launcher clips only. In an arranger song every track is measured at a different place, so do not apply its fixes.
 - Save a `snapshot` before changing a real song; never save the project file.
 
+## The default testing template (2026-10-05)
+- "Trance Test Template" (project in Documents\Bitwig Studio\Projects\Trance Test Template and a Bitwig template of the same name): 140 bpm F# minor, 104 bars (Intro 16, Strings Build 16, Subtle Mid 16,
+  Big Build 16, Massive Drop 32, Outro 8), 19 tracks in groups (Drums, Strings Group, Bass Group, Synth Group, FX Group), Spire-1.5 for Bass/Sub/Chords/Pluck/Lead/Pad (always the Spire-1.5 VST2 plug-in),
+  Delay+/Reverb/Kick SC returns with trance sidechain, master EQ+ > Compressor+ > Tool > Peak Limiter (-2 dB) > BW Remote. Rebuild/extend: `research/build_trance_template.py`.
+- Spire presets: `spire_presets` / `spire_load` (JSON .spf2 -> deep_set); audition with `research/spire_audition.py`. Playing the arrangement needs `return_to_arrangement` (launcher clips override it).
+- A sidechain source menu opens upwards at the top of the screen: read the whole screen, click 'Kick'/'FX n' there, then its (PRE) entry. Never click blind: a missed click once hit the toolbar's Delete device (undone).
+
 ## The VST3 link (docs/VST.md)
 - `python manage.py vst` builds/installs BW Remote (JUCE). Insert it on the master with `insert_plugin("BW Remote")`; `vst_status` shows the feed. Audio tools prefer it automatically.
 - Letters typed while a Bitwig text field is NOT in edit mode are shortcuts (this once started the transport and opened the editor on the user's song). Always use
