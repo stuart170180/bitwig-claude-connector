@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (151 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (152 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -539,6 +539,10 @@ Insert a plug-in or device that the controller API cannot reach by name (a VST3/
 ### `insert_on_fx_track(fx_track, device)`
 
 Insert a device on an FX (send) track, which the API cannot reach: clicks the track's name in the track list, then uses the device browser like insert_plugin (typing only after a blinking caret proves the search box is in edit mode) and checks the device panel on screen. fx_track = its current name ('FX 1', 'Reverb'); device = the browser entry ('Reverb', 'Delay+', 'EQ+'). Bitwig must show the Arrange view with the FX track visible and the device browser open.
+
+### `true_peak_limiter(ceiling_db, input_gain_db, release_ms, insert)`
+
+The master's TRUE-peak limiter (BW True Peak VST3, vst/): a lookahead brick-wall limiter whose detector sees the 4x oversampled signal, so the level between samples never passes the ceiling. Bitwig's Peak Limiter only watches sample peaks (measured on a trance drop: sample peak -0.28, true peak +0.48 dBTP; with this plug-in after it: sample -1.0, true -0.99 at the same loudness). Finds it on the master or, with insert=True, inserts it at the end of the chain through the browser, then sets ceiling (dBTP; -1.2 leaves the 0.2 dB margin the measurement needs for a -1 dBTP delivery target), input gain (0..24 dB) and release (10..1000 ms). Put BW Remote AFTER it to measure the final output. Returns the device position and the values read back.
 
 ## Bitwig user guide (local copy)
 

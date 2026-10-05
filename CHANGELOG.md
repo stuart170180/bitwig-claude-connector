@@ -2,6 +2,12 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.3.0 - 2026-10-05 (script 6.1)
+- **BW True Peak VST3** (vst/, JUCE): a true-peak lookahead limiter for the master (4x oversampled detector, ceiling in dBTP). Measured on the trance drop: Bitwig's Peak Limiter alone left the true peak at
+  +0.48 dBTP (sample peak -0.28); with BW True Peak after it: -0.99 dBTP at the same loudness, and -1.19 with the ceiling at -1.2. Tool `true_peak_limiter`; `python manage.py vst` builds and installs both plug-ins.
+- **Live monitor / desktop app: BW Remote VST card** (`/api/vst`): link state, peak L/R, momentary LUFS, correlation, width, host tempo/play state, packet counts, key id and the 24-band spectrum measured inside Bitwig.
+- Trance Test Template master chain: EQ+ > Compressor+ > Tool > Peak Limiter (-1 dB, +1 dB gain) > BW True Peak (-1.2 dBTP) > BW Remote; drop = -12.0 LUFS, true peak -1.19 dBTP.
+
 ## 8.2.0 - 2026-10-05 (script 6.1) - Spire presets and the trance test template
 - **Spire-1.5 presets without Spire's window**: a Spire `.spf2` preset is JSON whose names and 0..1 values equal the 500 parameters Bitwig exposes for the plug-in, so
   `spire_load(track, 'Lead_SuperSaw')` writes them all through deep_set (read back: exact). `spire_presets(query, bank)` searches the 71,684 presets in `%APPDATA%\RevealSound\Banks`.

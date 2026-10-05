@@ -30,3 +30,30 @@ target_link_libraries(BWRemote PRIVATE
     juce::juce_dsp
     juce::juce_recommended_config_flags
     juce::juce_recommended_warning_flags)
+
+juce_add_plugin(BWTruePeak
+    COMPANY_NAME "Caviio Claude Bitwig"
+    PLUGIN_MANUFACTURER_CODE Bwcl
+    PLUGIN_CODE Bwtp
+    FORMATS VST3
+    PRODUCT_NAME "BW True Peak"
+    IS_SYNTH FALSE
+    NEEDS_MIDI_INPUT FALSE
+    NEEDS_MIDI_OUTPUT FALSE
+    VST3_CATEGORIES Fx Dynamics
+    COPY_PLUGIN_AFTER_BUILD FALSE)
+
+target_sources(BWTruePeak PRIVATE
+    Source/TruePeakProcessor.cpp
+    Source/TruePeakEditor.cpp)
+
+target_compile_definitions(BWTruePeak PUBLIC
+    JUCE_WEB_BROWSER=0
+    JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=0)
+
+target_link_libraries(BWTruePeak PRIVATE
+    juce::juce_audio_utils
+    juce::juce_dsp
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_warning_flags)

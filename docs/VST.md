@@ -31,3 +31,10 @@ The plug-in sends each packet to 127.0.0.1 ports 8790-8795. Each receiver (MCP s
 - Two receivers on one port split the packets: port range 8790-8795, no address sharing.
 - `capture_vst` returned float32 and crashed `analyze_master` JSON: converted to float64.
 - Windows keeps a loaded plug-in DLL locked: remove the device from the project before reinstalling; Bitwig's plug-in host for other plug-ins may keep a dead process that blocks reloads (see CLAUDE.md).
+
+## BW True Peak (second plug-in, same project)
+A lookahead brick-wall limiter for the master: the detector sees the 4x oversampled signal (JUCE oversampling, equiripple FIR), the gain comes from a sliding minimum over 2 ms smoothed by a
+box average (so the gain is already down when the peak arrives), then a release; the audio is delayed by exactly the lookahead plus the oversampler latency, which is reported to the host.
+Parameters (also exposed to Bitwig): Ceiling dBTP (-12..0, default -1), Input Gain 0..24 dB, Release 10..1000 ms. Tool: `true_peak_limiter` (inserts it through the browser and sets the values).
+Measured on a trance drop with Bitwig's Peak Limiter at -0.3 dB ceiling: without it sample peak -0.28 / true peak +0.48 dBTP, with it -1.0 / -0.99 at the same -10.6 LUFS; with ceiling -1.2: true peak -1.19.
+Put it after Bitwig's limiter and before BW Remote so the monitor shows the final output.

@@ -454,6 +454,14 @@ def make_handler(cap: Capture):
                     self._json(chords_voice(q))
                 except Exception as e:
                     self._json({"error": str(e)}, 400)
+            elif self.path == "/api/vst":
+                try:
+                    from bwmcp.analysis import vstfeed
+                    st = vstfeed.feed().status()
+                    st.pop("capture", None)
+                    self._json(st)
+                except Exception as e:  # noqa: BLE001
+                    self._json({"alive": False, "error": str(e), "latest": None, "packets_ok": 0, "packets_rejected": 0, "port": None})
             elif self.path.startswith("/api/compressors"):
                 try:
                     self._json(compressors_state())

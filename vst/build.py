@@ -1,4 +1,4 @@
-"""Build, test and install the BW Remote VST3 (64-bit) - the plug-in that moves Bitwig's master audio to the live monitor and desktop app.
+"""Build, test and install the two 64-bit VST3 plug-ins: BW Remote (moves Bitwig's master audio to the live monitor and desktop app) and BW True Peak (true-peak limiter).
 
     python vst/build.py            build (clones JUCE 8.0.8 into vst/third_party on first run), run the SHA-256/HMAC test, install
     python vst/build.py --no-install
@@ -30,13 +30,14 @@ def main():
         bat.write_text(f'@echo off\ncall "{vcvars}" >nul\ncd /d "{HERE}"\ncl /nologo /EHsc /O2 tests\sha_test.cpp /Fe:build\sha_test.exe >nul && build\sha_test.exe\n')
         run("cmd", "/c", bat)
     run(CMAKE, "-S", HERE, "-B", HERE / "build", "-G", "Visual Studio 18 2026", "-A", "x64")
-    run(CMAKE, "--build", HERE / "build", "--config", "Release", "--target", "BWRemote_VST3", "-j", "8")
-    out = HERE / "build" / "BWRemote_artefacts" / "Release" / "VST3" / "BW Remote.vst3"
-    print("built:", out)
-    if "--no-install" not in sys.argv:
-        dest = VST3_DIR / "BW Remote.vst3"
-        shutil.copytree(out, dest, dirs_exist_ok=True)
-        print("installed:", dest, "(remove the plug-in from Bitwig first if it is loaded: Windows keeps the DLL locked; rescan under Settings > Locations)")
+    for target, folder, bundle in (("BWRemote_VST3", "BWRemote_artefacts", "BW Remote.vst3"), ("BWTruePeak_VST3", "BWTruePeak_artefacts", "BW True Peak.vst3")):
+        run(CMAKE, "--build", HERE / "build", "--config", "Release", "--target", target, "-j", "8")
+        out = HERE / "build" / folder / "Release" / "VST3" / bundle
+        print("built:", out)
+        if "--no-install" not in sys.argv:
+            dest = VST3_DIR / bundle
+            shutil.copytree(out, dest, dirs_exist_ok=True)
+            print("installed:", dest, "(remove the plug-in from Bitwig first if it is loaded: Windows keeps the DLL locked; rescan under Settings > Locations)")
 
 
 if __name__ == "__main__":

@@ -28,6 +28,10 @@
   main { display: grid; gap: 12px; padding: 12px 16px; grid-template-columns: repeat(12, 1fr); }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
   .card { position: relative; }
+  .vstgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 6px 0 10px; }
+  .vstgrid .label { color: var(--dim); font-size: 11px; }
+  .vstgrid .vv { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .vstgrid .unit { color: var(--dim); font-size: 11px; margin-left: 4px; }
   .card.closed { display: none; }
   .card .x { position: absolute; top: 6px; right: 8px; width: 24px; height: 24px; padding: 0; line-height: 1; font-size: 16px;
              border: 0; background: transparent; color: var(--dim); border-radius: 6px; z-index: 2; }
@@ -61,7 +65,7 @@
           position: relative; margin: 6px 0 2px; }
   .corr > b { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--fg); border-radius: 2px; }
   .scale { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); }
-  .master { grid-column: span 12; }
+  .master, .vst { grid-column: span 12; }
   .master .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 24px; margin-top: 4px; }
   .ctl label { display: flex; justify-content: space-between; font-size: 12px; color: var(--dim); margin-bottom: 4px; }
   .ctl label b { color: var(--fg); font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -126,6 +130,18 @@
     <div class="corr"><b id="corrb"></b></div>
     <div class="scale"><span>-1</span><span>0</span><span>+1</span></div>
     <h2 style="margin-top:14px">Clipped samples <span id="clips" style="float:right;color:var(--fg)">0</span></h2>
+  </section>
+  <section class="card vst"><h2>BW Remote VST3 link <span id="vstchip" class="msg" style="text-transform:none;letter-spacing:0">· waiting for the plug-in</span></h2>
+    <div class="vstgrid">
+      <div><div class="label">Peak L / R</div><span id="vstpk" class="vv">–</span><span class="unit">dBFS</span></div>
+      <div><div class="label">Momentary</div><span id="vstlufs" class="vv">–</span><span class="unit">LUFS</span></div>
+      <div><div class="label">Correlation</div><span id="vstcorr" class="vv">–</span></div>
+      <div><div class="label">Width</div><span id="vstwidth" class="vv">–</span><span class="unit">%</span></div>
+      <div><div class="label">Host</div><span id="vsthost" class="vv">–</span></div>
+      <div><div class="label">Link</div><span id="vstlink" class="vv" style="font-size:13px">–</span></div>
+    </div>
+    <canvas id="vstspec" height="150"></canvas>
+    <div class="msg" style="margin-top:4px">24 bands, 25 Hz to 20 kHz, measured inside Bitwig by the plug-in (not through the sound card). Packets are signed with a per-instance key.</div>
   </section>
   <section class="card master"><h2>Master chain controls <span id="chainstate" class="msg" style="text-transform:none;letter-spacing:0"></span></h2>
     <div class="row" id="ctls">
@@ -439,7 +455,7 @@ window.addEventListener("resize", () => { drawHistory(); });
 // ---- Panels: close what you don't need, bring it back from the Panels menu ----
 const PANELS = [
   ["nums", "Loudness readouts"], ["history", "Loudness history"], ["scope", "Vectorscope"], ["spectrum", "Spectrum"],
-  ["meters", "Levels & phase"], ["master", "Master chain controls"], ["comps", "Compressors"], ["chords", "Chords & voicings"], ["tuner", "Tuner"], ["advice", "Advice"],
+  ["meters", "Levels & phase"], ["vst", "BW Remote VST link"], ["master", "Master chain controls"], ["comps", "Compressors"], ["chords", "Chords & voicings"], ["tuner", "Tuner"], ["advice", "Advice"],
 ];
 const PAIRS = [["history", "scope"], ["spectrum", "meters"]];   // two cards sharing a row: the survivor takes the full width
 const card = id => document.querySelector("main > .card." + id);
@@ -481,6 +497,33 @@ function placeMenu() {   // open towards the side that has room (the header wrap
 $("panelbtn").onclick = e => { e.stopPropagation(); const open = $("panelmenu").classList.toggle("open"); $("panelbtn").setAttribute("aria-expanded", open); if (open) placeMenu(); };
 document.addEventListener("click", e => { if (!$("panelmenu").contains(e.target)) { $("panelmenu").classList.remove("open"); $("panelbtn").setAttribute("aria-expanded", "false"); } });
 document.addEventListener("keydown", e => { if (e.key === "Escape") $("panelmenu").classList.remove("open"); });
+
+// ---- BW Remote VST3 link: meters and spectrum measured inside Bitwig ----
+async function pollVst() {
+  if (!document.querySelector("main > .card.vst").offsetParent) return;
+  let st; try { st = await (await fetch("/api/vst")).json(); } catch { return; }
+  const L = st.latest;
+  $("vstchip").textContent = st.alive ? "· receiving (port " + st.port + ")" : "· no signal: load BW Remote on the master";
+  $("vstchip").style.color = st.alive ? "var(--ok, #6ee7b7)" : "var(--dim)";
+  if (!L) { $("vstlink").textContent = "packets ok " + st.packets_ok + ", rejected " + st.packets_rejected; return; }
+  $("vstpk").textContent = fmt(L.peak[0]) + " / " + fmt(L.peak[1]);
+  $("vstlufs").textContent = fmt(L.lufs_m);
+  $("vstcorr").textContent = L.corr.toFixed(2);
+  $("vstwidth").textContent = (L.width * 100).toFixed(0);
+  $("vsthost").textContent = (L.playing ? "playing " : "stopped ") + L.bpm.toFixed(1) + " bpm";
+  $("vstlink").textContent = "ok " + st.packets_ok + " · rejected " + st.packets_rejected + " · key " + (L.kid || "?") + " · v" + (L.build || "?");
+  const [g, w, h] = sizeCanvas($("vstspec")); g.clearRect(0, 0, w, h);
+  const n = L.bands.length, bw = w / n;
+  for (let i = 0; i < n; i++) {
+    const v = Math.max(0, Math.min(1, (L.bands[i] + 95) / 62)), bh = v * (h - 16);
+    g.fillStyle = `hsl(${210 - 160 * i / n} 70% 60%)`; g.fillRect(i * bw + 1, h - 14 - bh, bw - 2, bh);
+  }
+  g.fillStyle = css("--dim"); g.font = "10px system-ui";
+  [["50", 25 * Math.pow(800, 0)], ["100", 100], ["1k", 1000], ["10k", 10000]].forEach(([t, f]) => {
+    const x = Math.log(f / 25) / Math.log(20000 / 25) * w; g.fillText(t, Math.min(w - 18, x), h - 2);
+  });
+}
+setInterval(pollVst, 250);
 applyPanels();
 connect();
 </script>

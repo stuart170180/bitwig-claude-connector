@@ -1,6 +1,6 @@
 # To do
 
-Connector v8.0.0 (148 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Connector v8.3.0 (152 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
 Updated 2026-10-05.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
@@ -14,8 +14,8 @@ Updated 2026-10-05.
 ## VST3 (v8.0.0, docs/VST.md)
 - [x] BW Remote VST3 64-bit built, on the real song's master, audio + meters reach the live monitor / desktop app / analysis tools; API key per instance.
 - [ ] CLAP build (clap-juce-extensions); VST2 is not possible (SDK no longer licensed).
-- [ ] Show the VST meters/spectrum card in the live monitor page itself (the monitor already analyses the VST audio); desktop-app window uses the same page.
-- [ ] A true-peak limiter on the master (Bitwig's Peak Limiter is sample-peak: needed -3.5 dB ceiling for -1 dBTP).
+- [x] VST meters/spectrum card in the live monitor page (and so in the desktop app): v8.3.0.
+- [x] True-peak limiter on the master: BW True Peak VST3 + `true_peak_limiter` (v8.3.0).
 
 ## Added 2026-10-05
 - [x] Bitwig user guide indexed (`manual_search`, `device_manual`), `docs/BITWIG_MANUAL.md`; `compressor_mode`; Transfer/Curve/Curves/Wavetable LFO/Clock Grid modules (template built in Bitwig by the UI driver, proven with audio).

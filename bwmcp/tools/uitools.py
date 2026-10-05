@@ -338,3 +338,35 @@ def insert_on_fx_track(fx_track: str, device: str) -> dict:
         raise RuntimeError(f"'{device}' did not show up in the browser")
     seen = [t["text"] for t in ui.read_text(region=DEVICE_PANEL)]
     return {"fx_track": fx_track, "device": device, "panel_text": seen[:12], "inserted": any(device.lower().rstrip("+") in t.lower() for t in seen)}
+
+
+@tool()
+def true_peak_limiter(ceiling_db: float = -1.2, input_gain_db: float | None = None, release_ms: float | None = None, insert: bool = True) -> dict:
+    """The master's TRUE-peak limiter (BW True Peak VST3, vst/): a lookahead brick-wall limiter whose detector sees the 4x oversampled signal, so the level between
+    samples never passes the ceiling. Bitwig's Peak Limiter only watches sample peaks (measured on a trance drop: sample peak -0.28, true peak +0.48 dBTP; with
+    this plug-in after it: sample -1.0, true -0.99 at the same loudness). Finds it on the master or, with insert=True, inserts it at the end of the chain through the
+    browser, then sets ceiling (dBTP; -1.2 leaves the 0.2 dB margin the measurement needs for a -1 dBTP delivery target), input gain (0..24 dB) and release (10..1000 ms).
+    Put BW Remote AFTER it to measure the final output. Returns the device position and the values read back."""
+    idx = next((d["index"] for d in deep.tree(-1) if "true peak" in d["name"].lower()), None)
+    if idx is None:
+        if not insert:
+            raise ValueError("no BW True Peak on the master (insert=True adds it)")
+        insert_plugin("BW True Peak", -1)
+        idx = next((d["index"] for d in deep.tree(-1) if "true peak" in d["name"].lower()), None)
+        if idx is None:
+            raise RuntimeError("BW True Peak did not appear on the master")
+    deep.goto(-1, idx)
+    time.sleep(0.5)
+    ids = {p["name"]: p["id"] for p in deep.params(None, 10, 0)["params"]}
+    values = {ids["Ceiling (dBTP)"]: (max(-12.0, min(0.0, ceiling_db)) + 12.0) / 12.0}
+    if input_gain_db is not None:
+        values[ids["Input Gain (dB)"]] = max(0.0, min(24.0, input_gain_db)) / 24.0
+    if release_ms is not None:                                  # release is a skewed range 10..1000 ms (skew 0.4): normalized = ((ms-10)/990) ** 0.4
+        values[ids["Release (ms)"]] = (max(10.0, min(1000.0, release_ms)) - 10.0) / 990.0
+        values[ids["Release (ms)"]] = values[ids["Release (ms)"]] ** 0.4
+    deep.set_values(values)
+    time.sleep(1.5)                                             # the host reports new values a moment late
+    back = {p["name"]: p["value"] for p in deep.params(None, 10, 0)["params"]}
+    rel_norm = back.get("Release (ms)", 0.0)
+    return {"device_index": idx, "ceiling_dbtp": round(back["Ceiling (dBTP)"] * 12.0 - 12.0, 2), "input_gain_db": round(back["Input Gain (dB)"] * 24.0, 2),
+            "release_ms": round(10.0 + 990.0 * (rel_norm ** (1 / 0.4)), 1) if rel_norm > 0 else 10.0, "chain": [d["name"] for d in deep.tree(-1)]}

@@ -72,7 +72,7 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 ## The default testing template (2026-10-05)
 - "Trance Test Template" (project in Documents\Bitwig Studio\Projects\Trance Test Template and a Bitwig template of the same name): 140 bpm F# minor, 104 bars (Intro 16, Strings Build 16, Subtle Mid 16,
   Big Build 16, Massive Drop 32, Outro 8), 19 tracks in groups (Drums, Strings Group, Bass Group, Synth Group, FX Group), Spire-1.5 for Bass/Sub/Chords/Pluck/Lead/Pad (always the Spire-1.5 VST2 plug-in),
-  Delay+/Reverb/Kick SC returns with trance sidechain, master EQ+ > Compressor+ > Tool > Peak Limiter (-2 dB) > BW Remote. Rebuild/extend: `research/build_trance_template.py`.
+  Delay+/Reverb/Kick SC returns with trance sidechain, master EQ+ > Compressor+ > Tool > Peak Limiter (-1 dB, +1 dB gain) > BW True Peak (-1.2 dBTP) > BW Remote. Rebuild/extend: `research/build_trance_template.py`.
 - Spire presets: `spire_presets` / `spire_load` (JSON .spf2 -> deep_set); audition with `research/spire_audition.py`. Playing the arrangement needs `return_to_arrangement` (launcher clips override it).
 - A sidechain source menu opens upwards at the top of the screen: read the whole screen, click 'Kick'/'FX n' there, then its (PRE) entry. Never click blind: a missed click once hit the toolbar's Delete device (undone).
 
