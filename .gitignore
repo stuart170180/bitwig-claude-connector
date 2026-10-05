@@ -37,3 +37,6 @@ snapshots/
 *.orig
 *.obj
 *.log
+dist/
+build/
+*.spec

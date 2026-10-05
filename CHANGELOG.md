@@ -2,6 +2,10 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.4.0 - 2026-10-05 (script 6.1) - Desktop app packager
+- **Packaged desktop app**: `python packaging/build_app.py` makes a standalone `dist/Bitwig Remote/Bitwig Remote.exe` (PyInstaller, no Python needed; serves the monitor in-process; user data in `%APPDATA%\BitwigClaude\data`).
+- **Installer**: `packaging/BitwigRemote.iss` (Inno Setup) builds `dist/BitwigRemote-Setup.exe` with the app, optional BW Remote / BW True Peak VST3 copy to Common Files\VST3 and optional controller-script copy. Frozen exe tested (window process up, monitor + /api/vst answer); installer compiled but not run on this PC.
+
 ## 8.3.0 - 2026-10-05 (script 6.1)
 - **BW True Peak VST3** (vst/, JUCE): a true-peak lookahead limiter for the master (4x oversampled detector, ceiling in dBTP). Measured on the trance drop: Bitwig's Peak Limiter alone left the true peak at
   +0.48 dBTP (sample peak -0.28); with BW True Peak after it: -0.99 dBTP at the same loudness, and -1.19 with the ceiling at -1.2. Tool `true_peak_limiter`; `python manage.py vst` builds and installs both plug-ins.

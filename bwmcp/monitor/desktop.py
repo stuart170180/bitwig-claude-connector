@@ -34,10 +34,31 @@ def server_up() -> bool:
         return False
 
 
+class _Thread:
+    """Stands in for the subprocess when the packaged app serves the monitor inside its own process."""
+
+    def __init__(self, srv):
+        self.srv = srv
+
+    def terminate(self):
+        self.srv.shutdown()
+
+
 def ensure_server():
     """Start the monitor in the background if nothing answers; returns the process (None when it was already running)."""
     if server_up():
         return None
+    if getattr(sys, "frozen", False):                                  # packaged app: no Python to launch, so serve in this process
+        import threading
+
+        from bwmcp.monitor import live_monitor
+        srv, _cap = live_monitor.serve(PORT)
+        threading.Thread(target=srv.serve_forever, daemon=True, name="monitor-http").start()
+        for _ in range(60):
+            time.sleep(0.25)
+            if server_up():
+                return _Thread(srv)
+        raise RuntimeError("the monitor service did not start")
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
     exe = Path(sys.executable).with_name("pythonw.exe")
     proc = subprocess.Popen([str(exe if exe.exists() else sys.executable), "-m", "bwmcp.monitor.live_monitor", "--port", str(PORT)], cwd=str(paths.ROOT),

@@ -529,14 +529,19 @@ def make_handler(cap: Capture):
     return Handler
 
 
+def serve(port: int = 8780, target: str = "streaming"):
+    """Start the capture thread and the HTTP server; returns (server, capture). The caller runs server.serve_forever() (in a thread for the packaged desktop app)."""
+    cap = Capture(target)
+    cap.start()
+    return ThreadingHTTPServer(("127.0.0.1", port), make_handler(cap)), cap
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8780)
     ap.add_argument("--target", default="streaming", choices=list(mastering.TARGETS))
     args = ap.parse_args()
-    cap = Capture(args.target)
-    cap.start()
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(cap))
+    srv, _cap = serve(args.port, args.target)
     print(f"Live master monitor on http://127.0.0.1:{args.port}", flush=True)
     srv.serve_forever()
 

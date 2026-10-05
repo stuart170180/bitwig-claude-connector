@@ -6,8 +6,20 @@ import sys
 from ctypes import wintypes
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]   # the repository folder
-DATA = ROOT / "data"                          # caches, saved recipes, bookmarks, snapshots (personal and rebuildable files)
+FROZEN = bool(getattr(sys, "frozen", False))   # True inside the packaged Bitwig Remote app (PyInstaller)
+if FROZEN:
+    ROOT = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))                                  # read-only bundle: shipped data, monitor page, icon
+    DATA = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "BitwigClaude" / "data"   # writable per-user data
+    DATA.mkdir(parents=True, exist_ok=True)
+    for _f in (ROOT / "data").glob("*.json") if (ROOT / "data").exists() else []:                       # first run: copy the shipped reference data
+        if not (DATA / _f.name).exists():
+            try:
+                (DATA / _f.name).write_bytes(_f.read_bytes())
+            except OSError:
+                pass
+else:
+    ROOT = Path(__file__).resolve().parents[2]   # the repository folder
+    DATA = ROOT / "data"                          # caches, saved recipes, bookmarks, snapshots (personal and rebuildable files)
 
 
 def documents_dir() -> Path:
