@@ -34,9 +34,10 @@ def _base_path(base: str) -> Path:
 
 
 def _extra_dirs():
-    """Other places with readable (version 0002) Grid presets: Bitwig's own Library and the user's library (found 9 more modules, e.g. Wavetable, Select, Low-pass SK)."""
+    """Other places with readable (version 0002) Grid presets: Bitwig's own Library, the user's library and data/grid_templates (presets made in Bitwig that
+    hold modules no factory preset uses: Transfer, Curve, Curves, Wavetable LFO, Clock)."""
     inst = paths.bitwig_install_dir() or Path(r"C:\Program Files\Bitwig Studio")
-    cands = [inst / "Library", Path.home() / "Documents" / "Bitwig Studio" / "Library"]
+    cands = [inst / "Library", Path.home() / "Documents" / "Bitwig Studio" / "Library", paths.DATA / "grid_templates"]
     return [str(d) for d in cands if d.exists()]
 
 

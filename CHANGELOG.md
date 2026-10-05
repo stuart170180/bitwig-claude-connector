@@ -2,6 +2,16 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.8.0 - 2026-10-05 (script 6.1)
+- New Grid modules you can add: **Transfer** (drawable waveshaper), **Curve**, **Curves**, **Wavetable LFO**, **Clock**. No factory preset uses them, so Claude built a small FX Grid by hand
+  through the screen driver (drag from the module palette, right-click the device header, Save Preset to Library) and saved it as `data/grid_templates/TransferKit.bwpreset`;
+  `grid_add_module` scans that folder for templates (45 modules now).
+- PROVEN with audio: Polysynth -> an FX Grid with an added Transfer module: the Transfer processed the sound (level +5.9 dB, spectral centre 2019 -> 3011 Hz when on vs bypassed); engine stayed up.
+- `bwmcp/control/gridui.py`: `category()`, `place_module()`, `drag()` for the Grid editor palette (drag a module from the palette to a grid cell).
+- UI facts: the Grid editor opens from the small window icon on the device (not by double-clicking the preview); the folder icon opens the preset *browser* (Cancel, never OK);
+  `Save Preset to Library...` is in the device-header right-click menu and its Name field takes typed text.
+- Stopped the transport and restored position after the audio test (the clip launch had left it playing).
+
 ## 7.7.1 - 2026-10-05 (script 6.1)
 - Looked inside a community pack of curve-driven native devices (Caviio: CURVECOMP, WAVESHAPER, VOLSHAPER, SHAPER). They are NOT Grid patches: they use Bitwig 6.1's internal device
   format (own curve resources, UI definitions, custom device UUID), saved as `.bwdevice`, and Bitwig only accepts the custom UUIDs if `bitwig.jar` is patched or a native device is
