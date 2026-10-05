@@ -2,6 +2,10 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.8.2 - 2026-10-05 (docs only)
+- Real-song session: analysed the user's song (read-only), enabled two bypassed bass compressors, removed 8 empty EQ+ devices, added a Peak Limiter on the master (gain +1 dB, ceiling -1.3 dB).
+  Lessons recorded in CLAUDE.md (check the open project, select_track lag, auto-arm, masking_report is for looping launcher clips only).
+
 ## 7.8.1 - 2026-10-05 (script 6.1)
 - Live-confirmed `edit_action` on an arranger clip: `bounce_in_place` turns the note clip into an audio clip (track becomes Hybrid because a launcher note clip remains) and `normalize` raised the
   clip gain 0.0 -> +9.2 dB (read from the inspector). `consolidate` / `reverse` ran cleanly (no visible change on a single-pass clip). Tip: close any floating Grid editor window first, it covers the Arrange view.

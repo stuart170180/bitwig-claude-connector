@@ -61,6 +61,14 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - Evidence for all of this: `research/discoveries/FULL_LOG.md` and `CANDIDATES.md`.
 - Music is original only: no copyrighted melodies. Keys/tempo are generic; do not assume a genre or 140 bpm.
 
+## Working on the user's real song (learned 2026-10-05)
+- ALWAYS check which project is open first (`get_session`: tempo/track names). The user can switch project tabs at any time; a test script once ran on the real song.
+- `list_devices` / `device_delete` follow Bitwig's *selected* track, and `select_track` lags: after `select_track` wait ~1 s and check that `list_devices()['track']` is the expected name
+  BEFORE any delete. A delete on track 18 once removed the Spire plug-in from track 15; fixed with `undo_redo` (11 steps) - undo is the safety net. Verify other tracks after every delete.
+- Selecting a track auto-arms it (Bitwig default): restore arm afterwards (the song had only the Spire track armed).
+- `masking_report` solos each track in turn for ~5.4 s while the song plays: valid for looping launcher clips only. In an arranger song every track is measured at a different place, so do not apply its fixes.
+- Save a `snapshot` before changing a real song; never save the project file.
+
 ## Driving Bitwig's screen (`bwmcp/control/uidriver.py`, tools in `tools/uitools.py`)
 Real screen grab (popups included) + offline OCR (rapidocr) + mouse/keyboard. NEVER type text unless the screen shows the field in edit mode (a darker
 box): stray letters trigger Bitwig shortcuts (solo all, arm, metronome, space = play). Alt+click renames, right-click menus have DELETE, double-click shows devices.
