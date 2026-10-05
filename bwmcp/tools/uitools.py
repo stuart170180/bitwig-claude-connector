@@ -261,3 +261,39 @@ def select_arranger_clip(track_index: int, clip: int = 0, limit: int = 200) -> d
     if not info.get("exists"):
         return {"exists": False, "clicked": {"x": (x0 + x1) // 2, "y": row_y + 4}, "hint": "the click did not select a clip"}
     return {"clip": clip, "clips_on_track": len(segs), "info": info, **arrclipsdev.arrclip_notes(bw, limit=limit)}
+
+
+BROWSER_SEARCH = (1340, 150, 1520, 172)
+
+
+@tool()
+def insert_plugin(name: str, track_index: int = -1) -> dict:
+    """Insert a plug-in or device that the controller API cannot reach by name (a VST3/CLAP/VST2 plug-in such as 'BW Remote') through Bitwig's own browser:
+    selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the
+    box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open
+    ('Everything' tab). Returns the track's devices afterwards."""
+    before = [d["name"] for d in deep.tree(track_index)]
+    ui.focus()
+    if track_index < 0:
+        ui.click(178, 705)                                     # the PROJECT column of the device panel = master chain
+    else:
+        bw.call("select_track", track_index=track_index)
+        time.sleep(1.2)
+        if bw.call("list_devices")["track"] != bw.call("get_session")["tracks"][track_index]["name"]:
+            raise RuntimeError("Bitwig has not selected that track yet")
+    time.sleep(0.8)
+    ui.click(1513, 160)                                        # the X clears old search text (the field keeps it between searches)
+    time.sleep(0.6)
+    ui.click(1420, 160)
+    time.sleep(0.4)
+    ui.type_text_safe(name, BROWSER_SEARCH)
+    time.sleep(2.5)
+    hit = ui.find(name, region=(1320, 250, 1536, 300), exact=True)
+    if not hit:
+        ui.click(1513, 160)
+        raise RuntimeError(f"'{name}' did not show up in the browser (is the plug-in scanned? Settings > Locations)")
+    ui.click(hit["cx"], hit["cy"], double=True)
+    time.sleep(5)
+    ui.click(1513, 160)                                        # leave the search box empty for the next search
+    after = [d["name"] for d in deep.tree(track_index)]
+    return {"track_index": track_index, "devices_before": before, "devices_after": after, "inserted": len(after) > len(before)}

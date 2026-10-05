@@ -197,3 +197,17 @@ def engine_recover(wait_seconds: float = 60.0, normal_tracks: int = 2) -> dict:
             return {"engine": "active", "clicked": clicked, "steps": steps, "seconds": round(time.time() - t0, 1)}
         time.sleep(2.5)
     return {"engine": "still down", "clicked": clicked, "hint": "Bitwig may be showing a dialog; look with look_at_bitwig"}
+
+
+@tool()
+def vst_status(forget_keys: bool = False) -> dict:
+    """State of the BW Remote VST3 link (audio from inside Bitwig to the live monitor and desktop app): is it sending, the newest meters (peak, RMS, momentary
+    LUFS, correlation, width, 24 spectrum bands, host tempo and playing state), the audio capture ring, and how many signed packets were accepted or
+    rejected. Each plug-in instance has its own dedicated API key (a file in %APPDATA%\\BitwigClaude\\keys, never shown or sent); forget_keys=True deletes them all
+    (reload the plug-in in Bitwig afterwards to get a new one). Once the plug-in feeds, analyze_master / masking / mastering use its audio first instead of loopback."""
+    from bwmcp.analysis import vstfeed
+    if forget_keys:
+        vstfeed.forget_keys()
+        vstfeed.feed().keys = {}
+    st = vstfeed.feed().status()
+    return st

@@ -221,6 +221,14 @@ def _spectrum(x, sr):
     return out
 
 
+def vstfeed_alive():
+    try:
+        from bwmcp.analysis import vstfeed
+        return vstfeed.feed().alive(3.0) and vstfeed.capture_info() is not None
+    except Exception:  # noqa: BLE001
+        return False
+
+
 class Capture(threading.Thread):
     """Reads the loopback stream in 100 ms blocks and feeds the analyzer; reconnects on errors."""
 
@@ -231,9 +239,44 @@ class Capture(threading.Thread):
         self.status = "starting"
         self.device = None
 
+    def run_vst(self):
+        """Audio straight from the BW Remote VST3's ring (no sound card). Returns when the plug-in stops delivering."""
+        from bwmcp.analysis import vstfeed
+        feed = vstfeed.feed()
+        info = vstfeed.capture_info()
+        sr = info["sample_rate"]
+        n = int(sr * BLOCK_S)
+        if self.analyzer is None or self.analyzer.sr != sr:
+            self.analyzer = Analyzer(sr, self.target)
+        pos = info["frames_written"]
+        last_new = time.time()
+        self.device, self.status = f"BW Remote VST3 ({sr} Hz)", "capturing"
+        while feed.alive(3.0):
+            total = vstfeed.capture_info()["frames_written"]
+            if total - pos < n:
+                if time.time() - last_new > 3.0 and not feed.latest.get("playing"):
+                    last_new = time.time()           # silence is still audio: the plug-in keeps writing zeros while Bitwig's engine runs
+                time.sleep(0.02)
+                continue
+            if total - pos > sr * 5:                  # fell far behind (e.g. the machine was busy): skip ahead
+                pos = total - n
+            x, _ = vstfeed.read_frames(pos, n)
+            if x is None:
+                pos = total - n
+                continue
+            pos += n
+            last_new = time.time()
+            self.analyzer.feed(x.astype(np.float64))
+
     def run(self):
         import pyaudiowpatch as pa
         while True:
+            try:
+                from bwmcp.analysis import vstfeed
+                if vstfeed.feed().alive(3.0) and vstfeed.capture_info():
+                    self.run_vst()
+            except Exception as e:  # noqa: BLE001
+                self.status = f"VST feed error: {e}; using loopback"
             p = pa.PyAudio()
             try:
                 wasapi = p.get_host_api_info_by_type(pa.paWASAPI)
@@ -254,6 +297,8 @@ class Capture(threading.Thread):
                     if x.shape[1] == 1:
                         x = np.repeat(x, 2, axis=1)
                     self.analyzer.feed(x)
+                    if vstfeed_alive():                  # the VST3 started feeding: switch to it (better: exact, no sound card)
+                        break
             except Exception as e:
                 self.status = (f"cannot capture: {e}. Is Bitwig using an exclusive ASIO driver? "
                                "Switch Bitwig to 'Windows Audio' (WASAPI). Retrying...")

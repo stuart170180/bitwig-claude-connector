@@ -27,6 +27,7 @@ COMMANDS = {
     "recover": ("module", "bwmcp.control.uiclick"),
     "app": ("module", "bwmcp.monitor.desktop"),
     "manual": ("module", "bwmcp.tools.manual"),
+    "vst": ("path", ROOT / "vst" / "build.py"),
 }
 
 

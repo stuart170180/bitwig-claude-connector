@@ -46,10 +46,25 @@ def capture_recorder(seconds: float, keep_file: bool = False):
     return x, sr, f"master recorder ({seconds:g} s)"
 
 
+def capture_vst(seconds: float):
+    """Audio straight from the BW Remote VST3 on the master (no sound card, no recorder file). Raises if the plug-in is not feeding."""
+    from bwmcp.analysis import vstfeed
+    if not vstfeed.feed().alive(3.0):
+        raise RuntimeError("the BW Remote VST3 is not sending (load it on the master track and press play)")
+    x, sr = vstfeed.read_audio(seconds, wait=True)
+    return x.astype("float64"), sr, f"BW Remote VST3 ({seconds:g} s)"      # same dtype as the file/recorder routes (numpy float32 scalars are not JSON serialisable)
+
+
 def capture_live(seconds: float, prefer: str = "auto"):
-    """prefer: auto (recorder, then loopback), recorder, loopback."""
-    if prefer not in ("auto", "recorder", "loopback"):
-        raise ValueError("prefer must be auto, recorder or loopback")
+    """prefer: auto (VST if it is feeding, then recorder, then loopback), vst, recorder, loopback."""
+    if prefer not in ("auto", "vst", "recorder", "loopback"):
+        raise ValueError("prefer must be auto, vst, recorder or loopback")
+    if prefer in ("auto", "vst"):
+        try:
+            return capture_vst(seconds)
+        except Exception:
+            if prefer == "vst":
+                raise                                   # in auto mode a missing VST simply falls through to the recorder
     if prefer in ("auto", "recorder"):
         try:
             return capture_recorder(seconds)

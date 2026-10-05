@@ -69,6 +69,14 @@ with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py moni
 - `masking_report` solos each track in turn for ~5.4 s while the song plays: valid for looping launcher clips only. In an arranger song every track is measured at a different place, so do not apply its fixes.
 - Save a `snapshot` before changing a real song; never save the project file.
 
+## The VST3 link (docs/VST.md)
+- `python manage.py vst` builds/installs BW Remote (JUCE). Insert it on the master with `insert_plugin("BW Remote")`; `vst_status` shows the feed. Audio tools prefer it automatically.
+- Letters typed while a Bitwig text field is NOT in edit mode are shortcuts (this once started the transport and opened the editor on the user's song). Always use
+  `uidriver.type_text_safe(text, box)` (needs a blinking caret) or the `insert_plugin` tool. The browser search box KEEPS old text: click its X (1513,160) before every new search.
+- After Bitwig switches project or restarts the audio engine, plug-ins can fail with 'Plugin host died'; kill the stale `BitwigPluginHost ... host <Vendor>` process and press Reload All Plug-ins.
+- Installing a plug-in file and toggling a Plug-in Location's monitor icon can make Bitwig re-index plug-ins: check the real song's plug-ins load afterwards.
+- A project tab can hold the user's real song: check `get_session` (tempo, track names) before any test, restore arm (select_track arms the track), solo, playing and playhead afterwards.
+
 ## Driving Bitwig's screen (`bwmcp/control/uidriver.py`, tools in `tools/uitools.py`)
 Real screen grab (popups included) + offline OCR (rapidocr) + mouse/keyboard. NEVER type text unless the screen shows the field in edit mode (a darker
 box): stray letters trigger Bitwig shortcuts (solo all, arm, metronome, space = play). Alt+click renames, right-click menus have DELETE, double-click shows devices.

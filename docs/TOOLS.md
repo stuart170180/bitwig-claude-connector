@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (146 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (148 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -500,7 +500,7 @@ Read a device's parameters in real units ('125 ms', '-12.0 dB', '3.08 kHz', ...)
 
 ### `edit_action(action, track_indices)`
 
-Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit, slice_in_place, slice_at_repeats, next_take, previous_take, toggle_groove, unwrap, transpose_semitone_up/down, transpose_octave_up/down (clips or notes selected in the Arrange view or editor). These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
+Run a common editing command in Bitwig on the current selection (or on track_indices, which are selected first). action: consolidate, split, reverse, normalize, bounce_in_place, bounce_pre_fader, bounce_post_fader, quantize, quantize_audio, quantize_length, quantize_to_key, fade_in_to_here, fade_out_from_here, reset_fades, stretch_to_project_tempo, detect_tempo, merge_duplicate_patterns, zoom_to_fit, slice_at_repeats, next_take, previous_take, toggle_groove, unwrap, transpose_semitone_up/down, transpose_octave_up/down (clips or notes selected in the Arrange view or editor). These act on what is selected in the Arrange view (clips need to be selected there); Bitwig does not report back whether anything changed, so check with get_session or look_at_bitwig.
 
 ### `engine_recover(wait_seconds, normal_tracks)`
 
@@ -532,6 +532,10 @@ Add a layer (a parallel chain) to a layer device such as FX Layer or Instrument 
 
 Select an arranger clip on a track by clicking it in the Arrange view, then read its notes. This is the missing link for clips that record_arrangement recorded (the API can only follow Bitwig's own selection). clip = which clip on that track, counted from the left (0 = the first). Bitwig must show the Arrange view with the track's clips on screen (scroll or zoom first, e.g. edit_action 'zoom_to_fit'). Returns the clip info and notes, or exists=false when no clip is found.
 
+### `insert_plugin(name, track_index)`
+
+Insert a plug-in or device that the controller API cannot reach by name (a VST3/CLAP/VST2 plug-in such as 'BW Remote') through Bitwig's own browser: selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open ('Everything' tab). Returns the track's devices afterwards.
+
 ## Bitwig user guide (local copy)
 
 ### `manual_search(query, limit)`
@@ -545,6 +549,12 @@ Read part of the user guide: either a section by (part of) its title, e.g. 'Oper
 ### `device_manual(name, max_chars)`
 
 What the user guide says about a Bitwig device, modulator or Grid module (e.g. 'Compressor+', 'Delay+', 'LFO', 'Wavefolder', 'Ø Shift'). Gives its description, modes and parameter meanings. Several matches are listed by name first so you can ask again with the exact one.
+
+## VST link (audio from inside Bitwig)
+
+### `vst_status(forget_keys)`
+
+State of the BW Remote VST3 link (audio from inside Bitwig to the live monitor and desktop app): is it sending, the newest meters (peak, RMS, momentary LUFS, correlation, width, 24 spectrum bands, host tempo and playing state), the audio capture ring, and how many signed packets were accepted or rejected. Each plug-in instance has its own dedicated API key (a file in %APPDATA%\BitwigClaude\keys, never shown or sent); forget_keys=True deletes them all (reload the plug-in in Bitwig afterwards to get a new one). Once the plug-in feeds, analyze_master / masking / mastering use its audio first instead of loopback.
 
 ## Device presets
 

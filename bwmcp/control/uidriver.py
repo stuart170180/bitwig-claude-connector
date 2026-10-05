@@ -119,6 +119,24 @@ def became_darker(before, after, box, drop=15.0) -> bool:
     return a - b >= drop
 
 
+def caret_blinking(box, seconds=1.3, threshold=0.15) -> bool:
+    """True when something inside box = (x0, y0, x1, y1) flickers: a text field in edit mode shows a blinking caret, a field that is NOT in edit mode does not.
+    Use before typing: letters sent to a non-edit-mode Bitwig are keyboard shortcuts (space = play, M = mute, E = editor ...)."""
+    t0 = time.time()
+    frames = []
+    while time.time() - t0 < seconds:
+        frames.append(np.asarray(grab().crop(box).convert("L"), dtype=float))
+        time.sleep(0.12)
+    return any(float(np.abs(a - b).mean()) > threshold for a in frames for b in frames)
+
+
+def type_text_safe(text: str, box):
+    """type_text, but only after caret_blinking(box) proved the field is in edit mode; raises (and types nothing) otherwise."""
+    if not caret_blinking(box):
+        raise RuntimeError("the text field is not in edit mode (no blinking caret): not typing, letters would be Bitwig shortcuts")
+    type_text(text)
+
+
 def click_text(label: str, region=None, exact=False, wait=0.8, double=False):
     it = find(label, region, exact)
     if not it:

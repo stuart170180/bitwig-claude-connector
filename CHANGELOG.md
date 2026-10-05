@@ -2,6 +2,14 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.0.0 - 2026-10-05 (script 6.1)
+- **BW Remote VST3** (64-bit, JUCE 8.0.8, `vst/`): audio from inside Bitwig's master to the live monitor, the desktop app and the analysis tools (no sound card, loopback or recorder file).
+  Memory-mapped 30 s audio ring + signed UDP meters; per-instance dedicated API key (HMAC-SHA256, key id, own key file); ports 8790-8795. Measured identical to the master recorder.
+  `python manage.py vst` builds and installs it; docs/VST.md. VST2 is not built (SDK no longer licensed); a Standalone build is the desktop-app form.
+- `vst_status`, `insert_plugin` (browser-driven plug-in insert with a typing guard), `uidriver.caret_blinking` / `type_text_safe`; `capture_live(prefer="vst")` and the live monitor read the VST first.
+- Real song: Peak Limiter ceiling -3.5 dB / gain +3 dB (true peak -1.4 dBTP, -15.9 LUFS; the limiter is sample-peak only, so inter-sample peaks needed the margin); BW Remote on its master.
+- Fixed while building: JUCE SHA256 MAC mismatch, key file virtualised by the plug-in host, shared UDP port, float32 JSON error; test `tests/test_vstfeed.py`, `vst/tests/sha_test.cpp`.
+
 ## 7.8.2 - 2026-10-05 (docs only)
 - Real-song session: analysed the user's song (read-only), enabled two bypassed bass compressors, removed 8 empty EQ+ devices, added a Peak Limiter on the master (gain +1 dB, ceiling -1.3 dB).
   Lessons recorded in CLAUDE.md (check the open project, select_track lag, auto-arm, masking_report is for looping launcher clips only).
