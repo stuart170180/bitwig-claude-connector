@@ -2,6 +2,12 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.1.0 - 2026-10-05 (script 6.1)
+- **Bitwig Remote is now a real desktop app**: `BitwigRemote.pyw` (double-click) or `python manage.py app`; icon (`bwmcp/monitor/assets/bitwig_remote.ico`), own taskbar identity,
+  one window at a time (a second launch brings the first forward), remembers size/position (`%APPDATA%\BitwigClaude\app.json`), starts the monitor service itself and stops it again on exit
+  (a service started by autostart keeps running). `python manage.py app --shortcut` puts "Bitwig Remote" on the Desktop and in the Start menu. Tested: opens, icon set, single instance,
+  geometry saved, service started and stopped by the app. Packaging into an installer/exe is the next step.
+
 ## 8.0.0 - 2026-10-05 (script 6.1)
 - **BW Remote VST3** (64-bit, JUCE 8.0.8, `vst/`): audio from inside Bitwig's master to the live monitor, the desktop app and the analysis tools (no sound card, loopback or recorder file).
   Memory-mapped 30 s audio ring + signed UDP meters; per-instance dedicated API key (HMAC-SHA256, key id, own key file); ports 8790-8795. Measured identical to the master recorder.
