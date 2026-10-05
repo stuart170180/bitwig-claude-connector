@@ -17,7 +17,20 @@ CHORDS = [(6, "m"), (2, ""), (9, ""), (4, "")]                 # F#m D A E as (p
 TRIAD = {"m": (0, 3, 7), "": (0, 4, 7)}
 ROOT_BASS = [42, 38, 45, 40]                                   # F#2 D2 A2 E2
 KICK, CLAP, SNARE, HAT, OPEN, CRASH = 60, 60, 60, 60, 60, 60  # every drum is a Sampler: C3 plays the sample at its original pitch
-SAMPLES = json.loads((Path(__file__).resolve().parent.parent / "data" / "trance_samples.json").read_text())
+SAMPLES_FILE = Path(__file__).resolve().parent.parent / "data" / "trance_samples.json"
+
+
+def _trance_samples():
+    """The trance-pack samples of this machine (cached in data/trance_samples.json, which holds local paths and is not committed)."""
+    if not SAMPLES_FILE.exists():
+        from bwmcp.library import samples
+        hits = samples.search("", None, None, None, 3, None, None, 20000)
+        keep = [h for h in hits if "trance" in (h["pack"] + h["path"]).lower() or "dpte" in h["name"].lower() or "FSS" in h["name"]]
+        SAMPLES_FILE.write_text(json.dumps(keep, indent=0), encoding="utf-8")
+    return json.loads(SAMPLES_FILE.read_text())
+
+
+SAMPLES = _trance_samples()
 TRACKS = {}
 
 

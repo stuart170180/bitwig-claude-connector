@@ -29,7 +29,7 @@ Bitwig's script API cannot see audio, so analysis works on files or on Windows "
    `arranger.js`, `deep.js`). In Bitwig: *Settings → Controllers → Add controller → Claude → Bitwig MCP*. Bitwig reloads the script
    whenever a file changes.
 2. **Python:** `pip install -r requirements.txt`
-3. **Claude:** `claude mcp add --scope user bitwig -- python C:/Users/stuar/Documents/Bitwig/bitwig_mcp/server.py`
+3. **Claude:** `claude mcp add --scope user bitwig -- python <path to this folder>/server.py`
    (then start a new Claude session; tools are loaded at session start).
 4. **Live capture (optional):** set Bitwig *Settings → Audio → Driver model* to **Windows Audio (WASAPI)**. Exclusive ASIO
    drivers (e.g. ASIO4ALL) can't be captured; file-based analysis works with any driver.
@@ -154,3 +154,11 @@ N = how many tracks the project had before the test. To run it without an approv
 - Meters are on Bitwig's 0–1 scale; true LUFS / dBTP come from the captured audio, not from Bitwig's meters.
 - Master-chain sliders and tools select Bitwig's master track; don't use the monitor's sliders while Claude is also
   changing the master chain.
+
+
+## Licence and notices
+- Licensed under the **GNU Affero General Public Licence v3.0** (see `LICENSE`). The VST3 plug-ins in `vst/` are built on the JUCE framework, which is dual-licensed (AGPLv3 or a paid JUCE licence);
+  this project uses it under the AGPLv3, so the whole repository is AGPLv3.
+- Unofficial project. Not made, supported or endorsed by Bitwig GmbH, Reveal Sound, or any sample/preset vendor. Bitwig Studio, Spire and the other product names belong to their owners.
+- The Bitwig user guide is copyrighted and is NOT included: `manage.py manual` indexes your own copy of the PDF locally. No samples, presets or Bitwig/Spire files are redistributed here.
+- This project reads and edits preset files and drives Bitwig's window with the mouse. It does not patch Bitwig. Use it on your own projects, with backups.

@@ -27,3 +27,12 @@ research/shots/*.wav
 # the Bitwig user guide is copyrighted: keep local only
 data/manual/
 research/manual/
+
+# machine-specific indexes and personal snapshots (hold local paths or the user's own project layout)
+preset_index.json
+data/spire_index.json
+data/trance_samples.json
+snapshots/
+*.orig
+*.obj
+*.log
