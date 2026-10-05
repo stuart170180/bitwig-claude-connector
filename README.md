@@ -156,6 +156,18 @@ N = how many tracks the project had before the test. To run it without an approv
   changing the master chain.
 
 
+## Pictures
+| | |
+|---|---|
+| ![Live master monitor, dark](docs/images/monitor_full.png) | ![Live master monitor, phone width](docs/images/monitor_phone.png) |
+| **Live master monitor.** Loudness, history, vectorscope, spectrum, levels, the BW Remote VST3 card, master chain controls, compressors, chords. | **Phone width.** The same page stacked in one column. |
+| ![Bitwig Remote desktop app](docs/images/desktop_app.png) | ![BW Remote VST3 card](docs/images/vst_card.png) |
+| **Desktop app.** The monitor in its own window; audio now arrives from inside Bitwig. | **VST card.** Peak, loudness, correlation, width, host tempo, signed packets and a 24 band spectrum. |
+| ![BW Remote on the Bitwig master](docs/images/vst_on_master.png) | ![Grid modules added from a file](docs/images/grid_transfer_modules.png) |
+| **BW Remote VST3 on the master track.** | **Transfer, Curve, Curves, Wavetable LFO and Clock modules** added to a Grid preset by the connector. |
+| ![Bounce in place](docs/images/bounce_in_place.png) | ![Chords and voicings](docs/images/monitor_chords_full.png) |
+| **Bounce in place** confirmed: a note clip became an audio clip. | **Chords & voicings** card: voiced chords on keyboards, written into a clip. |
+
 ## Licence and notices
 - Licensed under the **GNU Affero General Public Licence v3.0** (see `LICENSE`). The VST3 plug-ins in `vst/` are built on the JUCE framework, which is dual-licensed (AGPLv3 or a paid JUCE licence);
   this project uses it under the AGPLv3, so the whole repository is AGPLv3.

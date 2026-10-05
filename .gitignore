@@ -9,6 +9,7 @@ data/bookmarks.json
 data/snapshots/
 data/reports/
 *.png
+!docs/images/*.png
 
 # editor / OS
 .vscode/
