@@ -2,6 +2,10 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.8.1 - 2026-10-05 (script 6.1)
+- Live-confirmed `edit_action` on an arranger clip: `bounce_in_place` turns the note clip into an audio clip (track becomes Hybrid because a launcher note clip remains) and `normalize` raised the
+  clip gain 0.0 -> +9.2 dB (read from the inspector). `consolidate` / `reverse` ran cleanly (no visible change on a single-pass clip). Tip: close any floating Grid editor window first, it covers the Arrange view.
+
 ## 7.8.0 - 2026-10-05 (script 6.1)
 - New Grid modules you can add: **Transfer** (drawable waveshaper), **Curve**, **Curves**, **Wavetable LFO**, **Clock**. No factory preset uses them, so Claude built a small FX Grid by hand
   through the screen driver (drag from the module palette, right-click the device header, Save Preset to Library) and saved it as `data/grid_templates/TransferKit.bwpreset`;

@@ -1,22 +1,26 @@
 # To do
 
-Connector v7.5.0 (142 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
-Updated 2026-10-04.
+Connector v7.8.1 (146 tools, controller script 6.1). Repo: private GitHub `stuart170180/bitwig-claude-connector`. History: [CHANGELOG.md](CHANGELOG.md).
+Updated 2026-10-05.
 
 ## Overnight plan (autonomous, with the user's full permission to drive Bitwig with the mouse)
 - [ ] Update the portfolio with version numbers at every milestone (v7.0.0 done on 2026-10-04).
-- [x] Chords and voicings engine and tools (v7.1.0). [ ] still to do: show them in the live remote.
+- [x] Chords and voicings engine and tools (v7.1.0). Shown in the live remote (Chords & voicings card).
 - [x] Audio pitch controls and colour controls (v7.2.0).
 - [x] Preset library: reverb, Delay+, compressor, saturator, de-esser, gate, limiter, pitch shifter, tool (v7.2.0).
 - [x] Live remote as a desktop window: `python manage.py app` (v7.2.0). [ ] A real VST/CLAP plugin would need a C++ toolchain (JUCE); not started.
 - [ ] Work through the build list below.
+
+## Added 2026-10-05
+- [x] Bitwig user guide indexed (`manual_search`, `device_manual`), `docs/BITWIG_MANUAL.md`; `compressor_mode`; Transfer/Curve/Curves/Wavetable LFO/Clock Grid modules (template built in Bitwig by the UI driver, proven with audio).
+- [ ] Drive Bounce / Slice dialogs with the UI driver; set Poly Grid Note Source / Auto-gate for audio tracks; automate master groove/tempo.
 
 ## Needs the user's song (needs a real project open)
 - [ ] Reopen the song project (the open project is an empty "New 1").
 - [ ] Group the song's tracks with `group_tracks`, then bus compressors on the groups.
 - [ ] Run `mix_audit`, master `mid_side_eq`, `masking_report` / `masking_fix`, `perform_ramp` builds, save chains with `recipe`.
 - [ ] Try plugin control on Serum and Spire with `deep_params` / `deep_set`.
-- [ ] Test `edit_action` (consolidate, normalize, quantize audio, stretch, bounce) on a selected arranger clip; `undo_redo`; `last_clicked`; look at `project_notes` in Bitwig's controller settings.
+- [ ] Test `edit_action` (quantize audio, stretch; bounce and normalize are done) on a selected arranger clip; `undo_redo`; `last_clicked`; look at `project_notes` in Bitwig's controller settings.
 - [ ] Tune the genre sidechain presets by ear (`genres.py`).
 - [ ] Share the portfolio page from its Share menu if other people should see it (it is private).
 
@@ -28,7 +32,7 @@ Updated 2026-10-04.
 - [ ] Real-unit presets for more devices; gain reduction has no API parameter (read it from a picture).
 - [x] Parallel compression and layer chains (v7.4.0: `layer_chain`, `parallel_compression`, `add_layer`).
 - [x] Reference library decodes MP3, FLAC and OGG (soundfile).
-- [x] `masking_fix` verifies its own improvement (v7.4.2). [ ] confirm bounce / consolidate / normalize worked.
+- [x] `masking_fix` verifies its own improvement (v7.4.2). bounce_in_place (note clip -> audio clip, track became Hybrid) and normalize (+9.2 dB clip gain) CONFIRMED live on 2026-10-05; consolidate and reverse ran without error but a changed result could not be seen on a one-pass clip.
 - [ ] PopupBrowser (browser-based preset loading) and the project file's track tree.
 
 ## Done
