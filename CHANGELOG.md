@@ -2,6 +2,14 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 7.7.1 - 2026-10-05 (script 6.1)
+- Looked inside a community pack of curve-driven native devices (Caviio: CURVECOMP, WAVESHAPER, VOLSHAPER, SHAPER). They are NOT Grid patches: they use Bitwig 6.1's internal device
+  format (own curve resources, UI definitions, custom device UUID), saved as `.bwdevice`, and Bitwig only accepts the custom UUIDs if `bitwig.jar` is patched or a native device is
+  overwritten (the pack's install tools). We did not run those tools (they modify Bitwig and bypass its integrity check). So no Transfer/Curves module template can be taken from them.
+- `grid_templates` / `grid_add_module` now also scan Bitwig's own Library and the user library for readable Grid presets (40 modules, was 37). Transfer/Curves/Wavetable-LFO templates still
+  do not exist in any readable file on this machine (all 203 other module files are the scrambled version 0004).
+- `.bwdevice` documents of this kind have a different root layout and a meta type 0x15 that `gridedit.dump` cannot write yet (reading works).
+
 ## 7.7.0 - 2026-10-04 (script 6.1)
 - `device_manual`: the guide's text for any stock device, modulator or Grid module (local copy, 445 entries).
 - `compressor_mode`: Compressor+ Character (Vanilla/Smooth/Over/Glue/Resist/Smash), VCA colour, Gain Reduction mode, Stereo Independence mode, Auto Timing %,

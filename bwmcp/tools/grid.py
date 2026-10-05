@@ -33,8 +33,27 @@ def _base_path(base: str) -> Path:
     return p
 
 
+def _extra_dirs():
+    """Other places with readable (version 0002) Grid presets: Bitwig's own Library and the user's library (found 9 more modules, e.g. Wavetable, Select, Low-pass SK)."""
+    inst = paths.bitwig_install_dir() or Path(r"C:\Program Files\Bitwig Studio")
+    cands = [inst / "Library", Path.home() / "Documents" / "Bitwig Studio" / "Library"]
+    return [str(d) for d in cands if d.exists()]
+
+
+_tpl_cache = {}
+
+
 def _templates():
-    return ge.module_templates([str(_settings_dir())])
+    """Module templates from the factory device-settings first (fast), then the wider libraries (slow scan, cached for the session)."""
+    if "t" not in _tpl_cache:
+        t = ge.module_templates([str(_settings_dir())])
+        try:
+            for u, v in ge.module_templates(_extra_dirs()).items():
+                t.setdefault(u, v)
+        except Exception:
+            pass
+        _tpl_cache["t"] = t
+    return _tpl_cache["t"]
 
 
 def _find_template(name: str):
