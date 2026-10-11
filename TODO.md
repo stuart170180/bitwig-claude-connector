@@ -68,5 +68,5 @@ fix what breaks as it breaks -> rebuild the exe + try it -> notes / TODO / CHANG
 - [x] Own VST plug-ins: BW Remote and BW True Peak exist and are used (masking_live puts BW Remote probes on every track). A lighter `BW Probe` (telemetry only, no shared audio ring) would be cleaner for many probes: not needed yet, noted in docs/API_COVERAGE.md.
 - [ ] Rebuild the exe, launch it, final notes.
 - [ ] Still not run live: UI-driven tools that click at fixed screen positions (`insert_plugin`, `insert_on_fx_track`, `rename_fx_track`, `delete_fx_track`, `sidechain_setup` / `sidechain_source`, `parallel_compression`, `select_arranger_clip` / `edit_arranger_clip`, `preset_patch_and_load`). `parallel_compression` failed with "no layer list on screen" because it needs the layer device showing in Bitwig's panel.
-- [ ] The packaged exe is from 9.1.1; rebuild with `python packaging/build_app.py`.
+- [x] The packaged exe is rebuilt from 9.3.0 (launches, writes its data file). Not run: the installer on a clean PC; the chat from the exe (it needs Python for the MCP server).
 
