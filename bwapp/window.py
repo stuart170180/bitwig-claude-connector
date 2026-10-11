@@ -1,6 +1,7 @@
 """Main window: QtAds docking (drag, tab, float, resize, close, re-add from the View menu), layout saved between runs."""
 import PySide6QtAds as ads
 from PySide6.QtCore import QSettings
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QComboBox, QLabel, QMainWindow, QPushButton, QSizePolicy, QToolBar
 
 from bwapp import blocks
@@ -16,7 +17,8 @@ class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Bitwig Remote")
-        self.resize(1360, 900)
+        screen = QGuiApplication.primaryScreen().availableGeometry()
+        self.resize(min(1500, screen.width() - 40), min(960, screen.height() - 40))
         ads.CDockManager.setConfigFlags(ads.CDockManager.DefaultOpaqueConfig | ads.CDockManager.FocusHighlighting)
         self.dm = ads.CDockManager(self)
         self.feed = Feed()
@@ -71,7 +73,7 @@ class Main(QMainWindow):
         add(BOT, d["advice"], left)
         mid.setCurrentIndex(0)
         try:                                                    # first-run proportions; the user's own resizing is saved afterwards
-            self.dm.setSplitterSizes(left, [190, 330, 250])
+            self.dm.setSplitterSizes(left, [170, 60, 300, 260])
             self.dm.setSplitterSizes(mid, [560, 360])
         except Exception:
             pass

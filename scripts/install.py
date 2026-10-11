@@ -29,8 +29,8 @@ MCP_NAME = "bitwig"
 MODULES = {"mcp": "mcp", "numpy": "numpy", "scipy": "scipy", "pyloudnorm": "pyloudnorm",
            "pyaudiowpatch": "PyAudioWPatch (live capture, optional)", "matplotlib": "matplotlib",
            "PySide6": "PySide6 (the Bitwig Remote app)", "PySide6QtAds": "PySide6-QtAds (dockable blocks)", "pyqtgraph": "pyqtgraph",
-           "sounddevice": "sounddevice (sample playback)", "tzdata": "tzdata (UK clock)"}
-OPTIONAL = {"pyaudiowpatch"}
+           "sounddevice": "sounddevice (sample playback)", "tzdata": "tzdata (UK clock)", "pedalboard": "pedalboard (sample stretch)", "anthropic": "anthropic (API chat, optional)", "keyring": "keyring (API key store, optional)"}
+OPTIONAL = {"pyaudiowpatch", "anthropic", "keyring"}
 STEPS = []
 
 

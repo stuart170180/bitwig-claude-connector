@@ -6,11 +6,15 @@ from pathlib import Path
 
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtGui import QTextDocument
-from PySide6.QtWidgets import (QCheckBox, QFileDialog, QHBoxLayout, QLabel, QPlainTextEdit, QPushButton, QTextBrowser, QVBoxLayout,
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QInputDialog, QLineEdit, QHBoxLayout, QLabel, QPlainTextEdit, QPushButton, QTextBrowser, QVBoxLayout,
                                QWidget)
 
 from bwapp import theme
+from bwapp.chat import keystore
+from bwapp.chat.api import ApiChat
 from bwapp.chat.cli import CliChat
+
+MODELS = ["claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1", "claude-haiku-4-5"]
 
 
 def md_html(md: str) -> str:
@@ -24,13 +28,22 @@ class ChatPanel(QWidget):
         super().__init__()
         self.items = []                    # [kind, text, extra] with kind user | assistant | tool
         self.images = []
-        self.chat = CliChat()
         self.view = QTextBrowser()
         self.box = QPlainTextEdit()
         self.box.setPlaceholderText("Ask Claude about your project...   (Ctrl+Enter to send)")
         self.box.setFixedHeight(70)
         self.send_b, self.stop_b, self.attach_b = QPushButton("Send"), QPushButton("Stop"), QPushButton("Attach image")
         self.details = QCheckBox("Tool details")
+        self.backend = QComboBox()
+        self.backend.addItems(["Claude Code login", "API key"])
+        self.model = QComboBox()
+        self.model.addItems(MODELS)
+        self.key_b = QPushButton("API key...")
+        self.new_b = QPushButton("New chat")
+        top = QHBoxLayout()
+        for w in (self.backend, self.model, self.key_b, self.new_b):
+            top.addWidget(w)
+        top.addStretch()
         self.info = QLabel("")
         self.info.setProperty("role", "dim")
         row = QHBoxLayout()
@@ -41,6 +54,7 @@ class ChatPanel(QWidget):
         row.addWidget(self.send_b)
         self.setMinimumWidth(260)
         lay = QVBoxLayout(self)
+        lay.addLayout(top)
         lay.addWidget(self.view, 1)
         lay.addWidget(self.box)
         lay.addLayout(row)
@@ -51,15 +65,41 @@ class ChatPanel(QWidget):
         self.attach_b.clicked.connect(self.attach)
         self.details.toggled.connect(self.render)
         self.box.installEventFilter(self)
+        self.chat = None
+        self.key_b.setVisible(False)
+        self.backend.currentIndexChanged.connect(self.new_chat)
+        self.model.currentIndexChanged.connect(self.new_chat)
+        self.new_b.clicked.connect(self.new_chat)
+        self.key_b.clicked.connect(self.ask_key)
+        self.timer = QTimer(self)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.render)
+        self.new_chat()
+
+    def new_chat(self, *_):
+        """(Re)start the conversation with the chosen backend and model."""
+        if self.chat is not None:
+            self.chat.close()
+        api = self.backend.currentIndex() == 1
+        self.key_b.setVisible(api)
+        self.chat = (ApiChat if api else CliChat)(self.model.currentText())
         c = self.chat
         c.text.connect(self.on_text)
         c.tool.connect(self.on_tool)
         c.tool_result.connect(self.on_result)
         c.finished.connect(self.on_done)
         c.failed.connect(lambda m: self.on_done("failed: " + m, 0))
-        self.timer = QTimer(self)
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.render)
+        self.items.clear()
+        self.info.setText("API key stored" if api and keystore.get() else "")
+        self.send_b.setEnabled(True)
+        self.stop_b.setEnabled(False)
+        self.render()
+
+    def ask_key(self):
+        k, ok = QInputDialog.getText(self, "Anthropic API key", "Paste your API key (kept in Windows Credential Manager):", QLineEdit.Password)
+        if ok and k.strip():
+            keystore.put(k)
+            self.info.setText("API key stored")
 
     def eventFilter(self, obj, ev):
         if obj is self.box and ev.type() == QEvent.KeyPress and ev.key() in (Qt.Key_Return, Qt.Key_Enter) and ev.modifiers() & Qt.ControlModifier:

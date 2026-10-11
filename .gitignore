@@ -40,3 +40,8 @@ snapshots/
 dist/
 build/
 *.spec
+
+# native app runtime files
+data/app_mcp.json
+data/app_*.json
+data/samples_processed/

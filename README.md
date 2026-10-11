@@ -55,9 +55,9 @@ Every block (loudness, history, spectrum, vectorscope, levels, tuner, advice, BW
 samples) can be dragged, tabbed, floated, resized and closed; **View** in the menu brings any block back, *Reset layout* restores the default.
 Your layout is remembered. A closed Master-controls block never touches Bitwig.
 **Open at login:** `python manage.py autostart` (no admin needed); `--status` to check, `--remove` to undo.
-**Claude chat block:** uses the `claude` command-line program with your own Claude Code login and only the Bitwig tools; Stop ends the turn.
+**Claude chat block:** pick *Claude Code login* (runs the `claude` program with your own login, only the Bitwig tools) or *API key* (your Anthropic key, kept in Windows Credential Manager; press *API key...* once). Choose the model, *New chat* starts over, Stop ends the turn, *Attach image* sends a picture.
 **Samples block:** your sample folders (the same list as `search_samples`), waveform with bar grid, BPM and length in bars, play / pause,
-hold *<<* / *>>* to rewind / fast-forward, loop, speed, *Send to Bitwig* (new audio track, first slot).
+hold *<<* / *>>* to rewind / fast-forward, loop, speed, key detection, *Match project tempo* (time-stretches a copy to the Bitwig tempo, pitch unchanged), *Shift pitch* (semitones, speed unchanged), *Original*, *Save copy* (`data/samples_processed/`), drag files or folders in, *Send to Bitwig* (new audio track, first slot; the processed copy if you made one).
 
 ## Project layout
 
@@ -117,7 +117,7 @@ N = how many tracks the project had before the test. To run it without an approv
 ## Ports
 
 `8765` requests to Bitwig · `8766–8771` replies (a client takes the first free one, so up to 6 can run at once) ·
-All bound to 127.0.0.1 only. The app and the MCP server talk through two small files in `data/` (`app_latest.json`, `app_cmd.json`), not a port.
+All bound to 127.0.0.1 only. The app and the MCP server talk through two small files in `%APPDATA%\BitwigClaude\link\` (`app_latest.json`, `app_cmd.json`), not a port.
 
 ## Troubleshooting
 

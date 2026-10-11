@@ -53,4 +53,5 @@ Updated 2026-10-05.
 - [x] v8.4.1: desktop app 'no window' hardening (off-screen position, stale lock, error log). Cause on the user's PC not reproduced; if it recurs read `%APPDATA%\BitwigClaudeapp_error.log`.
 - [x] Native app stage 1 (bwapp/): docking shell, live meters, Claude chat (CLI backend), sample mode. See docs/APP_PLAN.md.
 - [x] Stage 2 + 3 (v9.0.0): all blocks ported, web removed, live_monitor tool + autostart repointed.
-- [ ] Next for the app: API-key chat backend (anthropic SDK + keyring) for sharing; sample time-stretch / pitch-shift to project tempo (pedalboard); sample library tags and key detection; drag a sample onto a Bitwig track; frozen exe needs a Python for the chat's MCP server; installer run-through on a clean PC. Not live-tested: master sliders/Build chain, Write chords (they change the project).
+- [x] 9.1.0: API-key chat backend, sample match-tempo / pitch / key / drag-drop; Build chain, master slider and Write chords tested live.
+- [ ] Open: chat with an API key not run live (no key here); the packaged exe has no Python for the chat's MCP server (use the API route from source for now); installer run-through on a clean PC; sample tags/search beyond name filter; drag a sample straight onto a Bitwig track.

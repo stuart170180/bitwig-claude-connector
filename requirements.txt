@@ -13,3 +13,5 @@ pyqtgraph>=0.14   # spectrum, history and waveform plots
 sounddevice>=0.5   # sample playback
 pedalboard>=0.9   # time-stretch / pitch-shift (sample mode, planned)
 tzdata   # UK time zone data on Windows
+keyring>=25   # API-key chat (Windows Credential Manager)
+anthropic>=1.0   # API-key chat backend

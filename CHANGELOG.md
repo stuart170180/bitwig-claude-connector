@@ -2,12 +2,18 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 9.1.0 - 2026-10-11 - Sample processing, API-key chat, polish
+- **Samples**: key detection, *Match project tempo* (Rubber Band via pedalboard, pitch kept), *Shift pitch* (speed kept), both together, *Original*, *Save copy*, drag and drop of files and folders; *Send to Bitwig* sends the processed copy.
+- **Chat**: second backend using your own Anthropic API key (Windows Credential Manager) with the Bitwig tools, model picker, *New chat*. (Not run against the live API: no key on this PC.)
+- Window sizes itself to the screen; better first-run proportions; layout save / restore / reset tested.
+- Tested live against Bitwig: Build chain, a master slider (+3.0 dB read back), Write chords (14 notes verified), all cleaned up afterwards.
+
 ## 9.0.0 - 2026-10-11 - Native desktop app, web removed (plan and decisions: docs/APP_PLAN.md)
 - **Bitwig Remote is a native Qt app** (`bwapp/`: PySide6 + PySide6-QtAds + pyqtgraph). No web page, no web server, no web view, no port 8780. Blocks dock, tab, float, resize, close and come back from the View menu; layout is remembered; View > Reset layout.
 - Blocks: loudness, history, spectrum, vectorscope, levels, tuner, advice, BW Remote VST link, master chain controls, compressors, chords & voicings (with sound), **Claude chat**, **samples**; UK clock and weather in the toolbar.
 - **Claude chat block**: streamed text, tool calls (details on request), image attach, Stop. Backend: the `claude` CLI in stream-json mode with only the Bitwig MCP server (your own Claude Code login).
 - **Sample mode**: your sample folders, waveform + bar grid, BPM (onset autocorrelation, whole-bar check), length, bars, time signature, play / pause / hold-to-rewind / hold-to-fast-forward, loop, speed, Send to Bitwig.
-- The `live_monitor` MCP tool now starts and reads the app through `data/app_latest.json` / `data/app_cmd.json` (start, reading, reset, target, stop); `open_browser` is gone.
+- The `live_monitor` MCP tool now starts and reads the app through `%APPDATA%BitwigClaudeinkpp_latest.json` / `app_cmd.json` (start, reading, reset, target, stop); `open_browser` is gone.
 - Removed: `bwmcp/monitor/` (HTML page, HTTP/SSE server, pywebview window, web autostart), `scripts/start_monitor.bat`, `pywebview`, the web screenshots. `manage.py monitor` is gone; `manage.py app` and `autostart` use the new app. The measurement engine moved to `bwapp/engine.py`.
 
 ## 8.4.1 - 2026-10-11 - Desktop app opens reliably

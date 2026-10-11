@@ -32,7 +32,7 @@ Full docs: `README.md` (overview, install, known limits), `docs/TOOLS.md` (gener
 ## Protocol
 Python sends OSC `/mcp "<json>"` to Bitwig on UDP 8765; replies come back as `/reply` on ports 8766-8771. Call from Python
 with `server.bw.call("<command>", **args)`. Bitwig Remote (native Qt app in `bwapp/`, no web anywhere): `python manage.py app`; the `live_monitor` tool starts it and reads
-`data/app_latest.json` (autostart: `python manage.py autostart`).
+`%APPDATA%BitwigClaudeinkpp_latest.json` (autostart: `python manage.py autostart`).
 
 ## Hard-won rules (do not rediscover)
 - The Bitwig API has no access to: modulators, Grid, sidechain source choice, FX track names/faders, compressor gain

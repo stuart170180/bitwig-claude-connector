@@ -3,15 +3,16 @@ the server reads them and can leave one-line commands (reset, target, quit) for 
 import json
 import os
 import time
+from pathlib import Path
 
-from bwmcp.core import paths
-
-LATEST = paths.DATA / "app_latest.json"
-CMD = paths.DATA / "app_cmd.json"
+# One fixed folder so the packaged exe and the source install (MCP server) always see the same files.
+LINK = Path(os.environ.get("APPDATA", str(Path.home()))) / "BitwigClaude" / "link"
+LATEST = LINK / "app_latest.json"
+CMD = LINK / "app_cmd.json"
 
 
 def _atomic(path, obj):
-    paths.DATA.mkdir(parents=True, exist_ok=True)
+    LINK.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(obj), encoding="utf-8")
     os.replace(tmp, path)
