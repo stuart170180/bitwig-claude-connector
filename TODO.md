@@ -50,4 +50,4 @@ Updated 2026-10-05.
 - [x] Grouping fixed; deep device access, EQ+ in real units, mid/side EQ, mix audit, recipes, A/B; MIDI files, reference library, masking finder, actions, automation by performance.
 - [x] Backups, git history, private GitHub repo, portfolio page.
 - [x] v8.4.0: packager for the desktop app (PyInstaller exe + Inno Setup installer). Not yet done: code signing, installer run-through on a clean PC.
-- [x] v8.4.1: desktop app 'no window' hardening (off-screen position, stale lock, error log). Cause on the user's PC not reproduced; if it recurs read `%APPDATA%\BitwigClaudepp_error.log`.
+- [x] v8.4.1: desktop app 'no window' hardening (off-screen position, stale lock, error log). Cause on the user's PC not reproduced; if it recurs read `%APPDATA%\BitwigClaudeapp_error.log`.
