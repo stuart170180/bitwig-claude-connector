@@ -10,7 +10,7 @@ from bwapp.header import Clock, Weather
 from bwmcp.analysis import mastering
 
 ORG, APP = "BitwigClaude", "BitwigRemote"
-LAYOUT_VERSION = 6       # bump when blocks change shape so an old saved layout is dropped
+LAYOUT_VERSION = 7       # bump when blocks change shape so an old saved layout is dropped
 
 
 class Main(QMainWindow):
@@ -19,11 +19,12 @@ class Main(QMainWindow):
         self.setWindowTitle("Bitwig Remote")
         screen = QGuiApplication.primaryScreen().availableGeometry()
         self.resize(min(1500, screen.width() - 40), min(960, screen.height() - 40))
-        ads.CDockManager.setConfigFlags(ads.CDockManager.DefaultOpaqueConfig | ads.CDockManager.FocusHighlighting)
+        ads.CDockManager.setConfigFlags(ads.CDockManager.DefaultOpaqueConfig)     # no focus highlight: it painted the focused tab's title invisible
         self.dm = ads.CDockManager(self)
         self.feed = Feed()
         self.feed.command.connect(self.on_command)
         self.docks = {}
+        self.default_state = None
         self._build_toolbar()
         for spec in blocks.all_blocks(self.feed):
             self._add(spec)
@@ -85,6 +86,7 @@ class Main(QMainWindow):
                 root.setSizes([int(w * 0.35), int(w * 0.36), int(w * 0.29)])
         except Exception:  # noqa: BLE001
             pass
+        QTimer.singleShot(50, lambda: setattr(self, "default_state", self.dm.saveState()))   # what Reset layout returns to
 
     def _build_toolbar(self):
         tb = QToolBar("Main")
@@ -119,10 +121,12 @@ class Main(QMainWindow):
 
     def reset_layout(self):
         s = QSettings(ORG, APP)
-        s.clear()
+        for k in ("dock", "geometry", "layout_version"):
+            s.remove(k)
         for d, _ in self.docks.values():
-            d.toggleView(False)
-        self._default_layout()
+            d.toggleView(True)
+        if self.default_state is not None:
+            self.dm.restoreState(self.default_state)
         for d, _ in self.docks.values():
             d.toggleView(True)
 

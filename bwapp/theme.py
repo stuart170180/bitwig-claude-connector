@@ -15,6 +15,13 @@ QMenuBar, QMenu {{ background: {PANEL}; }} QMenu::item:selected {{ background: {
 QSlider::groove:horizontal {{ height: 4px; background: {LINE}; border-radius: 2px; }}
 QSlider::handle:horizontal {{ background: {ACCENT}; width: 14px; margin: -6px 0; border-radius: 7px; }}
 QLabel[role="dim"] {{ color: {DIM}; }}
+ads--CDockWidgetTab {{ background: {BG}; border: none; padding: 0 6px; }}
+ads--CDockWidgetTab[activeTab="true"] {{ background: {PANEL}; border-bottom: 2px solid {ACCENT}; }}
+ads--CDockWidgetTab[focused="true"] {{ background: {PANEL}; border-bottom: 2px solid {ACCENT}; }}
+ads--CDockWidgetTab QLabel {{ color: {DIM}; }}
+ads--CDockWidgetTab[focused="true"] QLabel {{ color: {FG}; }}
+ads--CDockWidgetTab[activeTab="true"] QLabel {{ color: {FG}; }}
+ads--CDockAreaTitleBar {{ background: {BG}; }}
 """
 
 

@@ -12,5 +12,5 @@ from bwapp.panels.vst import VstCard
 
 LIVE = [("readouts", "Loudness", Readouts), ("history", "Loudness history", History), ("spectrum", "Spectrum (mid / side)", Spectrum),
         ("scope", "Vectorscope", Scope), ("levels", "Levels", Levels), ("tuner", "Tuner", Tuner),
-        ("advice", "Advice", Advice), ("vst", "BW Remote VST link", VstCard), ("master", "Master chain controls", MasterPanel),
-        ("comps", "Compressors", Compressors), ("chords", "Chords & voicings", Chords)]
+        ("advice", "Advice", Advice), ("vst", "VST link", VstCard), ("master", "Master", MasterPanel),
+        ("comps", "Compressors", Compressors), ("chords", "Chords", Chords)]

@@ -60,6 +60,15 @@ class SamplePanel(QWidget):
         self.speed.setRange(50, 200)
         self.speed.setValue(100)
         self.speed_l = QLabel("1.00x")
+        self.vol = QSlider()
+        self.vol.setOrientation(Qt.Horizontal)
+        self.vol.setRange(0, 100)
+        self.vol.setValue(40)
+        self.vol.setMaximumWidth(90)
+        self.vol.setMinimumWidth(60)
+        self.speed.setMinimumWidth(70)
+        self.vol.setToolTip("Playback volume")
+        self.player.gain = 0.16
         self.send_b = QPushButton("Send to Bitwig")
         self.send_b.setToolTip("Puts the sample on a new audio track as a clip in the first slot")
         self.msg = QLabel("")
@@ -74,14 +83,18 @@ class SamplePanel(QWidget):
         self.semi.setSuffix(" st")
         self.pitch_b, self.orig_b, self.save_b = QPushButton("Shift pitch"), QPushButton("Original"), QPushButton("Save copy")
         proc = QHBoxLayout()
-        for w in (self.proj, self.match_b, self.semi, self.pitch_b, self.orig_b, self.save_b):
+        for w in (self.proj, self.match_b):
             proc.addWidget(w)
         proc.addStretch()
+        proc2 = QHBoxLayout()
+        for w in (QLabel("Pitch"), self.semi, self.pitch_b, self.orig_b, self.save_b):
+            proc2.addWidget(w)
+        proc2.addStretch()
         top = QHBoxLayout()
         for w in (self.add_folder_b, self.add_files_b, self.filter):
             top.addWidget(w)
         ctl = QHBoxLayout()
-        for w in (self.rew, self.play, self.fwd, self.stop_b, self.loop, QLabel("Speed"), self.speed, self.speed_l):
+        for w in (self.rew, self.play, self.fwd, self.stop_b, self.loop, QLabel("Speed"), self.speed, self.speed_l, QLabel("Vol"), self.vol):
             ctl.addWidget(w)
         ctl.addStretch()
         ctl.addWidget(self.time)
@@ -99,6 +112,7 @@ class SamplePanel(QWidget):
         lay.addLayout(ctl)
         lay.addLayout(meta)
         lay.addLayout(proc)
+        lay.addLayout(proc2)
         lay.addWidget(self.msg)
         self.add_folder_b.clicked.connect(self.pick_folder)
         self.add_files_b.clicked.connect(self.pick_files)
@@ -112,6 +126,7 @@ class SamplePanel(QWidget):
         self.fwd.released.connect(self.release)
         self.loop.toggled.connect(lambda on: setattr(self.player, "loop", on))
         self.speed.valueChanged.connect(self.set_speed)
+        self.vol.valueChanged.connect(lambda v: setattr(self.player, "gain", (v / 100) ** 2))
         self.sig.currentTextChanged.connect(self.regrid)
         self.wave.seek.connect(self.player.seek)
         self.send_b.clicked.connect(self.send)

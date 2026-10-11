@@ -2,6 +2,12 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 9.1.2 - 2026-10-11 - Fixes from clicking through the real window
+- **Fixed: View > Reset layout made every block title vanish.** Reset now restores a saved copy of the default layout.
+- **Fixed: a focused block's title was painted invisible** (blue box); the focus highlight is off and tabs have a readable style. Tool tabs are named Samples / Master / VST link / Compressors / Chords.
+- Samples: a volume slider (default quiet), sample controls on two rows so nothing overlaps.
+- Checked by mouse and keyboard on the real window: select and analyse a sample (BPM and key), play, stop, click-to-seek, Ctrl+Enter chat turn through Claude, View menu, drag a block out to a floating window, Reset layout, Master / VST / Chords tabs.
+
 ## 9.1.1 - 2026-10-11 - UI pass and bug fixes from in-process testing
 - **Fixed: the spectrum block drew nothing** (the frequency axis was log-scaled twice). **Fixed: the tuner / `check_tuning` read the wrong octave on noisy audio** (YIN now band-limits first, picks the shortest good period when nothing clears the threshold, and uses a 4096-sample frame): a noisy 440 Hz tone now reads A4 within a few cents instead of F2.
 - **UI pass over every block**: new default layout (loudness, advice, history, then levels | tuner | vectorscope on the left; spectrum over tool tabs with Samples first in the centre; chat on the right), sensible minimum sizes so nothing is cut off, readouts fit, shorter sample buttons, compressor table fills its width, VST card tidied. Window sizes to the screen.
