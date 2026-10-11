@@ -91,6 +91,27 @@ function handleExtras(cmd, a) {
          var lp = exLast.parameter();
          return { exists: exLast.exists().get(), locked: exLast.isLocked().get(), name: lp.name().get(), value: lp.value().get(), display: lp.displayedValue().get() };
       }
+      case "reset_states": {   // clear solo / arm (and optionally mute) on every track: Project API, API 10+
+         if (!exProject) throw "project object unavailable: " + exErr.project;
+         if (a.solo !== false) exProject.unsoloAll();
+         if (a.arm !== false) exProject.unarmAll();
+         if (a.mute) exProject.unmuteAll();
+         return "ok";
+      }
+      case "new_scene_from_playing": {   // new scene holding the clips that are playing right now
+         if (!exProject) throw "project object unavailable: " + exErr.project;
+         exProject.createSceneFromPlayingLauncherClips();
+         return "ok";
+      }
+      case "insert_plugin_id": {   // straight through InsertionPoint: no browser, no clicks. kind vst3 | clap (string id) or vst2 (number id)
+         var ipp = a.where === "start" ? cursorTrack.startOfDeviceChainInsertionPoint() : cursorTrack.endOfDeviceChainInsertionPoint();
+         var kd = String(a.kind || "vst3").toLowerCase();
+         if (kd === "vst3") ipp.insertVST3Device(String(need(a, "id")));
+         else if (kd === "clap") ipp.insertCLAPDevice(String(need(a, "id")));
+         else if (kd === "vst2") ipp.insertVST2Device(+need(a, "id"));
+         else throw "kind must be vst3, clap or vst2";
+         return "requested";
+      }
       case "transport_extras": {
          if (a.punch_in != null) transport.isPunchInEnabled().set(!!a.punch_in);
          if (a.punch_out != null) transport.isPunchOutEnabled().set(!!a.punch_out);

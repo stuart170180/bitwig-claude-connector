@@ -1,6 +1,7 @@
 """Devices: parameters, nested chains, EQ, mid/side, recipes, A/B tests, device catalogue, preset patching, Bitwig actions, automation by performance."""
 import json
 import os
+import re
 import time
 
 from bwmcp.analysis import capture, mastering
@@ -430,3 +431,62 @@ def compressor_mode(track_index: int, device_index: int, character: str | None =
     if not vals:
         raise ValueError("give at least one setting")
     return compdev.set_modes(bw, deep, track_index, device_index, **vals)
+
+
+# --- Straight through the Bitwig API (InsertionPoint.insertVST3Device / insertCLAPDevice / insertVST2Device, Project.unarmAll ...) ---
+@tool()
+def insert_plugin_by_id(plugin: str, kind: str = "vst3", track_index: int = -1, where: str = "end") -> dict:
+    """Insert a plug-in through Bitwig's API: no browser, no clicking, no screen reading (the safe replacement for insert_plugin).
+    plugin: a name such as 'BW Remote' (VST3: looked up from the plug-in's own moduleinfo.json) or the raw id (VST3 / CLAP id string, VST2 number).
+    kind: vst3 (default), clap or vst2. track_index: -1 = master chain. where: end (default) or start of the chain.
+    Plug-ins without a moduleinfo.json need their id given directly. Returns the devices afterwards."""
+    from bwmcp.library import vst3ids
+    kind = kind.lower()
+    if kind not in ("vst3", "clap", "vst2"):
+        raise ValueError("kind must be vst3, clap or vst2")
+    if track_index < 0:
+        bw.call("select_master")
+    else:
+        bw.call("select_track", track_index=track_index)
+    time.sleep(SETTLE)
+    for _ in range(8):
+        want = bw.call("get_session")["tracks"][track_index]["name"] if track_index >= 0 else None
+        if want is None or bw.call("list_devices")["track"] == want:
+            break
+        time.sleep(0.4)
+    else:
+        raise RuntimeError("Bitwig has not selected that track yet; nothing was inserted")
+    if kind != "vst3":
+        ids = [plugin]
+    elif re.fullmatch(r"[0-9A-Fa-f]{32}", plugin):
+        ids = [plugin.upper()]
+    else:
+        hits = vst3ids.find(plugin)
+        if not hits:
+            raise ValueError(f"no VST3 named '{plugin}' with a moduleinfo.json was found; give the plug-in id, or use insert_plugin (browser route)")
+        ids = [h["cid"] for h in hits]
+    before = len(bw.call("list_devices")["devices"])
+    bw.call("insert_plugin_id", kind=kind, id=ids[0], where=where)
+    for _ in range(20):
+        time.sleep(0.3)
+        devs = bw.call("list_devices")["devices"]
+        if len(devs) > before:
+            return {"inserted": True, "id": ids[0], "devices": [d["name"] for d in devs]}
+    raise RuntimeError(f"Bitwig did not insert it (id {ids[0]}): unknown plug-in, or the chain cannot take it")
+
+
+@tool()
+def reset_track_states(solo: bool = True, arm: bool = True, mute: bool = False) -> dict:
+    """Clear solo and record-arm (and optionally mute) on every track in one go (Project API). Selecting a track in Bitwig arms it,
+    so run this after any test; the song's own mute states are only touched with mute=True."""
+    bw.call("reset_states", solo=solo, arm=arm, mute=mute)
+    time.sleep(0.5)
+    return {"tracks": [{"name": t["name"], "arm": t["arm"], "solo": t["solo"], "mute": t["mute"]} for t in bw.call("get_session")["tracks"]]}
+
+
+@tool()
+def scene_from_playing_clips() -> dict:
+    """Make a new scene out of the launcher clips that are playing right now (a live jam becomes a scene you can relaunch)."""
+    bw.call("new_scene_from_playing")
+    time.sleep(0.6)
+    return {"scenes": len(bw.call("get_session").get("scenes", []))}

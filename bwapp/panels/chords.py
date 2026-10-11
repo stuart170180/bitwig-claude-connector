@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QHBoxLayout, Q
                                QVBoxLayout, QWidget)
 
 from bwapp import theme, work
+from bwapp.links import LINK
 from bwapp import engine as lm
 
 NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -100,7 +101,23 @@ class Chords(QWidget):
         show.clicked.connect(self.show_chords)
         play.clicked.connect(self.play)
         write.clicked.connect(self.write)
+        LINK.key.connect(self.set_key)
+        LINK.progression.connect(self.set_progression)
         self.fill_styles()
+
+    def set_key(self, tonic, scale):
+        """From the circle of fifths: follow the chosen key."""
+        self.key.blockSignals(True)
+        self.scale.blockSignals(True)
+        self.key.setCurrentText(tonic)
+        self.scale.setCurrentText(scale)
+        self.key.blockSignals(False)
+        self.scale.blockSignals(False)
+        self.show_chords()
+
+    def set_progression(self, text):
+        self.chords.setText(text)
+        self.show_chords()
 
     def fill_styles(self, *_):
         g = self.genre.currentText()

@@ -1,4 +1,6 @@
 """Offline checks for the native app's logic: tempo, key, stretch, waveform peaks, the app/MCP file link. No Bitwig, no window."""
+import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -10,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from bwapp.audio import decode, process, tempo  # noqa: E402
 from bwmcp.core import appbridge  # noqa: E402
 
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 SR = 44100
 
 
@@ -79,6 +82,36 @@ def test_app_link():
     assert c["cmd"] == "target" and c["args"] == {"name": "club"} and appbridge.take() is None
     appbridge.LATEST.unlink(missing_ok=True)
     print("ok test_app_link")
+
+
+def test_circle_links_chords():
+    from PySide6.QtCore import QPoint, Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    import sounddevice as sd
+    from bwapp.links import LINK
+    from bwapp.panels.chords import Chords
+    from bwapp.panels.circle import Circle
+    app = QApplication.instance() or QApplication([])
+    sd.play = lambda *a, **k: None                                  # silent
+    c, ch = Circle(), Chords()
+    c.resize(420, 520)
+    c.show()
+    cen, r = c.dims()
+
+    def click(i, ring):
+        a = math.radians(-90 + 30 * i)
+        QTest.mouseClick(c, Qt.LeftButton, Qt.NoModifier, QPoint(int(cen.x() + r * ring * math.cos(a)), int(cen.y() + r * ring * math.sin(a))))
+    click(1, 0.85)                                                   # G major
+    assert c.sel == (1, False) and (ch.key.currentText(), ch.scale.currentText()) == ("G", "major")
+    click(9, 0.55)                                                   # C minor (inner ring)
+    assert c.sel == (9, True) and (ch.key.currentText(), ch.scale.currentText()) == ("C", "minor")
+    assert "I Eb" in c.info.text()                                   # C minor shares its notes with Eb major
+    LINK.progression.emit("I, V, vi, IV")
+    assert ch.chords.text() == "I, V, vi, IV" and len(ch.last["voicings"]) == 4
+    app.processEvents()
+    print("ok test_circle_links_chords")
 
 
 if __name__ == "__main__":

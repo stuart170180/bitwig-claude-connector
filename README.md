@@ -9,7 +9,7 @@ live measurements, and record scenes into the arrangement. Everything reads back
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          └── bwmcp/    tools/ (the 152 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                          └── bwmcp/    tools/ (the 155 MCP tools, by topic) · core/ (connection) · music/ · devices/
                                         analysis/ · control/ · library/
           └── bwapp/    Bitwig Remote: the native Qt desktop app (no web view, no web server)
 ```
@@ -51,8 +51,8 @@ Ask Claude in plain language, for example:
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
 **Bitwig Remote (the desktop app), without Claude:** double-click `BitwigRemote.pyw` or the *Bitwig Remote* shortcut (`python manage.py app`).
-Every block (loudness, history, spectrum, vectorscope, levels, tuner, advice, BW Remote VST card, master controls, compressors, chords, Claude chat,
-samples) can be dragged, tabbed, floated, resized and closed; **View** in the menu brings any block back, *Reset layout* restores the default.
+Every block (loudness, history, spectrum, vectorscope, levels, tuner, advice, BW Remote VST card, master controls, compressors, chords, circle of fifths,
+Claude chat, samples) can be dragged, tabbed, floated, resized and closed; **View** in the menu brings any block back, *Reset layout* restores the default.
 Your layout is remembered. A closed Master-controls block never touches Bitwig.
 **Open at login:** `python manage.py autostart` (no admin needed); `--status` to check, `--remove` to undo.
 **Claude chat block:** pick *Claude Code login* (runs the `claude` program with your own login, only the Bitwig tools) or *API key* (your Anthropic key, kept in Windows Credential Manager; press *API key...* once). Choose the model, *New chat* starts over, Stop ends the turn, *Attach image* sends a picture.

@@ -1,6 +1,7 @@
 """Registry of blocks: (id, title, factory). A block is a QWidget built from the shared Feed."""
 from bwapp.panels.advice import Advice
 from bwapp.panels.chords import Chords
+from bwapp.panels.circle import Circle
 from bwapp.panels.comps import Compressors
 from bwapp.panels.graphs import History, Spectrum
 from bwapp.panels.levels import Levels
@@ -13,4 +14,4 @@ from bwapp.panels.vst import VstCard
 LIVE = [("readouts", "Loudness", Readouts), ("history", "Loudness history", History), ("spectrum", "Spectrum (mid / side)", Spectrum),
         ("scope", "Vectorscope", Scope), ("levels", "Levels", Levels), ("tuner", "Tuner", Tuner),
         ("advice", "Advice", Advice), ("vst", "VST link", VstCard), ("master", "Master", MasterPanel),
-        ("comps", "Compressors", Compressors), ("chords", "Chords", Chords)]
+        ("comps", "Compressors", Compressors), ("chords", "Chords", Chords), ("circle", "Circle of fifths", Circle)]

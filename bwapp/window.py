@@ -10,7 +10,7 @@ from bwapp.header import Clock, Weather
 from bwmcp.analysis import mastering
 
 ORG, APP = "BitwigClaude", "BitwigRemote"
-LAYOUT_VERSION = 7       # bump when blocks change shape so an old saved layout is dropped
+LAYOUT_VERSION = 8       # bump when blocks change shape so an old saved layout is dropped
 
 
 class Main(QMainWindow):
@@ -68,7 +68,7 @@ class Main(QMainWindow):
         add(RIGHT, d["scope"], tuner)
         mid = add(RIGHT, d["spectrum"])
         tools = add(BOT, d["samples"], mid)
-        for k in ("master", "vst", "comps", "chords"):
+        for k in ("master", "vst", "comps", "chords", "circle"):
             add(CEN, d[k], tools)
         add(RIGHT, d["chat"])
         tools.setCurrentIndex(0)

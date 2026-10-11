@@ -2,6 +2,12 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 9.2.0 - 2026-10-11 - Circle of fifths and direct API integration (script 6.2)
+- **Circle of Fifths block**: click any major or minor key; it hears the triad (quietly), links the Chords block to that key and scale, lists the chords in the key, offers one-click progressions (I V vi IV, ii V I, vi IV I V, I vi IV V), and marks the loaded sample's detected key (with how close it is). Tabbed next to Chords.
+- **New tools**: `insert_plugin_by_id` (VST3 / CLAP / VST2 straight through Bitwig's API: no browser, no clicking), `reset_track_states` (clear solo / arm / mute in one call), `scene_from_playing_clips`.
+- Studied Bitwig's public API documentation against what the script uses: `docs/API_COVERAGE.md`, `scripts/api_coverage.py`.
+- Controller script: new commands `insert_plugin_id`, `reset_states`, `new_scene_from_playing` (script 6.2).
+
 ## 9.1.2 - 2026-10-11 - Fixes from clicking through the real window
 - **Fixed: View > Reset layout made every block title vanish.** Reset now restores a saved copy of the default layout.
 - **Fixed: a focused block's title was painted invisible** (blue box); the focus highlight is off and tabs have a readable style. Tool tabs are named Samples / Master / VST link / Compressors / Chords.

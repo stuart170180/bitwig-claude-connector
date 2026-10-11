@@ -13,7 +13,7 @@ load("extras.js");
 host.defineController("Claude", "Bitwig MCP", "3.0", "6b1f3a52-9d1e-4c8e-a7a1-5c3f2b8e9d10", "Claude");
 host.defineMidiPorts(0, 0);
 
-var VERSION = "6.1";
+var VERSION = "6.2";
 var PORT = 8765, REPLY_PORTS = [8766, 8767, 8768, 8769, 8770, 8771];  // one per concurrent client
 var NUM_TRACKS = 64, NUM_SCENES = 32, NUM_SENDS = 8, NUM_DEVICES = 32;
 var deviceBank, transport, application, trackBank, cursorTrack, cursorDevice, remotePage, cursorClip, sceneBank;

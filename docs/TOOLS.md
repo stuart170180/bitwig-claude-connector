@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (152 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (155 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -102,6 +102,10 @@ Select a track (device tools act on the selected track).
 
 Mixer snapshots (volume, pan, mute, solo, sends per track; matched by track name). action: save (name), recall (name; include_tempo to restore tempo), list, delete (name), diff (name vs current mix, or vs `other` snapshot). Use for A/B mix comparisons and as a safety net before big changes (save 'before', then recall it to undo everything).
 
+### `reset_track_states(solo, arm, mute)`
+
+Clear solo and record-arm (and optionally mute) on every track in one go (Project API). Selecting a track in Bitwig arms it, so run this after any test; the song's own mute states are only touched with mute=True.
+
 ### `auto_name_tracks(track_indices, style, only_default_names, color, analyze_notes, dry_run)`
 
 Rename tracks from what's on them: the loaded preset/instrument, sample or clip names, or (for bare MIDI tracks) the notes themselves (drums vs bass vs chords vs lead). style: smart ('Bass - Rippin' Bass'), role ('Bass'), source ('Rippin' Bass'). color=True also colours by role. only_default_names leaves tracks you've already named alone. dry_run shows the plan without renaming. Duplicate names get numbered. Restores your track selection afterwards.
@@ -127,6 +131,10 @@ Delete the clip in a launcher slot.
 ### `clip_settings(track_index, slot, loop_start, loop_length, loop_enabled, play_start, play_stop, shuffle, accent, launch_mode, launch_quantization, name, color, show_in_editor)`
 
 Read or change a launcher clip's settings: loop start/length (beats), loop on/off, play start/stop, groove shuffle on/off, accent (0..1), launch_mode (default, from_start, continue_or_from_start, continue_or_synced, synced), launch_quantization (default, none, 8, 4, 2, 1, 1/2, 1/4, 1/8, 1/16), name, color (hex). show_in_editor opens it in Bitwig's detail editor. Returns the settings after.
+
+### `scene_from_playing_clips()`
+
+Make a new scene out of the launcher clips that are playing right now (a live jam becomes a scene you can relaunch).
 
 ## Writing music
 
@@ -251,6 +259,10 @@ Enable or bypass a device.
 ### `open_device_browser(track_index)`
 
 Open Bitwig's browser to insert a device at the end of a track's chain (you pick it in Bitwig).
+
+### `insert_plugin_by_id(plugin, kind, track_index, where)`
+
+Insert a plug-in through Bitwig's API: no browser, no clicking, no screen reading (the safe replacement for insert_plugin). plugin: a name such as 'BW Remote' (VST3: looked up from the plug-in's own moduleinfo.json) or the raw id (VST3 / CLAP id string, VST2 number). kind: vst3 (default), clap or vst2. track_index: -1 = master chain. where: end (default) or start of the chain. Plug-ins without a moduleinfo.json need their id given directly. Returns the devices afterwards.
 
 ## Deep devices & mid/side EQ
 

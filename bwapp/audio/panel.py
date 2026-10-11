@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog
                                QListWidgetItem, QPushButton, QSlider, QVBoxLayout, QWidget)
 
 from bwapp import work
+from bwapp.links import LINK, SHARP
 from bwapp.audio import decode, process, tempo
 from bwapp.audio.player import Player
 from bwapp.audio.waveform import Waveform
@@ -193,6 +194,9 @@ class SamplePanel(QWidget):
         self.wave.set_sample(data, sr)
         self.show_stats(sr, data.shape[0])
         self.wave.set_grid(info["bpm"], self.beats())
+        if info.get("key") and info.get("key_conf", 0) > 0.6:
+            tonic, scale = info["key"].split()
+            LINK.sample_key.emit(SHARP.get(tonic, tonic), scale)
 
     def show_stats(self, sr=None, frames=None):
         i = self.info
