@@ -51,3 +51,6 @@ Updated 2026-10-05.
 - [x] Backups, git history, private GitHub repo, portfolio page.
 - [x] v8.4.0: packager for the desktop app (PyInstaller exe + Inno Setup installer). Not yet done: code signing, installer run-through on a clean PC.
 - [x] v8.4.1: desktop app 'no window' hardening (off-screen position, stale lock, error log). Cause on the user's PC not reproduced; if it recurs read `%APPDATA%\BitwigClaudeapp_error.log`.
+- [x] Native app stage 1 (bwapp/): docking shell, live meters, Claude chat (CLI backend), sample mode. See docs/APP_PLAN.md.
+- [ ] Stage 2: port VST card, master chain sliders, compressors, chord builder, advice, UK clock + weather, report; API-key chat backend; sample time-stretch to project tempo.
+- [ ] Stage 3: delete the web monitor (live_monitor.html, HTTP/SSE, desktop.py, pywebview), repoint the live_monitor MCP tool and autostart, repackage.

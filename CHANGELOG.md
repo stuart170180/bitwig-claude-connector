@@ -2,6 +2,12 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## Unreleased - native desktop app (`bwapp/`, plan in docs/APP_PLAN.md)
+- **Bitwig Remote is now a native Qt app (PySide6 + QtAds + pyqtgraph), no web view.** Blocks dock, tab, float, resize, close and come back from the View menu; the layout is remembered (View > Reset layout). Live blocks: loudness, history, spectrum, vectorscope, levels, tuner, all fed by the in-process capture (no HTTP).
+- **Claude chat block**: streams text, shows tool calls, image attach, Stop. Backend: the `claude` CLI in stream-json mode with only the Bitwig MCP server (your own Claude Code login).
+- **Sample mode block**: your sample folders, waveform with bar grid, BPM (onset autocorrelation + whole-bar check), length, bars, time signature, play / pause / rewind / fast-forward (hold), loop, speed, Send to Bitwig.
+- `python manage.py app` and `BitwigRemote.pyw` open the new app. The old web monitor still exists until the remaining blocks are ported (stage 2/3).
+
 ## 8.4.1 - 2026-10-11 - Desktop app opens reliably
 - `desktop.py`: a saved window position that is off every connected monitor (e.g. an unplugged second screen) is ignored, so the window can no longer open out of sight; a lock left by a copy that shows no window is treated as stale after 3 s; any startup error is written to `%APPDATA%\BitwigClaude\app_error.log` (pythonw has no console). The packaged exe needs `python packaging/build_app.py` to pick this up.
 
