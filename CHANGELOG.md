@@ -2,6 +2,9 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 8.4.1 - 2026-10-11 - Desktop app opens reliably
+- `desktop.py`: a saved window position that is off every connected monitor (e.g. an unplugged second screen) is ignored, so the window can no longer open out of sight; a lock left by a copy that shows no window is treated as stale after 3 s; any startup error is written to `%APPDATA%\BitwigClaude\app_error.log` (pythonw has no console). The packaged exe needs `python packaging/build_app.py` to pick this up.
+
 ## 8.4.0 - 2026-10-05 (script 6.1) - Desktop app packager
 - **Packaged desktop app**: `python packaging/build_app.py` makes a standalone `dist/Bitwig Remote/Bitwig Remote.exe` (PyInstaller, no Python needed; serves the monitor in-process; user data in `%APPDATA%\BitwigClaude\data`).
 - **Installer**: `packaging/BitwigRemote.iss` (Inno Setup) builds `dist/BitwigRemote-Setup.exe` with the app, optional BW Remote / BW True Peak VST3 copy to Common Files\VST3 and optional controller-script copy. Frozen exe tested (window process up, monitor + /api/vst answer); installer compiled but not run on this PC.

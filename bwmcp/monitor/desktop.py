@@ -91,12 +91,40 @@ def _single_instance():
     k32, u32 = ctypes.windll.kernel32, ctypes.windll.user32
     handle = k32.CreateMutexW(None, False, "Local\\BitwigRemoteDesktopApp")
     if k32.GetLastError() == 183:                                  # ERROR_ALREADY_EXISTS
-        hwnd = u32.FindWindowW(None, TITLE)
-        if hwnd:
-            u32.ShowWindow(hwnd, 9)
-            u32.SetForegroundWindow(hwnd)
-        return None
+        for _ in range(12):                                        # the first copy may still be opening its window
+            hwnd = u32.FindWindowW(None, TITLE)
+            if hwnd:
+                u32.ShowWindow(hwnd, 9)
+                u32.SetForegroundWindow(hwnd)
+                return None
+            time.sleep(0.25)
+        _log("another copy holds the lock but shows no window - opening a new one")
     return handle
+
+
+def _log(msg: str):
+    """pythonw has no console, so problems go to app_error.log next to app.json."""
+    try:
+        SETTINGS.parent.mkdir(parents=True, exist_ok=True)
+        with open(SETTINGS.with_name("app_error.log"), "a", encoding="utf-8") as f:
+            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}\n")
+    except OSError:
+        pass
+
+
+def _on_screen(x, y, w, h):
+    """Saved position, or None (let the system place it) when it would be off every connected monitor."""
+    try:
+        if x is None or y is None:
+            return None, None
+        m = ctypes.windll.user32.GetSystemMetrics
+        left, top, width, height = m(76), m(77), m(78), m(79)     # virtual screen across all monitors
+        if x + 100 > left + width or x + w - 100 < left or y < top or y + 100 > top + height:
+            _log(f"saved position {x},{y} is off screen - using the default")
+            return None, None
+    except Exception:
+        return None, None
+    return x, y
 
 
 def _set_window_icon():
@@ -114,6 +142,15 @@ def _set_window_icon():
 
 
 def open_window(on_top: bool = False):
+    try:
+        _open_window(on_top)
+    except Exception:
+        import traceback
+        _log(traceback.format_exc())
+        raise
+
+
+def _open_window(on_top: bool = False):
     import webview
 
     guard = _single_instance()
@@ -125,8 +162,9 @@ def open_window(on_top: bool = False):
         pass
     started = ensure_server()
     cfg = load_settings()
-    win = webview.create_window(TITLE, URL, width=int(cfg.get("w", 1320)), height=int(cfg.get("h", 900)),
-                                x=cfg.get("x"), y=cfg.get("y"), min_size=(520, 600), on_top=on_top, background_color="#111317")
+    w, h = int(cfg.get("w", 1320)), int(cfg.get("h", 900))
+    x, y = _on_screen(cfg.get("x"), cfg.get("y"), w, h)
+    win = webview.create_window(TITLE, URL, width=w, height=h, x=x, y=y, min_size=(520, 600), on_top=on_top, background_color="#111317")
 
     def remember():
         try:
