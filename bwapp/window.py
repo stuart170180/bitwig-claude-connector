@@ -1,6 +1,6 @@
 """Main window: QtAds docking (drag, tab, float, resize, close, re-add from the View menu), layout saved between runs."""
 import PySide6QtAds as ads
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QTimer
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QComboBox, QLabel, QMainWindow, QPushButton, QSizePolicy, QToolBar
 
@@ -10,7 +10,7 @@ from bwapp.header import Clock, Weather
 from bwmcp.analysis import mastering
 
 ORG, APP = "BitwigClaude", "BitwigRemote"
-LAYOUT_VERSION = 3       # bump when blocks change shape so an old saved layout is dropped
+LAYOUT_VERSION = 6       # bump when blocks change shape so an old saved layout is dropped
 
 
 class Main(QMainWindow):
@@ -56,26 +56,34 @@ class Main(QMainWindow):
         self.docks[spec.id] = (d, spec)
 
     def _default_layout(self):
-        """Left: loudness over history over meters. Centre: spectrum tabbed with samples. Right: chat."""
+        """Left column: loudness, advice, history, then levels | tuner | vectorscope. Centre: spectrum over the tool tabs (samples first). Right: chat."""
         d = {k: v[0] for k, v in self.docks.items()}
         add, TOP, BOT, RIGHT, CEN = self.dm.addDockWidget, ads.TopDockWidgetArea, ads.BottomDockWidgetArea, ads.RightDockWidgetArea, ads.CenterDockWidgetArea
         left = add(TOP, d["readouts"])
-        hist = add(BOT, d["history"], left)
-        meters = add(BOT, d["levels"], hist)
-        add(CEN, d["tuner"], meters)
-        add(RIGHT, d["scope"], meters)
+        adv = add(BOT, d["advice"], left)
+        hist = add(BOT, d["history"], adv)
+        levels = add(BOT, d["levels"], hist)
+        tuner = add(RIGHT, d["tuner"], levels)
+        add(RIGHT, d["scope"], tuner)
         mid = add(RIGHT, d["spectrum"])
-        add(CEN, d["samples"], mid)
-        add(RIGHT, d["chat"])
-        tools = add(BOT, d["master"], mid)                      # lower centre: tools, tabbed
-        for k in ("vst", "comps", "chords"):
+        tools = add(BOT, d["samples"], mid)
+        for k in ("master", "vst", "comps", "chords"):
             add(CEN, d[k], tools)
-        add(BOT, d["advice"], left)
-        mid.setCurrentIndex(0)
-        try:                                                    # first-run proportions; the user's own resizing is saved afterwards
-            self.dm.setSplitterSizes(left, [170, 60, 300, 260])
-            self.dm.setSplitterSizes(mid, [560, 360])
-        except Exception:
+        add(RIGHT, d["chat"])
+        tools.setCurrentIndex(0)
+        QTimer.singleShot(0, lambda: self._proportions(left, mid))
+
+    def _proportions(self, left, mid):
+        """First-run sizes (the user's own resizing is saved and restored afterwards)."""
+        try:
+            h = max(self.height() - 90, 600)
+            self.dm.setSplitterSizes(left, [int(h * 0.20), int(h * 0.06), int(h * 0.34), int(h * 0.30)])
+            self.dm.setSplitterSizes(mid, [int(h * 0.36), int(h * 0.64)])
+            root = self.dm.rootSplitter() if hasattr(self.dm, "rootSplitter") else None
+            if root is not None:
+                w = max(self.width(), 1000)
+                root.setSizes([int(w * 0.35), int(w * 0.36), int(w * 0.29)])
+        except Exception:  # noqa: BLE001
             pass
 
     def _build_toolbar(self):

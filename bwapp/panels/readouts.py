@@ -11,13 +11,14 @@ CELLS = [("Momentary", "momentary", "LUFS"), ("Short-term", "short_term", "LUFS"
 class Readouts(QWidget):
     def __init__(self, feed):
         super().__init__()
+        self.setMinimumHeight(165)
         g = QGridLayout(self)
         self.vals = {}
         for i, (title, key, unit) in enumerate(CELLS):
             cap = QLabel(title.upper())
             cap.setStyleSheet(f"color:{theme.DIM};font-size:10px;letter-spacing:1px")
             v = QLabel("-")
-            v.setStyleSheet("font-size:26px;font-weight:600")
+            v.setStyleSheet("font-size:22px;font-weight:600")
             u = QLabel(unit)
             u.setStyleSheet(f"color:{theme.DIM}")
             g.addWidget(cap, (i // 4) * 3, i % 4)
@@ -36,4 +37,4 @@ class Readouts(QWidget):
                 col = theme.BAD
             elif key == "momentary" and v is not None and abs(v - t.get("lufs", -14)) < 1:
                 col = theme.GOOD
-            lab.setStyleSheet(f"font-size:26px;font-weight:600;color:{col}")
+            lab.setStyleSheet(f"font-size:22px;font-weight:600;color:{col}")

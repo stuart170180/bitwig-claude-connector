@@ -2,6 +2,11 @@
 
 Connector version = the Python package (`bwmcp.__version__`). The Bitwig controller script has its own number (shown by `capabilities`).
 
+## 9.1.1 - 2026-10-11 - UI pass and bug fixes from in-process testing
+- **Fixed: the spectrum block drew nothing** (the frequency axis was log-scaled twice). **Fixed: the tuner / `check_tuning` read the wrong octave on noisy audio** (YIN now band-limits first, picks the shortest good period when nothing clears the threshold, and uses a 4096-sample frame): a noisy 440 Hz tone now reads A4 within a few cents instead of F2.
+- **UI pass over every block**: new default layout (loudness, advice, history, then levels | tuner | vectorscope on the left; spectrum over tool tabs with Samples first in the centre; chat on the right), sensible minimum sizes so nothing is cut off, readouts fit, shorter sample buttons, compressor table fills its width, VST card tidied. Window sizes to the screen.
+- Tested by sending real Qt events to every block with synthetic audio (reset, target change, chord preview, typing in chat, closing and re-adding all blocks, loading a sample): no exceptions.
+
 ## 9.1.0 - 2026-10-11 - Sample processing, API-key chat, polish
 - **Samples**: key detection, *Match project tempo* (Rubber Band via pedalboard, pitch kept), *Shift pitch* (speed kept), both together, *Original*, *Save copy*, drag and drop of files and folders; *Send to Bitwig* sends the processed copy.
 - **Chat**: second backend using your own Anthropic API key (Windows Credential Manager) with the Bitwig tools, model picker, *New chat*. (Not run against the live API: no key on this PC.)

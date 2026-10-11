@@ -49,7 +49,6 @@ class Spectrum(QWidget):
     def __init__(self, feed):
         super().__init__()
         w = _plot()
-        w.setLogMode(x=True, y=False)
         w.setXRange(np.log10(20), np.log10(20000), padding=0)
         ticks = [(np.log10(f), lab) for f, lab in ((30, "30"), (60, "60"), (100, "100"), (200, "200"), (500, "500"), (1000, "1k"),
                                                      (2000, "2k"), (5000, "5k"), (10000, "10k"), (20000, "20k"))]

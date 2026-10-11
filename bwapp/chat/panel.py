@@ -52,7 +52,7 @@ class ChatPanel(QWidget):
         row.addStretch()
         row.addWidget(self.stop_b)
         row.addWidget(self.send_b)
-        self.setMinimumWidth(260)
+        self.setMinimumWidth(340)
         lay = QVBoxLayout(self)
         lay.addLayout(top)
         lay.addWidget(self.view, 1)

@@ -10,7 +10,7 @@ class Scope(QWidget):
     def __init__(self, feed):
         super().__init__()
         self.pts, self.corr = [], 1.0
-        self.setMinimumSize(160, 160)
+        self.setMinimumSize(150, 150)
         feed.frame.connect(self.update_frame)
 
     def update_frame(self, f):

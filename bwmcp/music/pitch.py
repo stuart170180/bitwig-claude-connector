@@ -21,6 +21,9 @@ def yin(frame, sr, fmin=60.0, fmax=1100.0, thresh=0.15):
     """YIN fundamental estimate for one frame. Returns (hz, clarity 0..1) or (None, 0)."""
     n = len(frame)
     w = n // 2
+    cut = np.fft.rfft(frame)                                         # band-limit to a few harmonics: white noise above them only hurts the period search
+    cut[int(min(fmax * 2.2, sr / 2) / (sr / n)):] = 0
+    frame = np.fft.irfft(cut, n)
     tau_max, tau_min = min(int(sr / fmin), w - 1), max(2, int(sr / fmax))
     spec = np.fft.rfft(frame, 2 * n)
     head = np.fft.rfft(frame[:w], 2 * n)
@@ -35,10 +38,13 @@ def yin(frame, sr, fmin=60.0, fmax=1100.0, thresh=0.15):
         tau = tau_min + below[0]
         while tau + 1 < tau_max and cm[tau + 1] < cm[tau]:
             tau += 1
-    else:
-        tau = tau_min + int(np.argmin(cm[tau_min:tau_max]))
-        if cm[tau] > 0.5:
+    else:                                                            # nothing under the threshold (noisy / weak): the shortest period that is nearly as good as the best
+        seg = cm[tau_min:tau_max]
+        if seg.min() > 0.5:
             return None, 0.0
+        tau = tau_min + int(np.where(seg <= seg.min() * 1.25 + 0.02)[0][0])
+        while tau + 1 < tau_max and cm[tau + 1] < cm[tau]:
+            tau += 1
     if 1 < tau < w - 1:                                             # parabolic refinement
         a, b, cc = cm[tau - 1], cm[tau], cm[tau + 1]
         denom = a - 2 * b + cc

@@ -10,7 +10,7 @@ class Tuner(QWidget):
     def __init__(self, feed):
         super().__init__()
         self.pitch = None
-        self.setMinimumSize(220, 140)
+        self.setMinimumSize(150, 130)
         feed.frame.connect(self.update_frame)
 
     def update_frame(self, f):

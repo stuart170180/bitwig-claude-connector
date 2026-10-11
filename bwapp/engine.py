@@ -145,9 +145,9 @@ class Analyzer:
     def _pitch(self):
         """Fundamental of the last ~46 ms (YIN) as note + cents, or None when unvoiced / too quiet."""
         buf = np.array(self.fft_buf)
-        if len(buf) < 2048:
+        if len(buf) < 4096:
             return None
-        fr = buf[-2048:].mean(axis=1)
+        fr = buf[-4096:].mean(axis=1)             # ~93 ms: low notes need several periods to read within a few cents
         if db(np.sqrt(np.mean(fr ** 2))) < -50:
             return None
         hz, clarity = pitchlib.yin(fr - fr.mean(), self.sr)

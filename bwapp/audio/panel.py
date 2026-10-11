@@ -37,11 +37,13 @@ class SamplePanel(QWidget):
         self.orig, self.processed, self.project_bpm, self.tag = None, False, None, "processed"
         self.factor, self.st = 1.0, 0.0
         self.setAcceptDrops(True)
+        self.setMinimumWidth(430)
         self.files = []
         self.filter = QLineEdit()
         self.filter.setPlaceholderText("Filter by name...")
         self.add_folder_b, self.add_files_b = QPushButton("Add folder"), QPushButton("Add files")
         self.list = QListWidget()
+        self.list.setMinimumHeight(110)
         self.wave = Waveform()
         self.title = QLabel("No sample loaded")
         self.title.setStyleSheet("font-size:15px;font-weight:600")
@@ -63,7 +65,8 @@ class SamplePanel(QWidget):
         self.msg = QLabel("")
         self.msg.setProperty("role", "dim")
         self.proj = QLabel("Project: -")
-        self.match_b = QPushButton("Match project tempo")
+        self.match_b = QPushButton("Match tempo")
+        self.match_b.setMinimumWidth(110)
         self.match_b.setToolTip("Time-stretches a copy so the sample's BPM equals the Bitwig project tempo (pitch stays the same)")
         self.semi = QDoubleSpinBox()
         self.semi.setRange(-12, 12)

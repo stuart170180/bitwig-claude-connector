@@ -1,5 +1,5 @@
 """Compressor+ settings in real units for every compressor in the project (reading selects each device in Bitwig)."""
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from bwapp import work
 from bwapp import engine as lm
@@ -13,7 +13,7 @@ class Compressors(QWidget):
         super().__init__()
         self.table = QTableWidget(0, 1 + len(COLS))
         self.table.setHorizontalHeaderLabels(["Track"] + [c[1] for c in COLS])
-        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.msg = QLabel("Press Read compressors (it selects each Compressor+ in Bitwig).")
         self.msg.setProperty("role", "dim")
