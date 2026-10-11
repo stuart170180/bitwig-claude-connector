@@ -26,7 +26,7 @@ GROUPS = [  # (heading, tool-name prefixes/names in that group)
                                     "mid_side_eq", "mix_audit", "recipe", "ab_test", "device_catalog",
                                     "preset_inspect", "preset_patch_and_load"]),
     ("Mastering, metering & monitoring", ["get_levels", "gain_stage", "master_meters", "mastering_chain", "master_control",
-                                          "analyze_master", "auto_master", "compare_reference", "live_monitor",
+                                          "analyze_master", "auto_master", "compare_reference", "live_monitor", "masking_live",
                                           "check_tuning"]),
     ("Arrangement", ["record_arrangement", "perform_plan", "perform_ramp", "perform_status", "perform_abort", "return_to_arrangement",
                                     "get_arranger_clip_notes", "edit_arranger_clip"]),

@@ -20,6 +20,8 @@ class Feed(QObject):
         self.timer.start(66)
         self._last_status = None
         self._n = 0
+        self._seq = -1
+        self.last = None
 
     def _tick(self):
         a = self.cap.analyzer
@@ -27,14 +29,19 @@ class Feed(QObject):
         if st != self._last_status:
             self._last_status = st
             self.status.emit(*st)
+        cap, f = self.cap, None
         if a is not None:
-            f = a.frame(with_history=False)
+            if cap.frame_cache is None:
+                f = a.frame(with_history=False)               # synthetic feeds (tests) that bypass the capture thread
+            elif cap.frame_seq != self._seq:                  # a new block was analysed: draw it once (10 Hz), not the same frame again
+                self._seq, f = cap.frame_seq, cap.frame_cache
+        if f is not None:
+            self.last = f
             self.frame.emit(f)
-            if self._n % 4 == 0:                               # ~4 Hz hand-over for the MCP server (live_monitor tool)
-                appbridge.write_latest({**{k: v for k, v in f.items() if k not in ("scope", "history")},
-                                        "status": st[0], "device": st[1]})
         self._n += 1
-        if self._n % 4 == 0:
+        if self._n % 4 == 0:                                   # ~4 Hz hand-over to the MCP server (live_monitor tool), even when the audio is stalled
+            if self.last is not None:
+                appbridge.write_latest({**{k: v for k, v in self.last.items() if k not in ("scope", "history")}, "status": st[0], "device": st[1]})
             c = appbridge.take()
             if c:
                 self.command.emit(c["cmd"], c.get("args") or {})

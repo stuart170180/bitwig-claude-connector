@@ -69,15 +69,21 @@ def _chords_arg(chords, progression):
 
 # --- Clip editing ---
 def _read_clip(track_index: int, slot: int):
+    """Notes and loop length of a clip. Bitwig needs a moment to show a clip's notes after it is focused or just written; in a big project
+    (the 24-track template) 0.6 s is not always enough, so an empty first read is repeated a few times before it is believed."""
     bw.call("focus_clip", track_index=track_index, slot=slot)
-    time.sleep(0.6)
-    notes, offset = [], 0
-    while True:
-        r = bw.call("get_notes", offset=offset, limit=120)
-        notes += r["notes"]
-        offset += len(r["notes"])
-        if not r["notes"] or offset >= r["total"]:
-            return notes, r["loop_length"]
+    for attempt in range(4):
+        time.sleep(0.6 if attempt == 0 else 0.9)
+        notes, offset = [], 0
+        while True:
+            r = bw.call("get_notes", offset=offset, limit=120)
+            notes += r["notes"]
+            offset += len(r["notes"])
+            if not r["notes"] or offset >= r["total"]:
+                break
+        if notes:
+            break
+    return notes, r["loop_length"]
 
 
 # --- Bookmarks ---

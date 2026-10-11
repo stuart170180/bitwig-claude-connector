@@ -40,6 +40,22 @@ def test_packets():
     print("ok test_packets")
 
 
+def test_instances():
+    """One entry per plug-in instance (the per-track probes of masking_live), with power-averaged band spectra."""
+    k1, k2 = "11" * 32, "22" * 32
+    (vstfeed.keys_dir() / "vst_key_a.txt").write_text(k1)
+    (vstfeed.keys_dir() / "vst_key_b.txt").write_text(k2)
+    f = vstfeed.Feed()
+    t0 = __import__("time").time()
+    for _ in range(5):
+        assert f.handle(packet(k1, bands=[-40.0] * 24)[0]) and f.handle(packet(k2, bands=[-50.0] * 12 + [-30.0] * 12)[0])
+    assert sorted(f.live_instances()) == sorted([vstfeed.kid_of(k1), vstfeed.kid_of(k2)])
+    assert f.mean_bands(vstfeed.kid_of(k1), t0) == [-40.0] * 24
+    assert f.mean_bands(vstfeed.kid_of(k2), t0)[0] == -50.0 and f.mean_bands(vstfeed.kid_of(k2), t0)[23] == -30.0
+    assert f.mean_bands("deadbeef", t0) is None
+    print("ok test_instances")
+
+
 def test_ring():
     sr, cap = 1000, 5000
     p = vstfeed._capture_file()

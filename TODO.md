@@ -55,3 +55,18 @@ Updated 2026-10-05.
 - [x] Stage 2 + 3 (v9.0.0): all blocks ported, web removed, live_monitor tool + autostart repointed.
 - [x] 9.1.0: API-key chat backend, sample match-tempo / pitch / key / drag-drop; Build chain, master slider and Write chords tested live.
 - [ ] Open: chat with an API key not run live (no key here); the packaged exe has no Python for the chat's MCP server (use the API route from source for now); installer run-through on a clean PC; sample tags/search beyond name filter; drag a sample straight onto a Bitwig track.
+
+## Full test pass (started 2026-10-11, uses the Trance Test Template)
+Plan: open the template in Bitwig -> offline tests -> `tests/live_test.py` (every tool through a real MCP client) -> click through every block of the app on the real window ->
+fix what breaks as it breaks -> rebuild the exe + try it -> notes / TODO / CHANGELOG updated at each stage and at the end.
+- [x] Start-up hardening: second launch brings the running window forward; any start-up error shows a dialog and goes to `%APPDATA%\BitwigClaudepp_error.log` (9.2.1).
+- [x] Open the template project and confirm `get_session` (24 tracks incl. groups, 140 bpm).
+- [x] Offline tests (`python manage.py test`) green.
+- [x] `tests/live_test.py` on the template: 126/126 (first runs failed on create_track timing and slow clip reads in the big project: fixed).
+- [x] `tests/live_test_extra.py` (34 more steps: compressor, devices, groups, scenes, masking, tuning, references, undo): all pass.
+- [x] App click-through on the template with real audio: meters, spectrum, history, tuner, lights (green/green), chat. Master sliders / VST card tab not re-checked on the real window this round.
+- [x] Own VST plug-ins: BW Remote and BW True Peak exist and are used (masking_live puts BW Remote probes on every track). A lighter `BW Probe` (telemetry only, no shared audio ring) would be cleaner for many probes: not needed yet, noted in docs/API_COVERAGE.md.
+- [ ] Rebuild the exe, launch it, final notes.
+- [ ] Still not run live: UI-driven tools that click at fixed screen positions (`insert_plugin`, `insert_on_fx_track`, `rename_fx_track`, `delete_fx_track`, `sidechain_setup` / `sidechain_source`, `parallel_compression`, `select_arranger_clip` / `edit_arranger_clip`, `preset_patch_and_load`). `parallel_compression` failed with "no layer list on screen" because it needs the layer device showing in Bitwig's panel.
+- [ ] The packaged exe is from 9.1.1; rebuild with `python packaging/build_app.py`.
+

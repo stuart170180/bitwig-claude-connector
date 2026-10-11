@@ -14,6 +14,7 @@ class Readouts(QWidget):
         self.setMinimumHeight(165)
         g = QGridLayout(self)
         self.vals = {}
+        self.styled = {}                                    # last colour per label: setStyleSheet is slow, so only call it when the colour changes
         for i, (title, key, unit) in enumerate(CELLS):
             cap = QLabel(title.upper())
             cap.setStyleSheet(f"color:{theme.DIM};font-size:10px;letter-spacing:1px")
@@ -37,4 +38,6 @@ class Readouts(QWidget):
                 col = theme.BAD
             elif key == "momentary" and v is not None and abs(v - t.get("lufs", -14)) < 1:
                 col = theme.GOOD
-            lab.setStyleSheet(f"font-size:22px;font-weight:600;color:{col}")
+            if self.styled.get(key) != col:
+                self.styled[key] = col
+                lab.setStyleSheet(f"font-size:22px;font-weight:600;color:{col}")

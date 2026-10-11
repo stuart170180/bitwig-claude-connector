@@ -149,11 +149,13 @@ def color_tracks(scheme: str = "roles", track_indices: list[int] | None = None, 
     out = {}
     for k, t in enumerate(tracks):
         if scheme == "roles":
-            try:
-                devs = deep.tree(t["index"])
-            except Exception:
-                devs = []
-            role, colour = naming.classify(_track_text(t, devs))
+            role, colour = naming.classify(_track_text(t, []))          # the name usually says it; reading devices selects the track and takes ~3 s
+            if not colour:
+                try:
+                    devs = deep.tree(t["index"])
+                except Exception:
+                    devs = []
+                role, colour = naming.classify(_track_text(t, devs))
             colour = colour or "#868e96"
         elif scheme == "rainbow":
             colour = _rgb01_to_hex(*colorsys.hsv_to_rgb(k / n, 0.65, 0.95))

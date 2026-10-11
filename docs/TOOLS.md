@@ -1,6 +1,6 @@
 # Tool reference
 
-Generated from the running connector (155 tools) by `make_docs.py`. Each entry is the description Claude sees.
+Generated from the running connector (156 tools) by `make_docs.py`. Each entry is the description Claude sees.
 
 ## Session & transport
 
@@ -356,6 +356,10 @@ Compare your track against a reference song: loudness, true peak, dynamics (PLR/
 
 Bitwig Remote, the desktop app: momentary / short-term / integrated LUFS, distance to target, true-peak hold, LRA, PLR, L/R and mid/side meters, correlation, width, vectorscope, spectrum, loudness history, tuner, master-chain controls, chords, samples and a Claude chat, in blocks you can move, resize, close and re-add. action: start (opens the app if it is not running and sets the target), reading (current numbers, so Claude can comment on what you're hearing), reset (restart integrated loudness / peak hold for a new pass), target (switch target), stop (closes the app). Needs the BW Remote VST3 on the master, or Bitwig on a WASAPI ('Windows Audio') driver.
 
+### `masking_live(track_indices, seconds, start_beats, play)`
+
+Masking between ALL tracks measured at the same time (right for arranger songs, unlike masking_report which solos each track in turn). Puts a BW Remote probe on every chosen track (default: every instrument and audio track), plays the song for `seconds` (from start_beats, 0 = the start; None leaves the playhead where it is; play=False measures whatever is already playing), averages each track's 24-band spectrum, removes the probes again, and ranks which tracks fight for the same bands, with advice. Nothing is soloed or muted. Needs the BW Remote VST3 installed.
+
 ### `check_tuning(source, seconds, start, mode, threshold_cents, show_image)`
 
 Pitch and tuning check, shown in chat. Single-note material (vocal, lead, bass, solo instrument) gets a per-note report: each note's name and cents sharp/flat, vibrato width, worst offenders and advice. Chords and full mixes get the overall tuning offset against A=440 (and the implied A4 frequency) plus a key estimate. source: 'live' (what Bitwig is playing now; needs a WASAPI driver, press play first) or a WAV path / sample name (start/seconds pick a section; seconds=0 = whole file). mode: auto, mono, poly. threshold_cents: how far off counts as out of tune (25 is audible to most ears).
@@ -546,7 +550,7 @@ Select an arranger clip on a track by clicking it in the Arrange view, then read
 
 ### `insert_plugin(name, track_index)`
 
-Insert a plug-in or device that the controller API cannot reach by name (a VST3/CLAP/VST2 plug-in such as 'BW Remote') through Bitwig's own browser: selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open ('Everything' tab). Returns the track's devices afterwards.
+Fallback: prefer insert_plugin_by_id (straight through the API, no clicking). Inserts a plug-in or device by name through Bitwig's own browser: selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open ('Everything' tab). Returns the track's devices afterwards.
 
 ### `insert_on_fx_track(fx_track, device)`
 

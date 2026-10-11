@@ -22,8 +22,11 @@ def create_track(kind: str = "instrument", position: int = -1, name: str | None 
         raise ValueError("kind must be instrument, audio or effect")
     before = bw.call("get_session")["tracks"]
     bw.call(f"create_{kind}_track", position=position)
-    time.sleep(0.4)
-    after = bw.call("get_session")["tracks"]
+    for _ in range(20):                                   # a big project (the 24-track template) takes a couple of seconds to show the new track
+        time.sleep(0.25)
+        after = bw.call("get_session")["tracks"]
+        if kind == "effect" or len(after) > len(before):
+            break
     if kind == "effect":
         return {"created": "effect track", "sends_now": bw.call("get_track", track_index=0)["sends"] if after else []}
     if len(after) <= len(before):

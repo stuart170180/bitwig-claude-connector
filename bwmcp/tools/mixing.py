@@ -517,6 +517,73 @@ def masking_report(track_indices: list[int] | None = None, seconds: float = 5.0)
 
 
 @tool()
+def masking_live(track_indices: list[int] | None = None, seconds: float = 15.0, start_beats: float | None = 0.0, play: bool = True) -> dict:
+    """Masking between ALL tracks measured at the same time (right for arranger songs, unlike masking_report which solos each track in turn).
+    Puts a BW Remote probe on every chosen track (default: every instrument and audio track), plays the song for `seconds` (from start_beats, 0 = the start; None leaves
+    the playhead where it is; play=False measures whatever is already playing), averages each track's 24-band spectrum, removes the probes
+    again, and ranks which tracks fight for the same bands, with advice. Nothing is soloed or muted. Needs the BW Remote VST3 installed."""
+    from bwmcp.analysis import masklive, vstfeed
+    from bwmcp.tools.devices import insert_plugin_by_id
+    sess = bw.call("get_session")
+    chosen = [t for t in sess["tracks"] if (track_indices is None and t["type"] in ("Instrument", "Audio")) or (track_indices is not None and t["index"] in track_indices)]
+    if len(chosen) < 2:
+        raise ValueError("need at least two tracks to compare")
+    feed = vstfeed.feed()
+    probes = {}                                                # track index -> (name, kid)
+    try:
+        for t in chosen:
+            known = set(feed.instances)
+            insert_plugin_by_id("BW Remote", track_index=t["index"])
+            for _ in range(24):                                # the new instance announces itself with its first packet
+                time.sleep(0.25)
+                new = [k for k in feed.live_instances(1.5) if k not in known]
+                if new:
+                    probes[t["index"]] = (t["name"], new[0])
+                    break
+            else:
+                raise RuntimeError(f"the probe on '{t['name']}' did not report (is the engine running and BW Remote installed?)")
+        if play:
+            if start_beats is not None:
+                bw.call("set_position", beats=start_beats)
+                time.sleep(0.5)
+            bw.call("play")
+        t0 = time.time()
+        time.sleep(seconds)
+        spectra = {name: feed.mean_bands(kid, t0) for name, kid in probes.values()}
+        if play:
+            bw.call("stop")
+    finally:
+        removed, left = [], []
+        for idx in probes:
+            try:
+                bw.call("select_track", track_index=idx)
+                for _ in range(10):
+                    time.sleep(0.4)
+                    if bw.call("list_devices")["track"] == bw.call("get_session")["tracks"][idx]["name"] or bw.call("list_devices")["devices"]:
+                        break
+                devs = bw.call("list_devices")["devices"]
+                hit = next((i for i, d in enumerate(devs) if d["name"] == "BW Remote"), None)
+                if hit is not None:
+                    deep.delete(idx, hit)
+                    time.sleep(0.4)
+                    removed.append(idx)
+                else:
+                    left.append(idx)
+            except Exception:
+                left.append(idx)
+        try:
+            bw.call("reset_states", solo=True, arm=True, mute=False)
+        except Exception:
+            pass
+    res = masklive.analyse(spectra)
+    res["probes_removed"] = len(removed)
+    if left:
+        res["warning"] = f"could not remove the probe from track(s) {left}: delete 'BW Remote' there by hand"
+    res["seconds"] = seconds
+    return res
+
+
+@tool()
 def masking_fix(track_indices: list[int] | None = None, seconds: float = 5.0, max_fixes: int = 2,
                 min_score: float = 0.5) -> dict:
     """Run masking_report, then apply the proposed EQ cuts for the worst clashes (inserting EQ+ where needed, one band

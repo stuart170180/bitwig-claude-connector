@@ -77,6 +77,7 @@ class Feed:
         self.latest = None
         self.latest_at = 0.0
         self.history = deque(maxlen=600)          # one minute of telemetry
+        self.instances = {}                       # kid -> {first, last, n, bands: deque[(t, [24 dB])]}: one entry per plug-in instance (one per track when used as a probe)
         self.ok = 0
         self.bad = 0
         self.unknown = 0
@@ -151,9 +152,26 @@ class Feed:
             self.bad += 1
             return False
         self.latest, self.latest_at = msg, time.time()
+        inst = self.instances.setdefault(msg.get("kid"), {"first": self.latest_at, "last": 0.0, "n": 0, "bands": deque(maxlen=1200)})
+        inst["last"], inst["n"] = self.latest_at, inst["n"] + 1
+        if isinstance(msg.get("bands"), list):
+            inst["bands"].append((self.latest_at, msg["bands"]))
         self.history.append((self.latest_at, msg))
         self.ok += 1
         return True
+
+    def live_instances(self, max_age=2.0):
+        """kids of plug-in instances that sent a packet in the last max_age seconds."""
+        now = time.time()
+        return [k for k, v in self.instances.items() if now - v["last"] < max_age]
+
+    def mean_bands(self, kid, since):
+        """Power-averaged 24-band spectrum (dB) of one instance since a timestamp, or None when it sent nothing."""
+        rows = [b for t, b in self.instances.get(kid, {}).get("bands", ()) if t >= since]
+        if not rows:
+            return None
+        p = np.mean(10 ** (np.array(rows, float) / 10), axis=0)
+        return [round(float(10 * np.log10(v + 1e-12)), 1) for v in p]
 
     def alive(self, max_age=2.0) -> bool:
         return self.latest is not None and time.time() - self.latest_at < max_age

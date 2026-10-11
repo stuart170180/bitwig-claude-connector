@@ -1,12 +1,13 @@
 """Main window: QtAds docking (drag, tab, float, resize, close, re-add from the View menu), layout saved between runs."""
 import PySide6QtAds as ads
-from PySide6.QtCore import QSettings, QTimer
+from PySide6.QtCore import QPoint, QSettings, QTimer
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QComboBox, QLabel, QMainWindow, QPushButton, QSizePolicy, QToolBar
 
 from bwapp import blocks
 from bwapp.feed import Feed
 from bwapp.header import Clock, Weather
+from bwapp.status import Lights
 from bwmcp.analysis import mastering
 
 ORG, APP = "BitwigClaude", "BitwigRemote"
@@ -46,6 +47,19 @@ class Main(QMainWindow):
             self.target.setCurrentText(args["name"])
         elif cmd == "quit":
             self.close()
+        elif cmd == "raise":
+            self.bring_forward()
+
+    def bring_forward(self):
+        """Un-minimise, put the window on a visible screen and in front (a second launch calls this on the first copy)."""
+        if self.isMinimized():
+            self.showNormal()
+        self.show()
+        screen = QGuiApplication.screenAt(self.frameGeometry().center()) or QGuiApplication.primaryScreen()
+        if not screen.availableGeometry().intersects(self.frameGeometry()):          # saved on a monitor that is gone
+            self.move(screen.availableGeometry().topLeft() + QPoint(30, 30))
+        self.raise_()
+        self.activateWindow()
 
     def _add(self, spec):
         d = ads.CDockWidget(spec.title)
@@ -103,6 +117,7 @@ class Main(QMainWindow):
         tb.addWidget(self.target)
         tb.addWidget(reset)
         tb.addSeparator()
+        tb.addWidget(Lights(self.feed))
         tb.addWidget(self.status)
         spacer = QLabel()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)

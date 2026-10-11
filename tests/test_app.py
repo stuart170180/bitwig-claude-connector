@@ -70,8 +70,9 @@ def test_peaks():
 
 
 def test_app_link():
-    for f in (appbridge.LATEST, appbridge.CMD):
-        f.unlink(missing_ok=True)
+    import tempfile
+    tmp = Path(tempfile.mkdtemp())                                   # never touch the real link folder: the running app writes there
+    appbridge.LINK, appbridge.LATEST, appbridge.CMD = tmp, tmp / "app_latest.json", tmp / "app_cmd.json"
     assert appbridge.read_latest() is None
     appbridge.write_latest({"momentary": -14.2})
     assert appbridge.read_latest()["momentary"] == -14.2
@@ -80,7 +81,6 @@ def test_app_link():
     appbridge.send("target", name="club")
     c = appbridge.take()
     assert c["cmd"] == "target" and c["args"] == {"name": "club"} and appbridge.take() is None
-    appbridge.LATEST.unlink(missing_ok=True)
     print("ok test_app_link")
 
 
@@ -112,6 +112,42 @@ def test_circle_links_chords():
     assert ch.chords.text() == "I, V, vi, IV" and len(ch.last["voicings"]) == 4
     app.processEvents()
     print("ok test_circle_links_chords")
+
+
+def test_lights():
+    from PySide6.QtCore import QObject, Signal
+    from PySide6.QtWidgets import QApplication
+    app = QApplication.instance() or QApplication([])
+    from bwapp import status
+    status.work.run = lambda fn, cb, *a, **k: None                    # no Bitwig needed
+
+    class Fake(QObject):
+        frame = Signal(dict)
+        status = Signal(str, str)
+    f = Fake()
+    L = status.Lights(f)
+    assert L.audio.colour == status.RED                                # nothing yet
+    f.status.emit("capturing", "BW Remote VST3")
+    L.refresh_audio()
+    assert L.audio.colour == status.AMBER                              # source up, no data yet
+    f.frame.emit({"momentary": -120.7})
+    L.refresh_audio()
+    assert L.audio.colour == status.AMBER                              # silent
+    f.frame.emit({"momentary": -14.0})
+    L.refresh_audio()
+    assert L.audio.colour == status.GREEN
+    L.last_frame -= 5
+    L.refresh_audio()
+    assert L.audio.colour == status.AMBER                              # stalled
+    f.status.emit("cannot capture: x", "")
+    L.refresh_audio()
+    assert L.audio.colour == status.RED
+    L._pinged({"ms": 3.2, "script": "6.2", "project": "T"}, None)
+    assert L.bitwig.colour == status.GREEN and L.project.text() == "T"
+    L._pinged(None, "No reply")
+    assert L.bitwig.colour == status.RED
+    app.processEvents()
+    print("ok test_lights")
 
 
 if __name__ == "__main__":

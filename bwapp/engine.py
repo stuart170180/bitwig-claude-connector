@@ -62,6 +62,29 @@ def db(x):
     return float(20 * np.log10(max(float(x), 1e-12)))
 
 
+class Ring:
+    """Last n stereo samples in a numpy array, readable as one contiguous view (a deque of samples needed a slow np.array() copy every block)."""
+
+    def __init__(self, n):
+        self.n, self.a, self.i, self.count = n, np.zeros((2 * n, 2)), 0, 0
+
+    def extend(self, x):
+        x = x[-self.n:]
+        k = len(x)
+        idx = (np.arange(k) + self.i) % self.n
+        self.a[idx] = x
+        self.a[idx + self.n] = x                               # mirrored second half: the newest samples are always one slice
+        self.i = (self.i + k) % self.n
+        self.count = min(self.count + k, self.n)
+
+    def last(self, m=None):
+        m = self.count if m is None else min(m, self.count)
+        return self.a[self.i + self.n - m:self.i + self.n]
+
+    def __len__(self):
+        return self.count
+
+
 class KWeighting:
     """Streaming BS.1770 K-weighting filter (keeps filter state between blocks)."""
 
@@ -96,8 +119,8 @@ class Analyzer:
             self.history = deque(maxlen=600)           # (t, momentary, short-term) for 60 s of graph
             self.tp_max = -200.0
             self.clips = 0
-            self.recent = deque(maxlen=int(self.sr * 0.4))  # raw samples for correlation/vectorscope
-            self.fft_buf = deque(maxlen=16384)
+            self.recent = Ring(int(self.sr * 0.4))      # raw samples for correlation/vectorscope
+            self.fft_buf = Ring(16384)
             self.started = time.time()
             self.latest = {}
 
@@ -120,7 +143,7 @@ class Analyzer:
             self.fft_buf.extend(x)
             L, R = x[:, 0], x[:, 1]
             M, S = (L + R) / 2, (L - R) / 2
-            rec = np.array(self.recent)
+            rec = self.recent.last()
             rl, rr = rec[:, 0], rec[:, 1]
             corr = float(np.corrcoef(rl, rr)[0, 1]) if np.std(rl) > 1e-6 and np.std(rr) > 1e-6 else 1.0
             rm, rs = np.sqrt(np.mean(((rl + rr) / 2) ** 2)), np.sqrt(np.mean(((rl - rr) / 2) ** 2))
@@ -144,7 +167,7 @@ class Analyzer:
 
     def _pitch(self):
         """Fundamental of the last ~46 ms (YIN) as note + cents, or None when unvoiced / too quiet."""
-        buf = np.array(self.fft_buf)
+        buf = self.fft_buf.last()
         if len(buf) < 4096:
             return None
         fr = buf[-4096:].mean(axis=1)             # ~93 ms: low notes need several periods to read within a few cents
@@ -176,10 +199,10 @@ class Analyzer:
         """Everything the page draws: numbers, spectrum, vectorscope points, loudness history."""
         with self.lock:
             out = dict(self.latest)
-            buf = np.array(self.fft_buf)
+            buf = self.fft_buf.last().copy()
             if len(buf) >= 4096:
                 out["spectrum"] = _spectrum(buf[-16384:], self.sr)  # longer FFT = usable bass resolution
-            rec = np.array(self.recent)
+            rec = self.recent.last().copy()
             if len(rec):
                 idx = np.linspace(0, len(rec) - 1, min(len(rec), 400)).astype(int)
                 pk = max(np.abs(rec).max(), 1e-6)
@@ -196,21 +219,35 @@ def _r(v):
 _BANDS = np.geomspace(20, 20000, 61)
 
 
+_SPEC = {}      # (fft length, sample rate) -> window, band bin ranges, centre frequencies (built once)
+
+
+def _spec_tables(n, sr):
+    key = (n, sr)
+    if key not in _SPEC:
+        f = np.fft.rfftfreq(n, 1 / sr)
+        lo = np.searchsorted(f, _BANDS[:-1], side="left")
+        hi = np.searchsorted(f, _BANDS[1:], side="left")
+        centre = np.sqrt(_BANDS[:-1] * _BANDS[1:])
+        empty = hi <= lo                                         # a band narrower than one FFT bin: use the nearest bin instead of a hole
+        near = np.abs(f[None, :] - centre[:, None]).argmin(axis=1)
+        lo = np.where(empty, near, lo)
+        hi = np.where(empty, near + 1, hi)
+        win = np.hanning(n)
+        _SPEC[key] = (win, win.sum() / 2, lo, hi, [round(float(c)) for c in centre])
+    return _SPEC[key]
+
+
 def _spectrum(x, sr):
-    """1/6-octave mid and side spectra in dBFS (60 bands)."""
-    win = np.hanning(len(x))
-    f = np.fft.rfftfreq(len(x), 1 / sr)
+    """1/6-octave mid and side spectra in dBFS (60 bands), vectorised: one cumulative sum per spectrum instead of a mask per band."""
+    win, norm, lo, hi, freqs = _spec_tables(len(x), sr)
     out = {}
     for name, sig in (("mid", (x[:, 0] + x[:, 1]) / 2), ("side", (x[:, 0] - x[:, 1]) / 2)):
-        mag = np.abs(np.fft.rfft(sig * win)) / (win.sum() / 2)
-        vals = []
-        for lo, hi in zip(_BANDS[:-1], _BANDS[1:]):
-            sel = (f >= lo) & (f < hi)
-            if not sel.any():  # band narrower than an FFT bin: use the nearest bin instead of a hole
-                sel = np.abs(f - np.sqrt(lo * hi)) == np.abs(f - np.sqrt(lo * hi)).min()
-            vals.append(round(db(np.sqrt(np.mean(mag[sel] ** 2))), 1))
-        out[name] = vals
-    out["freqs"] = [round(float(np.sqrt(a * b))) for a, b in zip(_BANDS[:-1], _BANDS[1:])]
+        p = (np.abs(np.fft.rfft(sig * win)) / norm) ** 2
+        cs = np.concatenate([[0.0], np.cumsum(p)])
+        mean = (cs[hi] - cs[lo]) / (hi - lo)
+        out[name] = np.round(10 * np.log10(mean + 1e-12), 1).tolist()
+    out["freqs"] = freqs
     return out
 
 
@@ -231,6 +268,13 @@ class Capture(threading.Thread):
         self.analyzer = None
         self.status = "starting"
         self.device = None
+        self.frame_cache, self.frame_seq = None, 0      # the newest frame, built here on the capture thread so the window never waits for the maths
+
+    def _publish(self):
+        try:
+            self.frame_cache, self.frame_seq = self.analyzer.frame(with_history=False), self.frame_seq + 1
+        except Exception:  # noqa: BLE001
+            pass
 
     def run_vst(self):
         """Audio straight from the BW Remote VST3's ring (no sound card). Returns when the plug-in stops delivering."""
@@ -260,6 +304,7 @@ class Capture(threading.Thread):
             pos += n
             last_new = time.time()
             self.analyzer.feed(x.astype(np.float64))
+            self._publish()
 
     def run(self):
         import pyaudiowpatch as pa
@@ -290,6 +335,7 @@ class Capture(threading.Thread):
                     if x.shape[1] == 1:
                         x = np.repeat(x, 2, axis=1)
                     self.analyzer.feed(x)
+                    self._publish()
                     if vstfeed_alive():                  # the VST3 started feeding: switch to it (better: exact, no sound card)
                         break
             except Exception as e:

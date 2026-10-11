@@ -272,7 +272,7 @@ BROWSER_SEARCH = (1340, 150, 1520, 172)
 
 @tool()
 def insert_plugin(name: str, track_index: int = -1) -> dict:
-    """Insert a plug-in or device that the controller API cannot reach by name (a VST3/CLAP/VST2 plug-in such as 'BW Remote') through Bitwig's own browser:
+    """Fallback: prefer insert_plugin_by_id (straight through the API, no clicking). Inserts a plug-in or device by name through Bitwig's own browser:
     selects the track (-1 = the master chain: its 'PROJECT' column), clears the browser search box, types the name ONLY after a blinking caret proves the
     box is in edit mode, double-clicks the exact result, and checks the device list. Bitwig must show the Arrange view with the device browser open
     ('Everything' tab). Returns the track's devices afterwards."""
@@ -351,7 +351,11 @@ def true_peak_limiter(ceiling_db: float = -1.2, input_gain_db: float | None = No
     if idx is None:
         if not insert:
             raise ValueError("no BW True Peak on the master (insert=True adds it)")
-        insert_plugin("BW True Peak", -1)
+        try:                                                    # straight through Bitwig's API; the browser route is only the fallback
+            from bwmcp.tools.devices import insert_plugin_by_id
+            insert_plugin_by_id("BW True Peak", track_index=-1)
+        except (ValueError, RuntimeError):
+            insert_plugin("BW True Peak", -1)
         idx = next((d["index"] for d in deep.tree(-1) if "true peak" in d["name"].lower()), None)
         if idx is None:
             raise RuntimeError("BW True Peak did not appear on the master")

@@ -17,6 +17,9 @@ the script reaches some methods through computed names (arranger / mixer toggles
 Project name / modified state, arranger and mixer section visibility, master recorder, last-clicked parameter, transport extras (punch, pre-roll, loop), undo / redo,
 project notes via the document state, specific-device parameters for real units, insert by Bitwig device UUID.
 
+- `Project.createSceneFromPlayingLauncherClips` is covered by `scene_from_playing_clips`.
+- v9.3.0: `masking_live` uses `insert_plugin_by_id` to put BW Remote probes on every track. A dedicated lighter plug-in (telemetry only, no shared audio ring file) would be a cleaner probe if more than ~8 are used at once.
+
 ## Still open
 - **Bitwig's own browser** (`PopupBrowser`, `BrowsingSession`, `Browser*ColumnBank`): browse, filter by creator / category / tag, audition and commit presets, samples and devices
   from Bitwig's library (including favourites and tags), instead of indexing files. Objects create at init but have not been driven; it opens Bitwig's browser UI
