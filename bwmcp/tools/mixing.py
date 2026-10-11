@@ -409,83 +409,58 @@ def check_tuning(source: str = "live", seconds: float = 8.0, start: float = 0.0,
     return out
 
 
-# --- Live monitor web dashboard ---
-MONITOR_PORT = 8780
-
-
-def _monitor_get(path: str, method: str = "GET", timeout: float = 2.0):
-    import urllib.request
-    req = urllib.request.Request(f"http://127.0.0.1:{MONITOR_PORT}{path}", method=method)
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read())
-
-
+# --- Live monitor: the native Bitwig Remote app (measurements come back through a small file, no network) ---
 @tool()
-def live_monitor(action: str = "start", target: str = "streaming", open_browser: bool = True) -> dict:
-    """Real-time mastering dashboard in your web browser at http://127.0.0.1:8780 - momentary / short-term
-    / integrated LUFS, distance to target, true-peak hold, LRA, PLR, L/R and mid/side meters, phase
-    correlation, stereo width, vectorscope, mid/side spectrum and a 60 s loudness graph, updating ~10x/s.
-    The page also has a pitch tuner, master-chain sliders, advice, a UK time and weather header, and
-    closable panels (Panels menu; layout remembered in the browser). It can start at Windows login
-    (python autostart.py).
-    action: start (launches it in the background if not running, sets the target, opens the browser),
-    reading (current numbers, so Claude can comment on what you're hearing), reset (restart integrated
-    loudness / peak hold for a new pass), target (switch target), stop.
-    Needs Bitwig on a WASAPI ('Windows Audio') driver."""
+def live_monitor(action: str = "start", target: str = "streaming") -> dict:
+    """Bitwig Remote, the desktop app: momentary / short-term / integrated LUFS, distance to target, true-peak hold, LRA, PLR,
+    L/R and mid/side meters, correlation, width, vectorscope, spectrum, loudness history, tuner, master-chain controls, chords,
+    samples and a Claude chat, in blocks you can move, resize, close and re-add.
+    action: start (opens the app if it is not running and sets the target), reading (current numbers, so Claude can comment on
+    what you're hearing), reset (restart integrated loudness / peak hold for a new pass), target (switch target), stop (closes the app).
+    Needs the BW Remote VST3 on the master, or Bitwig on a WASAPI ('Windows Audio') driver."""
     import subprocess
-    import webbrowser
-    url = f"http://127.0.0.1:{MONITOR_PORT}"
 
-    def running():
-        try:
-            return _monitor_get("/api/latest", timeout=1)
-        except Exception:
-            return None
-
+    from bwmcp.core import appbridge
+    if action not in ("start", "reading", "reset", "target", "stop"):
+        raise ValueError("action must be start, reading, reset, target or stop")
+    if target not in mastering.TARGETS:
+        raise ValueError(f"target must be one of {list(mastering.TARGETS)}")
+    running = appbridge.read_latest()
     if action == "start":
-        if not running():
-            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "DETACHED_PROCESS", 0)
-            subprocess.Popen([sys.executable, "-m", "bwmcp.monitor.live_monitor", "--port", str(MONITOR_PORT), "--target", target],
-                             cwd=str(paths.ROOT), creationflags=flags, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        if not running:
+            pyw = os.path.join(os.path.dirname(sys.executable), "pythonw.exe")
+            subprocess.Popen([pyw if os.path.exists(pyw) else sys.executable, str(paths.ROOT / "BitwigRemote.pyw")], cwd=str(paths.ROOT),
+                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                              stdin=subprocess.DEVNULL, close_fds=True)
-            for _ in range(30):
-                time.sleep(0.2)
-                if running():
+            for _ in range(160):                       # a cold start loads Qt and the analysis stack: allow up to 40 s
+                time.sleep(0.25)
+                if appbridge.read_latest():
                     break
             else:
-                raise RuntimeError("monitor did not start (is port 8780 in use?)")
-        else:
-            _monitor_get(f"/api/target/{target}", "POST")
-        if open_browser:
-            webbrowser.open(url)
-        time.sleep(0.5)
-        r = running() or {}
-        return {"url": url, "status": r.get("status"), "device": r.get("device"), "target": target}
+                raise RuntimeError("Bitwig Remote did not start")
+        appbridge.send("target", name=target)
+        time.sleep(0.6)
+        r = appbridge.read_latest() or {}
+        return {"app": "Bitwig Remote", "status": r.get("status"), "device": r.get("device"), "target": target}
+    if action == "stop":
+        if not running:
+            return {"stopped": False, "note": "not running"}
+        appbridge.send("quit")
+        time.sleep(1.5)
+        return {"stopped": appbridge.read_latest(1.0) is None}
+    if not running:
+        raise RuntimeError("Bitwig Remote is not running - use live_monitor('start')")
     if action == "reading":
-        r = running()
-        if not r:
-            raise RuntimeError("live monitor is not running - use live_monitor('start')")
-        r.pop("scope", None)
+        r = dict(running)
+        r.pop("written", None)
         sp = r.pop("spectrum", None)
         if sp:  # compact spectrum summary instead of 60 bands x 2
             r["spectrum_summary_db"] = {name: {lbl: round(float(np.mean([v for f, v in zip(sp["freqs"], sp[name]) if lo <= f < hi])), 1)
                                                for lbl, lo, hi in mastering.BANDS}
                                         for name in ("mid", "side")}
-        r.pop("history", None)
         return r
-    if action == "reset":
-        return _monitor_get("/api/reset", "POST")
-    if action == "target":
-        return _monitor_get(f"/api/target/{target}", "POST")
-    if action == "stop":
-        if not running():
-            return {"stopped": False, "note": "not running"}
-        out = subprocess.run(["powershell", "-NoProfile", "-Command",
-                              f"Get-NetTCPConnection -LocalPort {MONITOR_PORT} -State Listen -ErrorAction SilentlyContinue | "
-                              "ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }"], capture_output=True, text=True)
-        time.sleep(0.5)
-        return {"stopped": running() is None, "detail": out.stderr.strip()[:200] or None}
-    raise ValueError("action must be start, reading, reset, target or stop")
+    appbridge.send(action, name=target)
+    return {"sent": action, "target": target if action == "target" else None}
 
 
 @tool()

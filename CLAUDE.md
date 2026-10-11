@@ -16,7 +16,7 @@ Full docs: `README.md` (overview, install, known limits), `docs/TOOLS.md` (gener
   `session`, `tracks`, `clips`, `devices`, `presets`, `mixing`, `library`, `extras`. Shared connection and helpers: `bwmcp/core/`
   (`bridge.py` has `mcp`, `tool`, `bw`, `deep`; `util.py`; `paths.py` has `ROOT` and `DATA`).
 - Helper packages by area: `bwmcp/music/`, `devices/` (deepdev, compdev, recipes, presets, presetpatch, genres), `analysis/`,
-  `control/` (actions, performance, arranger clips), `library/` (samples, bookmarks, backup, sync), `monitor/`.
+  `control/` (actions, performance, arranger clips), `library/` (samples, bookmarks, backup, sync). The desktop app is `bwapp/` (docking window, `panels/`, `chat/`, `audio/` samples, `engine.py` capture+measurements); one block = one file in `bwapp/panels/` + a line in `panels/__init__.py` and `window._default_layout`.
 - A new tool: write a `@tool()` function in the matching `bwmcp/tools/*.py` file (import what it needs; keep imports one-way,
   no tool module imports a later one: presets < tracks < clips/mixing/library), add the name to a group in
   `scripts/make_docs.py`, run `python manage.py docs`. `server.<name>` still resolves for every tool and helper.
@@ -27,12 +27,12 @@ Full docs: `README.md` (overview, install, known limits), `docs/TOOLS.md` (gener
 - `tests/`: `live_test.py` (needs Bitwig running), plus offline `test_*.py` (`python manage.py test`). `research/`: experiments only (see its README; scripts find the repo root themselves, live ones need Bitwig).
 
 ## Commands
-`python manage.py` lists them: `install` (`--check` is the doctor), `sync`, `docs`, `monitor`, `autostart`, `backup`, `test`.
+`python manage.py` lists them: `install` (`--check` is the doctor), `sync`, `docs`, `app`, `autostart`, `backup`, `test`.
 
 ## Protocol
 Python sends OSC `/mcp "<json>"` to Bitwig on UDP 8765; replies come back as `/reply` on ports 8766-8771. Call from Python
-with `server.bw.call("<command>", **args)`. Live monitor: `python manage.py monitor` on http://127.0.0.1:8780 (autostart:
-`python manage.py autostart`).
+with `server.bw.call("<command>", **args)`. Bitwig Remote (native Qt app in `bwapp/`, no web anywhere): `python manage.py app`; the `live_monitor` tool starts it and reads
+`data/app_latest.json` (autostart: `python manage.py autostart`).
 
 ## Hard-won rules (do not rediscover)
 - The Bitwig API has no access to: modulators, Grid, sidechain source choice, FX track names/faders, compressor gain

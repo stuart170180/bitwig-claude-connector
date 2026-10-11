@@ -1,14 +1,15 @@
 """Main window: QtAds docking (drag, tab, float, resize, close, re-add from the View menu), layout saved between runs."""
 import PySide6QtAds as ads
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import QComboBox, QLabel, QMainWindow, QPushButton, QToolBar
+from PySide6.QtWidgets import QComboBox, QLabel, QMainWindow, QPushButton, QSizePolicy, QToolBar
 
 from bwapp import blocks
 from bwapp.feed import Feed
+from bwapp.header import Clock, Weather
 from bwmcp.analysis import mastering
 
 ORG, APP = "BitwigClaude", "BitwigRemote"
-LAYOUT_VERSION = 2       # bump when blocks change shape so an old saved layout is dropped
+LAYOUT_VERSION = 3       # bump when blocks change shape so an old saved layout is dropped
 
 
 class Main(QMainWindow):
@@ -19,6 +20,7 @@ class Main(QMainWindow):
         ads.CDockManager.setConfigFlags(ads.CDockManager.DefaultOpaqueConfig | ads.CDockManager.FocusHighlighting)
         self.dm = ads.CDockManager(self)
         self.feed = Feed()
+        self.feed.command.connect(self.on_command)
         self.docks = {}
         self._build_toolbar()
         for spec in blocks.all_blocks(self.feed):
@@ -32,6 +34,15 @@ class Main(QMainWindow):
                 self.restoreGeometry(s.value("geometry"))
             if s.value("dock"):
                 self.dm.restoreState(s.value("dock"))
+
+    def on_command(self, cmd, args):
+        """Commands the MCP server leaves for the app (live_monitor tool)."""
+        if cmd == "reset":
+            self.feed.reset()
+        elif cmd == "target" and args.get("name") in mastering.TARGETS:
+            self.target.setCurrentText(args["name"])
+        elif cmd == "quit":
+            self.close()
 
     def _add(self, spec):
         d = ads.CDockWidget(spec.title)
@@ -54,6 +65,10 @@ class Main(QMainWindow):
         mid = add(RIGHT, d["spectrum"])
         add(CEN, d["samples"], mid)
         add(RIGHT, d["chat"])
+        tools = add(BOT, d["master"], mid)                      # lower centre: tools, tabbed
+        for k in ("vst", "comps", "chords"):
+            add(CEN, d[k], tools)
+        add(BOT, d["advice"], left)
         mid.setCurrentIndex(0)
         try:                                                    # first-run proportions; the user's own resizing is saved afterwards
             self.dm.setSplitterSizes(left, [190, 330, 250])
@@ -77,6 +92,12 @@ class Main(QMainWindow):
         tb.addWidget(reset)
         tb.addSeparator()
         tb.addWidget(self.status)
+        spacer = QLabel()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        tb.addWidget(spacer)
+        tb.addWidget(Weather())
+        tb.addSeparator()
+        tb.addWidget(Clock())
         self.feed.status.connect(lambda st, dev: self.status.setText(f" {st}: {dev}" if st == "capturing" else f" {st}"))
 
     def _fill_view_menu(self):

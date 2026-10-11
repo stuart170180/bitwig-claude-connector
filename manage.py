@@ -3,11 +3,10 @@
     python manage.py install [--check|--dry-run|--uninstall|--autostart]   install / doctor / uninstall
     python manage.py sync [--install|--check]    mirror the Bitwig controller script <-> bitwig_script/
     python manage.py docs                        regenerate docs/TOOLS.md
-    python manage.py monitor [--port 8780]       run the live monitor web page
-    python manage.py autostart [--remove|--status]   start the monitor at Windows login
+    python manage.py autostart [--remove|--status]   open Bitwig Remote at Windows login
     python manage.py backup [--list|--restore ZIP]   zip backups
     python manage.py recover [--tracks N]        after an audio-engine crash: cancel the dialog, delete the crashed track, reactivate
-    python manage.py app [--shortcut|--top]      the native Bitwig Remote desktop app (Qt; no web view)
+    python manage.py app                      the native Bitwig Remote desktop app (Qt; no web view)
     python manage.py test                        run the offline tests (live tests: python tests/live_test.py)"""
 import runpy
 import subprocess
@@ -21,8 +20,7 @@ COMMANDS = {
     "install": ("path", ROOT / "scripts" / "install.py"),
     "docs": ("path", ROOT / "scripts" / "make_docs.py"),
     "sync": ("module", "bwmcp.library.sync_script"),
-    "monitor": ("module", "bwmcp.monitor.live_monitor"),
-    "autostart": ("module", "bwmcp.monitor.autostart"),
+    "autostart": ("module", "bwapp.autostart"),
     "backup": ("module", "bwmcp.library.backup"),
     "recover": ("module", "bwmcp.control.uiclick"),
     "app": ("module", "bwapp.main"),

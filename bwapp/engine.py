@@ -1,15 +1,9 @@
-"""Live master monitor: captures the Windows output (WASAPI loopback) and serves a real-time mastering
-dashboard at http://127.0.0.1:8780 (loudness, true peak, L/R + mid/side meters, correlation,
-vectorscope, spectrum, loudness history, tuner, master-chain sliders, advice; UK time and weather header;
-panels can be closed from the Panels menu). Starts at login via autostart.py. Run: python manage.py monitor [--port 8780] [--target streaming]
-Needs Bitwig on a WASAPI ('Windows Audio') driver so its output can be captured."""
-import argparse
+"""Engine behind the Bitwig Remote app (no UI, no web): captures Bitwig's output (BW Remote VST3, else WASAPI loopback), measures it
+(BS.1770 loudness, true peak, mid/side, correlation, spectrum, pitch), and holds the helpers the master / compressor / chord blocks call."""
 import json
 import threading
 import time
 from collections import deque
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 
 import numpy as np
 import pyloudnorm as pyln
@@ -19,7 +13,6 @@ from bwmcp.analysis import mastering
 from bwmcp.core import paths
 from bwmcp.music import pitch as pitchlib
 
-HERE = Path(__file__).parent
 BLOCK_S = 0.1  # analysis hop: 100 ms, as EBU R128 meters use
 
 # --- UK weather (Open-Meteo, no API key) ---------------------------------------------------------
@@ -415,136 +408,3 @@ def save_report(cap):
     path = REPORT_DIR / time.strftime("master_report_%Y%m%d_%H%M%S.json")
     path.write_text(json.dumps(frame, indent=1), encoding="utf-8")
     return {"saved": str(path), "integrated_lufs": frame.get("integrated"), "true_peak_max": frame.get("true_peak_max")}
-
-
-def make_handler(cap: Capture):
-    class Handler(BaseHTTPRequestHandler):
-        def log_message(self, *a):
-            pass
-
-        def _json(self, obj, code=200):
-            body = json.dumps(obj).encode()
-            self.send_response(code)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
-
-        def do_GET(self):
-            if self.path in ("/", "/index.html"):
-                page = (HERE / "live_monitor.html").read_bytes()  # re-read so page edits show on refresh
-                self.send_response(200)
-                self.send_header("Content-Type", "text/html; charset=utf-8")
-                self.send_header("Content-Length", str(len(page)))
-                self.end_headers()
-                self.wfile.write(page)
-            elif self.path.startswith("/api/weather"):
-                import urllib.parse
-                q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-                try:
-                    self._json(get_weather(q.get("city", ["London"])[0][:60]))
-                except Exception as e:
-                    self._json({"error": str(e)}, 502)
-            elif self.path.startswith("/api/chords/lib"):
-                self._json(chords_lib())
-            elif self.path.startswith("/api/chords/voice"):
-                import urllib.parse
-                q = {k: v[0] for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query).items()}
-                try:
-                    self._json(chords_voice(q))
-                except Exception as e:
-                    self._json({"error": str(e)}, 400)
-            elif self.path == "/api/vst":
-                try:
-                    from bwmcp.analysis import vstfeed
-                    st = vstfeed.feed().status()
-                    st.pop("capture", None)
-                    self._json(st)
-                except Exception as e:  # noqa: BLE001
-                    self._json({"alive": False, "error": str(e), "latest": None, "packets_ok": 0, "packets_rejected": 0, "port": None})
-            elif self.path.startswith("/api/compressors"):
-                try:
-                    self._json(compressors_state())
-                except Exception as e:
-                    self._json({"error": str(e)}, 502)
-            elif self.path.startswith("/api/master"):
-                try:
-                    self._json(master_state(refresh="refresh" in self.path))
-                except Exception as e:
-                    self._json({"error": str(e)}, 502)
-            elif self.path == "/api/latest":  # one-shot reading (used by the MCP tool)
-                a = cap.analyzer
-                self._json({"status": cap.status, "device": cap.device, **(a.frame() if a else {})})
-            elif self.path == "/events":  # Server-Sent Events stream, ~10 updates/s
-                self.send_response(200)
-                self.send_header("Content-Type", "text/event-stream")
-                self.send_header("Cache-Control", "no-cache")
-                self.end_headers()
-                first = True
-                try:
-                    while True:
-                        a = cap.analyzer
-                        data = {"status": cap.status, "device": cap.device,
-                                **(a.frame(with_history=first) if a else {})}
-                        first = False
-                        self.wfile.write(f"data: {json.dumps(data)}\n\n".encode())
-                        self.wfile.flush()
-                        time.sleep(0.1)
-                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
-                    pass
-            else:
-                self.send_error(404)
-
-        def do_POST(self):
-            a = cap.analyzer
-            n = int(self.headers.get("Content-Length") or 0)
-            try:
-                body = json.loads(self.rfile.read(n)) if n else {}
-            except ValueError:
-                body = {}
-            if self.path == "/api/chords/write":
-                try:
-                    return self._json(chords_write(body))
-                except Exception as e:
-                    return self._json({"error": str(e)}, 500)
-            if self.path in ("/api/master/set", "/api/master/build", "/api/report"):
-                try:
-                    fn = {"/api/master/set": master_set, "/api/master/build": master_build,
-                          "/api/report": lambda b: save_report(cap)}[self.path]
-                    return self._json(fn(body))
-                except Exception as e:
-                    return self._json({"error": str(e)}, 500)
-            if self.path == "/api/reset" and a:
-                a.reset()
-                self._json({"ok": True})
-            elif self.path.startswith("/api/target/") and a:
-                t = self.path.rsplit("/", 1)[-1]
-                if t not in mastering.TARGETS:
-                    return self._json({"error": f"unknown target {t}"}, 400)
-                a.target = cap.target = t
-                self._json({"ok": True, "target": t})
-            else:
-                self._json({"error": "not found"}, 404)
-
-    return Handler
-
-
-def serve(port: int = 8780, target: str = "streaming"):
-    """Start the capture thread and the HTTP server; returns (server, capture). The caller runs server.serve_forever() (in a thread for the packaged desktop app)."""
-    cap = Capture(target)
-    cap.start()
-    return ThreadingHTTPServer(("127.0.0.1", port), make_handler(cap)), cap
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--port", type=int, default=8780)
-    ap.add_argument("--target", default="streaming", choices=list(mastering.TARGETS))
-    args = ap.parse_args()
-    srv, _cap = serve(args.port, args.target)
-    print(f"Live master monitor on http://127.0.0.1:{args.port}", flush=True)
-    srv.serve_forever()
-
-
-if __name__ == "__main__":
-    main()

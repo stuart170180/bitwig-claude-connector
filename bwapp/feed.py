@@ -1,12 +1,14 @@
 """Runs the existing capture + analysis in this process and publishes a frame ~15x a second (no HTTP, no browser)."""
 from PySide6.QtCore import QObject, QTimer, Signal
 
-from bwmcp.monitor import live_monitor as lm
+from bwapp import engine as lm
+from bwmcp.core import appbridge
 
 
 class Feed(QObject):
     frame = Signal(dict)       # everything the blocks draw (see Analyzer.frame)
     status = Signal(str, str)  # (state, device or message)
+    command = Signal(str, dict)  # from the MCP server: reset | target | quit
 
     def __init__(self, target="streaming"):
         super().__init__()
@@ -17,6 +19,7 @@ class Feed(QObject):
         self.timer.timeout.connect(self._tick)
         self.timer.start(66)
         self._last_status = None
+        self._n = 0
 
     def _tick(self):
         a = self.cap.analyzer
@@ -25,7 +28,16 @@ class Feed(QObject):
             self._last_status = st
             self.status.emit(*st)
         if a is not None:
-            self.frame.emit(a.frame(with_history=False))
+            f = a.frame(with_history=False)
+            self.frame.emit(f)
+            if self._n % 4 == 0:                               # ~4 Hz hand-over for the MCP server (live_monitor tool)
+                appbridge.write_latest({**{k: v for k, v in f.items() if k not in ("scope", "history")},
+                                        "status": st[0], "device": st[1]})
+        self._n += 1
+        if self._n % 4 == 0:
+            c = appbridge.take()
+            if c:
+                self.command.emit(c["cmd"], c.get("args") or {})
 
     def history(self):
         a = self.cap.analyzer

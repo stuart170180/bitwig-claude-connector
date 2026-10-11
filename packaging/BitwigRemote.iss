@@ -14,7 +14,7 @@ Compression=lzma2
 SolidCompression=yes
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64compatible
-SetupIconFile=..\bwmcp\monitor\assets\bitwig_remote.ico
+SetupIconFile=..\bwapp\assets\bitwig_remote.ico
 UninstallDisplayIcon={app}\Bitwig Remote.exe
 LicenseFile=..\LICENSE
 [Tasks]

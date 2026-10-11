@@ -7,7 +7,7 @@
     options: --no-deps  --no-mcp  --autostart  --scripts-dir PATH  --yes
 
 What it does: installs the Python packages, copies the controller script into Bitwig's Controller Scripts folder,
-registers the MCP server with Claude Code (claude mcp add ... --scope user), and optionally starts the live monitor at login.
+registers the MCP server with Claude Code (claude mcp add ... --scope user), and optionally opens Bitwig Remote at login.
 Afterwards, one manual step in Bitwig: Settings > Controllers > Add controller > Claude > Bitwig MCP."""
 import argparse
 import filecmp
@@ -27,7 +27,9 @@ SRC = HERE / "bitwig_script"
 SERVER = HERE / "server.py"
 MCP_NAME = "bitwig"
 MODULES = {"mcp": "mcp", "numpy": "numpy", "scipy": "scipy", "pyloudnorm": "pyloudnorm",
-           "pyaudiowpatch": "PyAudioWPatch (live capture, optional)", "matplotlib": "matplotlib"}
+           "pyaudiowpatch": "PyAudioWPatch (live capture, optional)", "matplotlib": "matplotlib",
+           "PySide6": "PySide6 (the Bitwig Remote app)", "PySide6QtAds": "PySide6-QtAds (dockable blocks)", "pyqtgraph": "pyqtgraph",
+           "sounddevice": "sounddevice (sample playback)", "tzdata": "tzdata (UK clock)"}
 OPTIONAL = {"pyaudiowpatch"}
 STEPS = []
 
@@ -207,7 +209,7 @@ def main():
     ap.add_argument("--uninstall", action="store_true")
     ap.add_argument("--no-deps", action="store_true")
     ap.add_argument("--no-mcp", action="store_true")
-    ap.add_argument("--autostart", action="store_true", help="start the live monitor automatically at Windows login")
+    ap.add_argument("--autostart", action="store_true", help="open Bitwig Remote automatically at Windows login")
     ap.add_argument("--scripts-dir", help="Bitwig Controller Scripts target (default: Documents\\Bitwig Studio\\Controller Scripts\\BitwigMCP)")
     ap.add_argument("--yes", action="store_true", help="don't ask before uninstalling")
     a = ap.parse_args()
@@ -217,16 +219,16 @@ def main():
         doctor(dst)
         return 0 if all(s is not False for s in STEPS) else 1
     if a.uninstall:
-        if not a.yes and input(f"Remove the Claude registration, {dst} and the monitor autostart? [y/N] ").lower() != "y":
+        if not a.yes and input(f"Remove the Claude registration, {dst} and the app autostart? [y/N] ").lower() != "y":
             print("cancelled")
             return 1
         unregister()
         if dst.exists():
             shutil.rmtree(dst)
             say(True, f"removed {dst}")
-        from bwmcp.monitor import autostart
+        from bwapp import autostart
         autostart.LAUNCHER.unlink(missing_ok=True)
-        say(True, "removed the monitor autostart")
+        say(True, "removed the app autostart")
         return 0
 
     print("Installing the Bitwig connector for Claude\n")
@@ -239,19 +241,19 @@ def main():
         register_mcp(a.dry_run)
     if a.autostart:
         if a.dry_run:
-            say(None, "would install the monitor autostart (python manage.py autostart)")
+            say(None, "would install the app autostart (python manage.py autostart)")
         else:
-            from bwmcp.monitor import autostart
+            from bwapp import autostart
             autostart.LAUNCHER.parent.mkdir(parents=True, exist_ok=True)
             autostart.LAUNCHER.write_text(autostart.vbs(), encoding="utf-8")
-            say(True, f"monitor autostart installed ({autostart.LAUNCHER.name})")
+            say(True, f"app autostart installed ({autostart.LAUNCHER.name})")
     if not a.dry_run:
         doctor(dst)
     print("Next steps")
     print("  1. In Bitwig: Settings > Controllers > Add controller > Claude > Bitwig MCP (once).")
     print("  2. For live measurements set Settings > Audio > Driver model to Windows Audio (WASAPI).")
     print("  3. Start a NEW Claude Code session; the Bitwig tools load when a session starts.")
-    print("  4. Try: 'run health_check'. Live dashboard: double-click scripts/start_monitor.bat (http://127.0.0.1:8780).")
+    print("  4. Try: 'run health_check'. Open the app: double-click BitwigRemote.pyw.")
     return 0 if all(s is not False for s in STEPS) else 1
 
 

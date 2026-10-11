@@ -9,8 +9,9 @@ live measurements, and record scenes into the arrangement. Everything reads back
 ```
 Claude ──MCP (stdio)──> server.py ──OSC over UDP──> BitwigMCP controller script (inside Bitwig)
                           │  8765 → Bitwig, replies on 8766–8771 (one per client)
-                          └── bwmcp/    tools/ (the 142 MCP tools, by topic) · core/ (connection) · music/ · devices/
-                                        analysis/ · control/ · library/ · monitor/ ──> http://127.0.0.1:8780 live dashboard
+                          └── bwmcp/    tools/ (the 152 MCP tools, by topic) · core/ (connection) · music/ · devices/
+                                        analysis/ · control/ · library/
+          └── bwapp/    Bitwig Remote: the native Qt desktop app (no web view, no web server)
 ```
 
 Bitwig's script API cannot see audio, so analysis works on files or on Windows "loopback" capture of Bitwig's output.
@@ -19,7 +20,7 @@ Bitwig's script API cannot see audio, so analysis works on files or on Windows "
 
 1. Install Python 3.10+, Bitwig Studio and Claude Code.
 2. Double-click `install.bat` (or run `python manage.py install`). It installs the packages, copies the controller script into
-   Bitwig's Controller Scripts folder, and registers the MCP server with Claude. Add `--autostart` to start the live monitor at login.
+   Bitwig's Controller Scripts folder, and registers the MCP server with Claude. Add `--autostart` to open Bitwig Remote at login.
 3. In Bitwig: Settings > Controllers > Add controller > Claude > Bitwig MCP. For live measurements set the audio driver to Windows Audio (WASAPI).
 4. Start a new Claude session. `python manage.py install --check` tells you what works; `--dry-run` shows changes first; `--uninstall` removes it.
 
@@ -49,16 +50,20 @@ Ask Claude in plain language, for example:
 - "Audit my mix and fix what does nothing" → `mix_audit` · "Save this vocal chain" → `recipe` · "Did that EQ help?" → `ab_test`
 - "Tidy my track names" → `auto_name_tracks` · "Save the mixer as 'before'" → `snapshot`
 
-**Live monitor without Claude:** double-click `scripts/start_monitor.bat` (opens http://127.0.0.1:8780).
-**Start automatically at login:** `python manage.py autostart` (hidden, no admin needed); `--status` to check, `--remove` to undo.
-Every panel has a × to close it; the **Panels** menu in the header brings them back (or *Compact* for loudness only).
-Your layout is remembered in the browser, and a closed Master-controls panel never touches Bitwig.
+**Bitwig Remote (the desktop app), without Claude:** double-click `BitwigRemote.pyw` or the *Bitwig Remote* shortcut (`python manage.py app`).
+Every block (loudness, history, spectrum, vectorscope, levels, tuner, advice, BW Remote VST card, master controls, compressors, chords, Claude chat,
+samples) can be dragged, tabbed, floated, resized and closed; **View** in the menu brings any block back, *Reset layout* restores the default.
+Your layout is remembered. A closed Master-controls block never touches Bitwig.
+**Open at login:** `python manage.py autostart` (no admin needed); `--status` to check, `--remove` to undo.
+**Claude chat block:** uses the `claude` command-line program with your own Claude Code login and only the Bitwig tools; Stop ends the turn.
+**Samples block:** your sample folders (the same list as `search_samples`), waveform with bar grid, BPM and length in bars, play / pause,
+hold *<<* / *>>* to rewind / fast-forward, loop, speed, *Send to Bitwig* (new audio track, first slot).
 
 ## Project layout
 
 ```
 server.py            entry point Claude starts (registered with `claude mcp add`); the tools live in bwmcp/
-manage.py            one front door: install · sync · docs · monitor · autostart · backup · test
+manage.py            one front door: install · sync · docs · autostart · app · backup · test
 install.bat          double-click installer
 bitwig_script/       the Bitwig controller script (git copy; Bitwig loads its own copy, kept in sync by `manage.py sync`)
 bwmcp/               the Python package
@@ -78,10 +83,10 @@ bwmcp/               the Python package
   analysis/          loudness/spectrum (mastering) · live capture (capture) · reference comparison · reference library · masking finder · mix audit rules
   control/           Bitwig actions and grouping · automation by performance · arranger-clip reading · window screenshot
   library/           samples · bookmarks · project file reader · backup · script sync
-  monitor/           live dashboard server and page · autostart at login
 data/                your files: caches, saved recipes, bookmarks, snapshots, reports, device-ID list (mostly git-ignored)
 docs/                TOOLS.md (generated) · PRESET_FORMAT.md · MODULATORS_AND_GRID.md
-scripts/             install.py · make_docs.py · start_monitor.bat
+scripts/             install.py · make_docs.py
+bwapp/               the native app: window + docking · panels/ (one file per block) · chat/ · audio/ (samples) · engine (capture + measurements) · feed · autostart
 tests/               live_test.py (needs Bitwig) and offline test_*.py
 research/            experiments and evidence (see research/README.md); not used by the connector
 ```
@@ -112,13 +117,13 @@ N = how many tracks the project had before the test. To run it without an approv
 ## Ports
 
 `8765` requests to Bitwig · `8766–8771` replies (a client takes the first free one, so up to 6 can run at once) ·
-`8780` live monitor. All bound to 127.0.0.1 only.
+All bound to 127.0.0.1 only. The app and the MCP server talk through two small files in `data/` (`app_latest.json`, `app_cmd.json`), not a port.
 
 ## Troubleshooting
 
 - **"No reply from Bitwig"** — Bitwig isn't open, or the controller isn't enabled (see Setup 1).
 - **"all Bitwig reply ports … are in use"** — close other Claude sessions or stray `python server.py` processes.
-- **Monitor page won't load** — it isn't running: `python manage.py autostart --status`, or double-click `scripts/start_monitor.bat`.
+- **Bitwig Remote won't open** — run `python manage.py app` in a terminal to see the error; the app is single-instance (a second copy does nothing). `python manage.py autostart --status` shows the login launcher.
 - **Live capture says it can't capture** — Bitwig is on an exclusive driver; switch to Windows Audio (Setup 4).
 - **Script errors** — search `%LOCALAPPDATA%\Bitwig Studio\BitwigStudio.log` for "Bitwig MCP".
 - **Tools missing in Claude** — start a new session; check `claude mcp get bitwig` shows *Connected*.
@@ -152,17 +157,15 @@ N = how many tracks the project had before the test. To run it without an approv
 - Sounds load from preset/device **files** (6,000+ indexed), not by browsing Bitwig's own browser or its favourites.
 - Per-note **pressure** can be set but Bitwig doesn't report it back, so it can't be verified.
 - Meters are on Bitwig's 0–1 scale; true LUFS / dBTP come from the captured audio, not from Bitwig's meters.
-- Master-chain sliders and tools select Bitwig's master track; don't use the monitor's sliders while Claude is also
+- Master-chain sliders and tools select Bitwig's master track; don't use the app's master sliders while Claude is also
   changing the master chain.
 
 
 ## Pictures
 | | |
 |---|---|
-| ![Live master monitor, dark](docs/images/monitor_full.png) | ![Live master monitor, phone width](docs/images/monitor_phone.png) |
-| **Live master monitor.** Loudness, history, vectorscope, spectrum, levels, the BW Remote VST3 card, master chain controls, compressors, chords. | **Phone width.** The same page stacked in one column. |
-| ![Bitwig Remote desktop app](docs/images/desktop_app.png) | ![BW Remote VST3 card](docs/images/vst_card.png) |
-| **Desktop app.** The monitor in its own window; audio now arrives from inside Bitwig. | **VST card.** Peak, loudness, correlation, width, host tempo, signed packets and a 24 band spectrum. |
+| ![Bitwig Remote, native app](docs/images/app_native.png) | ![BW Remote VST3 card](docs/images/vst_card.png) |
+| **Bitwig Remote.** Native Qt window: dockable blocks, live meters, chords, Claude chat. | **VST card.** Peak, loudness, correlation, width, host tempo, signed packets and a 24 band spectrum. |
 | ![BW Remote on the Bitwig master](docs/images/vst_on_master.png) | ![Grid modules added from a file](docs/images/grid_transfer_modules.png) |
 | **BW Remote VST3 on the master track.** | **Transfer, Curve, Curves, Wavetable LFO and Clock modules** added to a Grid preset by the connector. |
 | ![Bounce in place](docs/images/bounce_in_place.png) | ![Chords and voicings](docs/images/monitor_chords_full.png) |

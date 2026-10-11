@@ -3,7 +3,7 @@ r"""Package Bitwig Remote (the desktop app) as a Windows program with PyInstalle
     python packaging/build_app.py            build dist/Bitwig Remote/ (a folder with 'Bitwig Remote.exe')
     python packaging/build_app.py --installer   also build the installer (needs Inno Setup 6: winget install JRSoftware.InnoSetup)
 
-The app needs no Python on the target PC. It runs the live monitor inside its own process, reads Bitwig's audio from the BW Remote VST3 (or loopback), and talks to Bitwig through the
+The app needs no Python on the target PC. It is the native Qt app (no web view), reads Bitwig's audio from the BW Remote VST3 (or loopback), and talks to Bitwig through the
 Bitwig controller script (installed by the installer into Documents\Bitwig Studio\Controller Scripts\BitwigMCP). Build the VST3 plug-ins first (python manage.py vst) if the installer should carry them."""
 import shutil
 import subprocess
@@ -24,15 +24,14 @@ def build_exe():
     sep = ";"
     args = [
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--windowed", "--name", NAME,
-        "--icon", ROOT / "bwmcp" / "monitor" / "assets" / "bitwig_remote.ico",
+        "--icon", ROOT / "bwapp" / "assets" / "bitwig_remote.ico",
         "--paths", ROOT,
-        "--add-data", f"{ROOT / 'bwmcp' / 'monitor' / 'live_monitor.html'}{sep}bwmcp/monitor",
-        "--add-data", f"{ROOT / 'bwmcp' / 'monitor' / 'assets'}{sep}bwmcp/monitor/assets",
+        "--add-data", f"{ROOT / 'bwapp' / 'assets'}{sep}bwapp/assets",
         "--add-data", f"{ROOT / 'data' / 'device_ranges.json'}{sep}data",
         "--add-data", f"{ROOT / 'data' / 'bitwig_device_ids.json'}{sep}data",
         "--add-data", f"{ROOT / 'data' / 'spire_params.json'}{sep}data",
-        "--collect-submodules", "bwmcp", "--hidden-import", "server",
-        "--collect-all", "webview", "--collect-all", "pyloudnorm", "--collect-all", "pyaudiowpatch",
+        "--collect-submodules", "bwmcp", "--collect-submodules", "bwapp", "--hidden-import", "server",
+        "--collect-all", "PySide6QtAds", "--collect-all", "sounddevice", "--collect-all", "pyloudnorm", "--collect-all", "pyaudiowpatch",
         "--exclude-module", "matplotlib", "--exclude-module", "rapidocr_onnxruntime", "--exclude-module", "onnxruntime", "--exclude-module", "tkinter",
         "--distpath", DIST, "--workpath", ROOT / "build" / "pyinstaller", "--specpath", ROOT / "build",
         ROOT / "BitwigRemote.pyw",

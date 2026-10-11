@@ -24,7 +24,7 @@ bwapp/
   audio/           sample library, decode, tempo, peaks, player, stretch
 ```
 
-## Stages
+## Stages (1, 2 and 3 done in 9.0.0)
 1. **Shell + live blocks + chat + sample mode (first cut).** App opens, docking works, meters live, chat answers, samples play. *(this stage)*
 2. Port the remaining blocks: BW Remote VST card, master chain sliders, compressors, chord builder, advice, UK clock + weather, target select, report.
 3. **Remove the web**: delete `live_monitor.html`, the HTTP handler / SSE in `live_monitor.py`, `desktop.py` (pywebview), `autostart.py` web launcher (replace by app autostart), `pywebview` requirement; point the `live_monitor` MCP tool at the native app; update packaging (PyInstaller spec) and docs. Only after stage 2 has parity.

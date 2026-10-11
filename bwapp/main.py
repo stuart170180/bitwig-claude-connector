@@ -1,8 +1,10 @@
 """Entry point: python -m bwapp.main   (or double-click BitwigRemote.pyw)."""
 import ctypes
 import sys
+from pathlib import Path
 
 from PySide6.QtCore import QLockFile, QStandardPaths
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from bwapp import theme
@@ -16,6 +18,7 @@ def run():
         pass
     app = QApplication(sys.argv)
     app.setApplicationName("Bitwig Remote")
+    app.setWindowIcon(QIcon(str(Path(__file__).parent / "assets" / "bitwig_remote.ico")))
     lock = QLockFile(QStandardPaths.writableLocation(QStandardPaths.TempLocation) + "/bitwig_remote_app.lock")
     lock.setStaleLockTime(0)
     if not lock.tryLock(100):                       # a copy is already open: do not start a second capture
